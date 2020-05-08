@@ -67,7 +67,21 @@ To quickly install everything in a virtual env just run
 
 To run the tests locally:
 ``` 
-scritps/test.sh 
+scripts/test.sh
+================================================================================ test session starts ================================================================================
+platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- /Users/wschrep/FreelanceWork/VIAA/syncrator-api/python_env/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
+plugins: cov-2.8.1
+collected 5 items
+
+tests/test_app.py::test_home PASSED                                                                                                                                           [ 20%]
+tests/test_app.py::test_liveness_check PASSED                                                                                                                                 [ 40%]
+tests/test_app.py::test_start_job PASSED                                                                                                                                      [ 60%]
+tests/test_app.py::test_list_jobs PASSED                                                                                                                                      [ 80%]
+tests/test_app.py::test_get_job PASSED                                                                                                                                        [100%]
+
+================================================================================= 5 passed in 0.19s =================================================================================
 ```
 
 To run a server on port 8080:

@@ -15,19 +15,23 @@ create_template()
 
   echo "\nparams file result:"
   echo "==================="
+
   while read line
   do
       eval echo "$line"
   done < "./$PARAMS"
 
+  # load param variable into memory so template can substitute them
   source "./$PARAMS"
 
 
   echo "\ntemplate result:"
   echo "================"
 
+  # the cat EOF shows the template literally, remove initial tab to show
+  # contents correctly with replaced variables from above
   eval "cat <<EOF
-  $(<./$TEMPLATE)
+$(<./$TEMPLATE)
   EOF
   " 2> /dev/null
 

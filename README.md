@@ -49,7 +49,8 @@ The application is now serving requests on `localhost:8080`. Try it with:
 
     `$ curl -v -X GET http://127.0.0.1:8080/`
 
-The root page has links and some minimal description of other available routes for api calls.
+The root page has links and some minimal description of other available routes for api calls, open in your browser by
+following this link <a href="http://127.0.0.1:8080/">Syncrator API</a>.
 
 
 ### Running using Docker

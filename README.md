@@ -60,3 +60,25 @@ The application is now serving requests on `localhost:8080`. Try it with:
    `$ docker run -p 8080:8080 syncrator-api`
 
 You can try the same cURL commands as specified above.
+
+### Helper scripts
+To quickly install everything in a virtual env just run
+``` scripts/install.sh ```
+
+To run the tests locally:
+``` 
+scritps/test.sh 
+```
+
+To run a server on port 8080:
+
+``` 
+scripts/run.sh 
+```
+
+To build the docker containers:
+
+```
+scripts/build.sh
+```
+

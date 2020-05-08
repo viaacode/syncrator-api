@@ -20,14 +20,16 @@ create_template()
       eval echo "$line"
   done < "./$PARAMS"
 
+  source "./$PARAMS"
 
 
   echo "\ntemplate result:"
   echo "================"
-  while read line
-  do
-      eval echo "$line"
-  done < "./$TEMPLATE"
+
+  eval "cat <<EOF
+  $(<./$TEMPLATE)
+  EOF
+  " 2> /dev/null
 
 }
 

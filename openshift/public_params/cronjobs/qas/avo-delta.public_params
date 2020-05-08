@@ -1,0 +1,7 @@
+ENV=qas
+TARGET=avo
+ACTION_NAME=delta
+ACTION=delta
+IS_TAG=latest
+CRON_ARGS=0 5 * * *
+OPTIONS=-n 1000 -c 1

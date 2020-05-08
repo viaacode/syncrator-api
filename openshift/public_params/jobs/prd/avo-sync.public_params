@@ -1,0 +1,6 @@
+ENV=prd
+TARGET=avo
+ACTION_NAME=sync
+ACTION=sync
+IS_TAG=stable
+OPTIONS=-n 1000 -c 1

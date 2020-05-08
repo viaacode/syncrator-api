@@ -1,0 +1,22 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: 'true'
+  labels:
+    app: metadatacatalogus-qas
+    service: solr-metadatacatalogus-qas
+  name: solr-metadatacatalogus-qas-sync
+spec:
+  alternateBackends:
+    - kind: Service
+      name: solr-metadatacatalogus-qas-sync
+      weight: 100
+  host: solr-metadatacatalogus-qas-sync-catalogi.apps.do-prd-okp-m0.do.viaa.be
+  port:
+    targetPort: '8983'
+  to:
+    kind: Service
+    name: solr-metadatacatalogus-qas
+    weight: 0
+  wildcardPolicy: None

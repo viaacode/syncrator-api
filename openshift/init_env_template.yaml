@@ -1,0 +1,224 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+labels:
+    app: syncrator
+    template: init
+    env: ${ENV}
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      template.openshift.io/expose-database_name: '{.data[''database-name'']}'
+      template.openshift.io/expose-password: '{.data[''database-password'']}'
+      template.openshift.io/expose-username: '{.data[''database-user'']}'
+      template.openshift.io/expose-url: '{.data[''database-url'']}'
+    name: db-syncrator-${ENV}
+  stringData:
+    database-name: syncrator
+    database-password: ${POSTGRESQL_PASSWORD}
+    database-user: syncrator
+    database-url: postgres://syncrator:${POSTGRESQL_PASSWORD}@db-syncrator-${ENV}:5432/syncrator
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
+    name: db-syncrator-${ENV}
+  spec:
+    ports:
+    - name: postgresql
+      nodePort: 0
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      name: db-syncrator-${ENV}
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: syncrator-db-${ENV}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: db-syncrator-${ENV}
+  spec:
+    replicas: 1
+    selector:
+      name: db-syncrator-${ENV}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: db-syncrator-${ENV}
+      spec:
+        containers:
+        - capabilities: {}
+          env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: db-syncrator-${ENV}
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: db-syncrator-${ENV}
+          - name: POSTGRESQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: db-syncrator-${ENV}
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+              - /usr/libexec/check-container
+              - --live
+            initialDelaySeconds: 120
+            timeoutSeconds: 10
+          name: postgresql
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /usr/libexec/check-container
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: db-syncrator-${ENV}-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        volumes:
+        - name: db-syncrator-${ENV}-data
+          persistentVolumeClaim:
+            claimName: syncrator-db-${ENV}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - postgresql
+        from:
+          kind: ImageStreamTag
+          name: postgresql:${POSTGRESQL_VERSION}
+          namespace: ${NAMESPACE}
+        lastTriggeredImage: ""
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: syncrator-env-${ENV}
+  data:
+    MEDIAHAVEN_URL: ${MEDIAHAVEN_URL}
+    DELETES_DB_URL: ${DELETES_DB_URL}
+    ORG_API_URL: ${ORG_API_URL}
+    DATABASE_URL: postgres://syncrator:${POSTGRESQL_PASSWORD}@db-syncrator-${ENV}:5432/syncrator
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: syncrator-envtarget-${ENV}-metadatacatalogus
+  data:
+    SOLR_URL: ${MDC_SOLR_URL}
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: syncrator-envtarget-${ENV}-cataloguspro
+  data:
+    SOLR_URL: ${CPRO_SOLR_URL}
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: syncrator-envtarget-${ENV}-avo
+  data:
+    POSTGRESQL_URL: ${AVO_POSTGRESQL_URL}
+    MAM_USER: ${AVO_MAM_USER}
+    MAM_PASSWORD: ${AVO_MAM_PASSWORD}
+parameters:
+- description: ENV, e.g. qas/prd
+  displayName: ENV
+  name: ENV
+  required: true
+- description: MEDIAHAVEN_URL
+  displayName: MEDIAHAVEN_URL
+  name: MEDIAHAVEN_URL
+  required: true
+- description: DELETES_DB_URL
+  displayName: DELETES_DB_URL
+  name: DELETES_DB_URL
+  required: true
+- description: ORG_API_URL
+  displayName: ORG_API_URL
+  name: ORG_API_URL
+  required: true
+- description: MDC_SOLR_URL
+  displayName: MDC_SOLR_URL
+  name: MDC_SOLR_URL
+  required: true
+- description: CPRO_SOLR_URL
+  displayName: CPRO_SOLR_URL
+  name: CPRO_SOLR_URL
+  required: true
+- description: AVO_POSTGRESQL_URL
+  displayName: AVO_POSTGRESQL_URL
+  name: AVO_POSTGRESQL_URL
+  required: true
+- description: AVO_MAM_USER
+  displayName: AVO_MAM_USER
+  name: AVO_MAM_USER
+  required: true
+- description: AVO_MAM_PASSWORD
+  displayName: AVO_MAM_PASSWORD
+  name: AVO_MAM_PASSWORD
+  required: true
+- description: POSTGRESQL_PASSWORD
+  displayName: POSTGRESQL_PASSWORD
+  name: POSTGRESQL_PASSWORD
+  required: true
+- description: Volume space available for db-syncs data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 128Mi
+- description: Maximum amount of memory the db-syncs container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: Version of PostgreSQL image to be used (9.4, 9.5, 9.6 or latest).
+  displayName: Version of PostgreSQL Image
+  name: POSTGRESQL_VERSION
+  required: true
+  value: "9.6"
+- description: The OpenShift Namespace where the ImageStream resides.
+  displayName: Namespace
+  required: true
+  name: NAMESPACE
+  value: openshift

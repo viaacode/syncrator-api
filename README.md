@@ -63,11 +63,11 @@ You can try the same cURL commands as specified above.
 
 ### Helper scripts
 To quickly install everything in a virtual env just run
-``` scripts/install.sh ```
+``` scripts/install ```
 
 To run the tests locally:
 ``` 
-scripts/test.sh
+scripts/test
 ================================================================================ test session starts ================================================================================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- /Users/wschrep/FreelanceWork/VIAA/syncrator-api/python_env/bin/python
 cachedir: .pytest_cache
@@ -87,12 +87,13 @@ tests/test_app.py::test_get_job PASSED                                          
 To run a server on port 8080:
 
 ``` 
-scripts/run.sh 
+scripts/run 
 ```
 
 To build the docker containers:
 
 ```
-scripts/build.sh
+scripts/build
 ```
 
+During development you can autoformat using scripts/autopep

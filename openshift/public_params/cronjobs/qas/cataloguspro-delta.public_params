@@ -1,0 +1,7 @@
+ENV=qas
+TARGET=cataloguspro
+ACTION_NAME=delta
+ACTION=delta
+IS_TAG=latest
+CRON_ARGS=0 4 * * *
+OPTIONS=-n 1000 -c 1

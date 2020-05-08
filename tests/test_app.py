@@ -20,7 +20,7 @@ def test_liveness_check():
 def test_dryrun_job():
     result = dryrun_job('avo', 'qas')
 
-    assert 'started job on project=avo, environment=qas...' in result[0]
+    assert 'Starting synchronisation job on project=avo, environment=qas...' in result[0]
     assert '>>> DRYRUN used' in result[0]
     assert 'params file result' in result[0]
     assert 'template result' in result[0]

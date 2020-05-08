@@ -47,7 +47,10 @@
 
 The application is now serving requests on `localhost:8080`. Try it with:
 
-    `$ curl -v -X GET localhost:8080/health/live`
+    `$ curl -v -X GET http://127.0.0.1:8080/`
+
+The root page has links and some minimal description of other available routes for api calls.
+
 
 ### Running using Docker
 

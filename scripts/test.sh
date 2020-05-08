@@ -1,2 +1,3 @@
 source python_env/bin/activate
-uwsgi -i uwsgi.ini
+python -m pytest -v
+

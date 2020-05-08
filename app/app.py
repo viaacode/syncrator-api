@@ -11,6 +11,9 @@ app = Flask(__name__)
 config = ConfigParser()
 log = logging.get_logger(__name__, config=config)
 
+@app.route("/")
+def home():
+    return "<h1>Syncrator-API routes</h1> GET /sync/jobs, GET /sync/jobs/<id>, POST /sync/<project>/<env>", status.HTTP_200_OK
 
 @app.route("/health/live")
 def liveness_check() -> str:

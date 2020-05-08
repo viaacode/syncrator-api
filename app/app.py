@@ -49,7 +49,8 @@ def get_job(job_id) -> str:
 def dryrun_job(project, environment) -> str:
     # GET with /sync/avo/qas does dryrun
     stream = os.popen(
-        "cd openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment))
+        "cd openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment)
+    )
     dryrun_result = stream.read()
 
     return "Starting synchronisation job on project={}, environment={}...<br/>\n <pre>{}</pre>".format(
@@ -60,10 +61,9 @@ def dryrun_job(project, environment) -> str:
 def start_job(project, environment) -> str:
     # post with /sync/avo/qas does actual job starting!
     stream = os.popen(
-        "cd openshift && ./syncrator_sync.sh {} {}".format(project, environment))
+        "cd openshift && ./syncrator_sync.sh {} {}".format(project, environment)
+    )
     sync_result = stream.read()
-    print("result of sync:\n{}".format(sync_result))
 
-    return "Starting synchronisation job on project={}, environment={}...".format(
-        project,
-        environment), status.HTTP_200_OK
+    return "Starting synchronisation job on project={}, environment={}, result={}...".format(
+        project, environment, sync_result), status.HTTP_200_OK

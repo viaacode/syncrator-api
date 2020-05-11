@@ -101,4 +101,21 @@ To build the docker containers:
 scripts/build
 ```
 
-During development you can autoformat using scripts/autopep
+During development you can autoformat using scripts/autopep and to make changes and see response instantly without restarting the application
+theres the scripts/debug helper script now
+```
+scripts/debug
+
+(python_env) ➜  syncrator-api git:(development) ✗ scripts/debug
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+{"message": " * Running on http://127.0.0.1:8080/ (Press CTRL+C to quit)"}
+{"message": " * Restarting with stat"}
+{"message": " * Debugger is active!"}
+{"message": " * Debugger PIN: 119-009-382"}
+
+```
+It also runs on port 8080 like the scripts/run and docker builds

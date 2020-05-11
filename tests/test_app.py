@@ -3,7 +3,13 @@
 
 from flask_api import status
 from app.app import *
+import pytest
 
+# have app context available in tests
+@pytest.fixture
+def app_context():
+    with app.app_context():
+        yield
 
 def test_home():
     assert home()[1] == status.HTTP_200_OK
@@ -11,10 +17,6 @@ def test_home():
 
 def test_liveness_check():
     assert liveness_check() == ('OK', status.HTTP_200_OK)
-
-# this will actually fire up a syncrator run now, todo make this also dryrun?
-# def test_start_job():
-#    assert start_job('avo', 'qas') == ('started job on project=avo, environment=qas...', status.HTTP_200_OK)
 
 
 def test_dryrun_job():
@@ -28,12 +30,34 @@ def test_dryrun_job():
 
 
 def test_list_jobs():
-    assert list_jobs() == (
-        'TODO: hook into syncrator db and show paginated job list here',
-        status.HTTP_200_OK)
+    client = app.test_client()
+    res = client.get('/jobs')
+
+    assert res.get_json() == [
+                  {
+                    "id": 1, 
+                    "progress": 30, 
+                    "running": True
+                  }, 
+                  {
+                    "id": 2, 
+                    "progress": 100, 
+                    "running": False
+                  }
+                ]
 
 
 def test_get_job():
-    assert get_job('1234') == (
-        'TODO: hook into syncrator db and show specific job with id=1234',
-        status.HTTP_200_OK)
+    client = app.test_client()
+    res = client.get('/jobs/22')
+
+    assert res.get_json() == {
+                  "id": 22, 
+                  "progress": 20, 
+                  "running": True
+                }
+
+# this will actually fire up a syncrator run now, todo make this also dryrun?
+# def test_start_job():
+#    assert start_job('avo', 'qas') == ('started job on project=avo, environment=qas...', status.HTTP_200_OK)
+

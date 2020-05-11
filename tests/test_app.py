@@ -16,7 +16,11 @@ def test_home():
 
 
 def test_liveness_check():
-    assert liveness_check() == ('OK', status.HTTP_200_OK)
+    client = app.test_client()
+    res = client.get('/health/live')
+
+    assert res.data == b'OK'
+    assert res.status_code == status.HTTP_200_OK
 
 
 def test_dryrun_job():

@@ -29,12 +29,12 @@ def home():
 
 
 @app.route("/health/live")
-def liveness_check() -> str:
+def liveness_check():
     return "OK", status.HTTP_200_OK
 
 
 @app.route("/jobs", methods=['GET'])
-def list_jobs() -> str:
+def list_jobs():
     # todo sqlalchemy connect and give back job list table entries like so:
     jobs = [
         {
@@ -55,7 +55,7 @@ def list_jobs() -> str:
 
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
-def get_job(job_id) -> str:
+def get_job(job_id):
     # todo lookup job with sqlalchemy
     job = {
         'id': job_id,
@@ -66,7 +66,7 @@ def get_job(job_id) -> str:
 
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
-def dryrun_job(project, environment) -> str:
+def dryrun_job(project, environment):
     # GET with /sync/avo/qas does dryrun
     stream = os.popen(
         "cd openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment)
@@ -78,7 +78,7 @@ def dryrun_job(project, environment) -> str:
 
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
-def start_job(project, environment) -> str:
+def start_job(project, environment):
     # post with /sync/avo/qas does actual job starting!
     stream = os.popen(
         "cd openshift && ./syncrator_sync.sh {} {}".format(project, environment)

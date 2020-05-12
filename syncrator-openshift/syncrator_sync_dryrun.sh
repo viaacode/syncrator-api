@@ -1,3 +1,4 @@
+#!/bin/bash
 #set -x
 APP=$1 # Change if needed to cataloguspro/metadatacatalogus
 ENVIRONMENT=$2 # Change if needed to qas/prd
@@ -13,8 +14,9 @@ create_template()
   # oc process -f $TEMPLATE --param-file=$PARAMS  | oc create -f -
   echo "oc process -f $TEMPLATE --param-file=$PARAMS | oc create -f -"
 
-  echo "\nparams file result:"
-  echo "==================="
+  echo ""
+  echo "params file:"
+  echo "============"
 
   while read line
   do
@@ -24,9 +26,9 @@ create_template()
   # load param variable into memory so template can substitute them
   source "./$PARAMS"
 
-
-  echo "\ntemplate result:"
-  echo "================"
+  echo ""
+  echo "parametrised template:"
+  echo "======================"
 
   # the cat EOF shows the template literally, remove initial tab to show
   # contents correctly with replaced variables from above

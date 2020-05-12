@@ -1,3 +1,4 @@
+#!/bin/bash
 #set -x
 APP=$1 # Change if needed to cataloguspro/metadatacatalogus
 ENVIRONMENT=$2 # Change if needed to qas/prd

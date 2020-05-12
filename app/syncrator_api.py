@@ -5,6 +5,7 @@ from flask_api import FlaskAPI, status, exceptions
 from viaa.configuration import ConfigParser
 from viaa.observability import logging
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError
 import os
 
 # app = Flask(__name__)
@@ -44,17 +45,24 @@ def liveness_check():
 
 @app.route("/jobs", methods=['GET'])
 def list_jobs():
-    job_rows = SyncJobs.query.order_by(
-        SyncJobs.start_time.desc()).limit(100).all()
-    jobs = [j.to_dict() for j in job_rows]
-    return jsonify(jobs)
+    try:
+        job_rows = SyncJobs.query.order_by(
+            SyncJobs.start_time.desc()).limit(100).all()
+        jobs = [j.to_dict() for j in job_rows]
+        return jsonify(jobs)
+    except OperationalError as pg:
+        return jsonify({'database error': str(pg) })
+
+
 
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
-    job = SyncJobs.query.filter_by(id=job_id).first()
-    return jsonify(job.to_dict())
-
+    try:
+        job = SyncJobs.query.filter_by(id=job_id).first()
+        return jsonify(job.to_dict())
+    except OperationalError as pg:
+        return jsonify({'database error': str(pg) })
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_job(project, environment):

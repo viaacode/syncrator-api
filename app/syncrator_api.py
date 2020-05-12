@@ -61,6 +61,8 @@ def get_job(job_id):
     try:
         job = SyncJobs.query.filter_by(id=job_id).first()
         return jsonify(job.to_dict())
+    except AttributeError:
+        return "not found", 404
     except OperationalError as pg:
         return jsonify({'database error': str(pg) })
 

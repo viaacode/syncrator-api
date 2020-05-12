@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask_api import status
-from app.app import *
+from app.syncrator_api import *
 import pytest
 
 # have app context available in tests
@@ -37,33 +37,19 @@ def test_dryrun_job():
     assert result[1] == status.HTTP_200_OK
 
 
-def test_list_jobs():
-    client = app.test_client()
-    res = client.get('/jobs')
-
-    assert res.get_json() == [
-        {
-            "id": 1,
-            "progress": 30,
-            "running": True
-        },
-        {
-            "id": 2,
-            "progress": 100,
-            "running": False
-        }
-    ]
-
+# todo test db setup here for testing...
+#def test_list_jobs():
+#    client = app.test_client()
+#    res = client.get('/jobs')
+#
+#    assert res.get_json() == ''
+    
 
 def test_get_job():
     client = app.test_client()
     res = client.get('/jobs/22')
+    assert res.status_code == 404
 
-    assert res.get_json() == {
-        "id": 22,
-        "progress": 20,
-        "running": True
-    }
 
 # this will actually fire up a syncrator run now, todo make this also dryrun?
 # def test_start_job():

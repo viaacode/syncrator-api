@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-from models import * 
 from flask import request, url_for, jsonify
 from flask_api import FlaskAPI, status, exceptions
 from viaa.configuration import ConfigParser
@@ -14,10 +12,11 @@ app = FlaskAPI(__name__)
 config = ConfigParser()
 logger = logging.get_logger(__name__, config=config)
 
-app.config.from_object('config.StagingConfig')
+app.config.from_object('app.config.StagingConfig')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+from app.models import *
 
 @app.route("/")
 def home():
@@ -29,7 +28,7 @@ def home():
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
     page += '<li><a href="/jobs">     GET /jobs         </a>   - lists active jobs </li>'
-    page += '<li><a href="/jobs/123"> GET /jobs/&lt;id> </a>   - get job details and progress </li>'
+    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id> </a>   - get job details and progress </li>'
     page += '<li> POST /sync/&lt;project>/&lt;env>             - start a new synchronisation job</li>'
     page += '<li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - job dryrun with openshift template output as result</li></ul>'
     page += '<h2>Health check call</h2>'
@@ -45,7 +44,8 @@ def liveness_check():
 
 @app.route("/jobs", methods=['GET'])
 def list_jobs():
-    job_rows = SyncJobs.query.order_by(SyncJobs.start_time.desc()).limit(100).all()
+    job_rows = SyncJobs.query.order_by(
+        SyncJobs.start_time.desc()).limit(100).all()
     jobs = [j.to_dict() for j in job_rows]
     return jsonify(jobs)
 

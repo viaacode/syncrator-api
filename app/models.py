@@ -1,4 +1,4 @@
-from app import db
+from app.syncrator_api import db
 from sqlalchemy.dialects.postgresql import JSON
 
 
@@ -9,20 +9,20 @@ class SyncJobs(db.Model):
     start_time = db.Column(db.DateTime())
     end_time = db.Column(db.DateTime())
     data_source = db.Column(db.String())
-    #type = db.Column(db.String())
+    type = db.Column(db.String())
     total_records = db.Column(db.Numeric())
     completed = db.Column(db.Boolean())
     options = db.Column(db.String())
     version = db.Column(db.String())
     target_datastore_url = db.Column(db.String())
 
-    def __init__(self, start_time, end_time, data_source,  # type,
+    def __init__(self, start_time, end_time, data_source, type,
                  total_records, completed, options,
                  version, target_datastore_url):
         self.start_time = start_time
         self.end_time = end_time
         self.data_source = data_source
-        #self.type = type
+        self.type = type
         self.total_records = total_records
         self.completed = completed
         self.options = options
@@ -36,10 +36,11 @@ class SyncJobs(db.Model):
         """Export sync job to dictionary for later jsonify to work."""
 
         return {
+            'id': self.id,
             'start_time': self.start_time,
             'end_time': self.end_time,
             'data_source': self.data_source,
-            # 'type': self.type,
+            'type': self.type,
             'total_records': int(self.total_records),
             'completed': self.completed,
             'options': self.options,

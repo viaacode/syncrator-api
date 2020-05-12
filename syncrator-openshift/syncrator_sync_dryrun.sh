@@ -60,7 +60,8 @@ syncrator_sync(){
   create_job ${APP}-sync
 }
 
-echo ">>> DRYRUN used! Call syncrator_sync.sh to do actual syncrator run \n"
+echo "Syncrator DRYRUN:"
+echo "================="
 
 # Dryrun only prints what will be done
 echo "oc login $OS_URL"

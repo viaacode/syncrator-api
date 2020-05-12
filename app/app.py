@@ -10,11 +10,17 @@ import os
 
 app = FlaskAPI(__name__)
 config = ConfigParser()
-log = logging.get_logger(__name__, config=config)
+logger = logging.get_logger(__name__, config=config)
+
+app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL', 
+                                'postgres://postgres@localhost:5432/syncrator_dev')
+app.config['API_KEY'] = os.environ.get('API_KEY', 'secret123')
+
 
 @app.route("/")
 def home():
     # TODO: add some jinja template here
+    logger.info("configuration = ", dictionary={'database_url': app.config.get('DATABASE_URL')})
     page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
@@ -35,7 +41,8 @@ def liveness_check():
 
 @app.route("/jobs", methods=['GET'])
 def list_jobs():
-    # todo sqlalchemy connect and give back job list table entries like so:
+    logger.warning("TODO: implement sqlalchemy connect and give back job list table entries")
+
     jobs = [
         {
             'id': 1,
@@ -56,7 +63,7 @@ def list_jobs():
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
-    # todo lookup job with sqlalchemy
+    logger.warning("TODO: implement sqlalchemy connect and lookup job entry")
     job = {
         'id': job_id,
         'running': True,
@@ -68,8 +75,9 @@ def get_job(job_id):
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_job(project, environment):
     # GET with /sync/avo/qas does dryrun
+    logger.info("Dryrun for project={} and env={} (use POST method to start real job)".format(project, environment))
     stream = os.popen(
-        "cd openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment)
+        "cd syncrator-openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment)
     )
     dryrun_result = stream.read()
 
@@ -79,9 +87,9 @@ def dryrun_job(project, environment):
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
 def start_job(project, environment):
-    # post with /sync/avo/qas does actual job starting!
+    logger.info("Starting openshift pod for project={} and env={}".format(project, environment))
     stream = os.popen(
-        "cd openshift && ./syncrator_sync.sh {} {}".format(project, environment)
+        "cd syncrator-openshift && ./syncrator_sync.sh {} {}".format(project, environment)
     )
     sync_result = stream.read()
 

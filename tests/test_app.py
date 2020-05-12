@@ -6,6 +6,8 @@ from app.app import *
 import pytest
 
 # have app context available in tests
+
+
 @pytest.fixture
 def app_context():
     with app.app_context():

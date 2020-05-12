@@ -1,3 +1,5 @@
 
 autopep8 --in-place --aggressive --aggressive app/app.py
+autopep8 --in-place --aggressive --aggressive app/config.py
+autopep8 --in-place --aggressive --aggressive app/models.py
 autopep8 --in-place --aggressive --aggressive tests/test_app.py

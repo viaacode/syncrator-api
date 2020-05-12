@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from models import * 
 from flask import request, url_for, jsonify
 from flask_api import FlaskAPI, status, exceptions
 from viaa.configuration import ConfigParser
 from viaa.observability import logging
+from flask_sqlalchemy import SQLAlchemy
 import os
 
-
+# app = Flask(__name__)
 app = FlaskAPI(__name__)
 config = ConfigParser()
 logger = logging.get_logger(__name__, config=config)
 
-app.config['DATABASE_URL'] = os.environ.get(
-    'DATABASE_URL', 'postgres://postgres@localhost:5432/syncrator_dev')
-app.config['API_KEY'] = os.environ.get('API_KEY', 'secret123')
+app.config.from_object('config.StagingConfig')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
 @app.route("/")
@@ -22,7 +24,7 @@ def home():
     # TODO: add some jinja template here
     logger.info(
         "configuration = ", dictionary={
-            'database_url': app.config.get('DATABASE_URL')})
+            'database_url': app.config.get('SQLALCHEMY_DATABASE_URI')})
     page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
@@ -43,34 +45,15 @@ def liveness_check():
 
 @app.route("/jobs", methods=['GET'])
 def list_jobs():
-    logger.warning(
-        "TODO: implement sqlalchemy connect and give back job list table entries")
-
-    jobs = [
-        {
-            'id': 1,
-            'running': True,
-            'progress': 30
-        },
-        {
-            'id': 2,
-            'running': False,
-            'progress': 100
-        },
-
-    ]
+    job_rows = SyncJobs.query.order_by(SyncJobs.start_time.desc()).limit(100).all()
+    jobs = [j.to_dict() for j in job_rows]
     return jsonify(jobs)
 
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
-    logger.warning("TODO: implement sqlalchemy connect and lookup job entry")
-    job = {
-        'id': job_id,
-        'running': True,
-        'progress': 20
-    }
-    return jsonify(job)
+    job = SyncJobs.query.filter_by(id=job_id).first()
+    return jsonify(job.to_dict())
 
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])

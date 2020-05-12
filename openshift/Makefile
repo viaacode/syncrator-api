@@ -5,7 +5,7 @@ SHELL = /bin/bash
 
 .PHONY: all
 
-NAMESPACE = viaa-tools
+NAMESPACE = shared-components
 OC_PROJECT = ${NAMESPACE}
 
 APP_NAME = syncrator-api

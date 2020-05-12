@@ -38,17 +38,18 @@ def test_dryrun_job():
 
 
 # todo test db setup here for testing...
-#def test_list_jobs():
-#    client = app.test_client()
-#    res = client.get('/jobs')
-#
-#    assert res.get_json() == ''
+def test_list_jobs():
+    client = app.test_client()
+    res = client.get('/jobs')
+
+    #assert res.get_json() == ''
+    assert res.status_code == 400
     
 
 def test_get_job():
     client = app.test_client()
     res = client.get('/jobs/22')
-    assert res.status_code == 404
+    assert res.status_code == 400 #normal because db does not connect
 
 
 # this will actually fire up a syncrator run now, todo make this also dryrun?

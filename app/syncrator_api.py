@@ -51,9 +51,7 @@ def list_jobs():
         jobs = [j.to_dict() for j in job_rows]
         return jsonify(jobs)
     except OperationalError as pg:
-        return jsonify({'database error': str(pg) })
-
-
+        return "database error: {}".format(str(pg)), 400
 
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
@@ -64,7 +62,7 @@ def get_job(job_id):
     except AttributeError:
         return "not found", 404
     except OperationalError as pg:
-        return jsonify({'database error': str(pg) })
+        return "database error: {}".format(str(pg)), 400
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_job(project, environment):

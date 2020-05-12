@@ -8,7 +8,7 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = 'somesecret_key_here234232425223faifaf'
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL', 'postgres://postgres@localhost:5432/syncrator_dev')
+        'DATABASE_URL', 'postgres://postgres@localhost:5432/syncrator_dev2')
     API_KEY = os.environ.get('API_KEY', 'secret123')
 
 

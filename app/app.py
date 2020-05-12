@@ -12,15 +12,17 @@ app = FlaskAPI(__name__)
 config = ConfigParser()
 logger = logging.get_logger(__name__, config=config)
 
-app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL', 
-                                'postgres://postgres@localhost:5432/syncrator_dev')
+app.config['DATABASE_URL'] = os.environ.get(
+    'DATABASE_URL', 'postgres://postgres@localhost:5432/syncrator_dev')
 app.config['API_KEY'] = os.environ.get('API_KEY', 'secret123')
 
 
 @app.route("/")
 def home():
     # TODO: add some jinja template here
-    logger.info("configuration = ", dictionary={'database_url': app.config.get('DATABASE_URL')})
+    logger.info(
+        "configuration = ", dictionary={
+            'database_url': app.config.get('DATABASE_URL')})
     page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
@@ -41,7 +43,8 @@ def liveness_check():
 
 @app.route("/jobs", methods=['GET'])
 def list_jobs():
-    logger.warning("TODO: implement sqlalchemy connect and give back job list table entries")
+    logger.warning(
+        "TODO: implement sqlalchemy connect and give back job list table entries")
 
     jobs = [
         {
@@ -59,8 +62,6 @@ def list_jobs():
     return jsonify(jobs)
 
 
-
-
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
     logger.warning("TODO: implement sqlalchemy connect and lookup job entry")
@@ -75,7 +76,9 @@ def get_job(job_id):
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_job(project, environment):
     # GET with /sync/avo/qas does dryrun
-    logger.info("Dryrun for project={} and env={} (use POST method to start real job)".format(project, environment))
+    logger.info(
+        "Dryrun for project={} and env={} (use POST method to start real job)".format(
+            project, environment))
     stream = os.popen(
         "cd syncrator-openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment)
     )
@@ -87,7 +90,9 @@ def dryrun_job(project, environment):
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
 def start_job(project, environment):
-    logger.info("Starting openshift pod for project={} and env={}".format(project, environment))
+    logger.info(
+        "Starting openshift pod for project={} and env={}".format(
+            project, environment))
     stream = os.popen(
         "cd syncrator-openshift && ./syncrator_sync.sh {} {}".format(project, environment)
     )
@@ -96,9 +101,11 @@ def start_job(project, environment):
     return "Starting synchronisation job on project={}, environment={}, result={}...".format(
         project, environment, sync_result), status.HTTP_200_OK
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

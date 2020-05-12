@@ -3,6 +3,14 @@ FROM python:3.6-slim
 # Applications should run on port 8080 so NGINX can auto discover them.
 EXPOSE 8080
 
+# install openshift cli
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y curl tar && \
+    curl -sLo /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clients/3.11.200/linux/oc.tar.gz && \
+    tar xzvf /tmp/oc.tar.gz -C /usr/local/bin/ && \
+    rm /tmp/oc.tar.gz && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Make a new group and user so we don't run as root.
 RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup
 

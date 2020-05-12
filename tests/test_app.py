@@ -29,8 +29,9 @@ def test_dryrun_job():
 
     assert 'Starting synchronisation job on project=avo, environment=qas...' in result[0]
     assert 'Syncrator DRYRUN' in result[0]
-    assert 'params file result' in result[0]
-    assert 'template result' in result[0]
+    assert 'TARGET=avo' in result[0]
+    assert 'ACTION=sync' in result[0]
+    assert 'name: syncrator-qas-avo-sync' in result[0]
     assert result[1] == status.HTTP_200_OK
 
 

@@ -1,6 +1,7 @@
-
+autopep8 --in-place --aggressive --aggressive app/__init__.py
 autopep8 --in-place --aggressive --aggressive app/syncrator_api.py
 autopep8 --in-place --aggressive --aggressive app/config.py
 autopep8 --in-place --aggressive --aggressive app/models.py
-# autopep8 --in-place --aggressive --aggressive tests/test_app.py # testing FLASK_ENV needs to be set before other imports
+autopep8 --in-place --aggressive --aggressive tests/__init__.py
 autopep8 --in-place --aggressive --aggressive tests/fixtures.py
+autopep8 --in-place --aggressive --aggressive tests/test_app.py

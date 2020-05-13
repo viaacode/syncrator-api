@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
-os.environ["FLASK_ENV"] = "TESTING"
 
-from fixtures import jobs_fixture
 from flask_api import status
 from app.syncrator_api import *
 from app.models import *
+from .fixtures import *
 import tempfile
 import pytest
+import warnings
+from sqlalchemy import exc as sa_exc
+
 
 @pytest.fixture(scope="module")
 def setup():
@@ -31,7 +32,9 @@ def teardown():
 @pytest.fixture
 def client():
     with app.test_client() as client:
-        yield client
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            yield client
 
 
 def test_home(client):

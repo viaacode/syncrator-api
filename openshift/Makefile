@@ -43,6 +43,7 @@ test-qas:
 tag-prd:
 	oc tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:prd
 deploy-prd:
+	bash ./openshift/wait4rollout.sh prd ${APP_NAME}
 
 approved:
 	echo "Approved"

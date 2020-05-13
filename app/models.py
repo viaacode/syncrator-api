@@ -1,5 +1,7 @@
-from app.syncrator_api import db
 from sqlalchemy.dialects.postgresql import JSON
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 class SyncJobs(db.Model):

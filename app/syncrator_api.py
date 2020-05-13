@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from app.models import *
 from flask import request, url_for, jsonify
 from flask_api import FlaskAPI, status, exceptions
 from viaa.configuration import ConfigParser
 from viaa.observability import logging
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError
+from app.config import flask_environment
 import os
 
-# app = Flask(__name__)
 app = FlaskAPI(__name__)
 config = ConfigParser()
 logger = logging.get_logger(__name__, config=config)
 
-app.config.from_object('app.config.StagingConfig')
+app.config.from_object(flask_environment())
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+db.init_app(app)
 
-from app.models import *
 
 @app.route("/")
 def home():
@@ -63,6 +62,7 @@ def get_job(job_id):
         return "not found", 404
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
+
 
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_job(project, environment):

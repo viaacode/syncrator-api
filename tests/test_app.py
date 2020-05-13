@@ -1,25 +1,44 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
+os.environ["FLASK_ENV"] = "TESTING"
 
+from fixtures import jobs_fixture
 from flask_api import status
 from app.syncrator_api import *
+from app.models import *
+import tempfile
 import pytest
 
-# have app context available in tests
+@pytest.fixture(scope="module")
+def setup():
+    db_fd, app.config['DATABASE'] = tempfile.mkstemp()
+    app.config['TESTING'] = True
+
+    with app.app_context():
+        db.create_all()
+        jobs_fixture(db)
+
+    yield setup
+
+
+@pytest.fixture(scope="module")
+def teardown():
+    os.close(db_fd)
+    os.unlink(app.config['DATABASE'])
 
 
 @pytest.fixture
-def app_context():
-    with app.app_context():
-        yield
+def client():
+    with app.test_client() as client:
+        yield client
 
 
-def test_home():
+def test_home(client):
     assert home()[1] == status.HTTP_200_OK
 
 
-def test_liveness_check():
-    client = app.test_client()
+def test_liveness_check(client):
     res = client.get('/health/live')
 
     assert res.data == b'OK'
@@ -37,20 +56,22 @@ def test_dryrun_job():
     assert result[1] == status.HTTP_200_OK
 
 
-# todo test db setup here for testing...
-def test_list_jobs():
-    client = app.test_client()
+def test_list_jobs(client, setup):
     res = client.get('/jobs')
 
-    #assert res.get_json() == ''
-    assert (res.status_code == 400 or res.status_code == 200)
+    assert res.status_code == 200
+    assert len(res.get_json()) == 2
 
 
-def test_get_job():
-    client = app.test_client()
-    res = client.get('/jobs/22')
-    # normal because db does not connect
-    assert (res.status_code == 400 or res.status_code == 404)
+def test_get_unknown_job(client, setup):
+    res = client.get('/jobs/123')
+    assert res.status_code == 404
+
+
+def test_get_existing_job(client, setup):
+    res = client.get('/jobs/1')
+    assert res.get_json()['completed']
+    assert res.get_json()['data_source'] == 'mam harvester-AvO'
 
 
 # this will actually fire up a syncrator run now, todo make this also dryrun?

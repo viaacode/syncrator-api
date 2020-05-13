@@ -34,6 +34,10 @@ class SyncJobs(db.Model):
 
     def to_dict(self):
         """Export sync job to dictionary for later jsonify to work."""
+        try:
+            total_records = int(self.total_records)
+        except TypeError:
+            total_records = 0
 
         return {
             'id': self.id,
@@ -41,7 +45,7 @@ class SyncJobs(db.Model):
             'end_time': self.end_time,
             'data_source': self.data_source,
             'type': self.type,
-            'total_records': int(self.total_records),
+            'total_records': total_records,
             'completed': self.completed,
             'options': self.options,
             'version': self.version,

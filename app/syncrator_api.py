@@ -23,7 +23,7 @@ def home():
     # TODO: add some jinja template here
     logger.info(
         "configuration = ", dictionary={
-            'database_url': app.config.get('SQLALCHEMY_DATABASE_URI')})
+            'environment': flask_environment()})
     page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'

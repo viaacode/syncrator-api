@@ -10,8 +10,6 @@ def flask_environment():
         'PRODUCTION': 'app.config.PrdConfig',
     }
 
-    print("config loaded={}".format(configs[env]))
-
     return configs[env]
 
 

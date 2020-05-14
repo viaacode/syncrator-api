@@ -37,7 +37,10 @@ def home():
     page += '<li> POST /delta/&lt;project>/&lt;env>             - start a new delta synchronisation job</li><br/>'
 
     page += '<li><a href="/delete/avo/qas">GET /delete/avo/qas</a> - delete synchronisation job dryrun</li>'
-    page += '<li> POST /delete/&lt;project>/&lt;env>             - start a new delete synchronisation job</li>'
+    page += '<li> POST /delete/&lt;project>/&lt;env>             - start a new delete synchronisation job</li><br/>'
+
+    page += '<li><a href="/diff/avo/qas">GET /diff/avo/qas</a> - dryrun for delta followed by delete in one go for partial updates</li>'
+    page += '<li> POST /diff/&lt;project>/&lt;env>             - start delta job followed by a delete job</li>'
 
     page += '</ul>'
 
@@ -82,51 +85,91 @@ def dryrun_sync_job(project, environment):
     return dryrun_job(project, environment, 'sync')
 
 # POST /sync/avo/qas creates openshift pod and executes job
+
+
 @app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
 def start_sync_job(project, environment):
     return start_job(project, environment, 'sync')
 
 # GET /delta/avo/qas does dryrun
+
+
 @app.route("/delta/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_delta_job(project, environment):
     return dryrun_job(project, environment, 'delta')
 
 # POST /delta/avo/qas creates openshift pod and executes job
+
+
 @app.route("/delta/<string:project>/<string:environment>", methods=['POST'])
 def start_delta_job(project, environment):
     return start_job(project, environment, 'delta')
 
 # GET /delete/avo/qas does dryrun
+
+
 @app.route("/delete/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_delete_job(project, environment):
     return dryrun_job(project, environment, 'delete')
 
 # POST /delete/avo/qas creates openshift pod and executes job
+
+
 @app.route("/delete/<string:project>/<string:environment>", methods=['POST'])
 def start_delete_job(project, environment):
     return start_job(project, environment, 'delete')
 
+# GET /diff/avo/qas does dryrun a diff is a delta followed by a delete
+
+
+@app.route("/diff/<string:project>/<string:environment>", methods=['GET'])
+def dryrun_diff_job(project, environment):
+    # TODO: possibly implement this in syncrator itself as seperate cli
+    # command instead
+    res_delta = dryrun_job(project, environment, 'delta')
+    res_delete = dryrun_job(project, environment, 'delete')
+    res_diff = res_delta[0] + res_delete[0]
+
+    return res_diff, status.HTTP_200_OK
+
+
+# POST /delete/avo/qas creates openshift pod and executes job
+@app.route("/diff/<string:project>/<string:environment>", methods=['POST'])
+def start_diff_job(project, environment):
+    # TODO: either poll here or probably better just make syncrator have a diff command
+    # res_delta = start_job(project, environment, 'delta')
+    # somehow poll here or alternative make a seperate syncrator cli command for this
+    # res_delete = start_job(project, environment, 'delete')
+
+    return "This is work in progress", status.HTTP_200_OK
 
 
 # run alternate script that echo's all commands that will be run using oc cli
 def dryrun_job(project, environment, job_type):
-    logger.info( "Dryrun for project={} and env={} job_type={}".format(project, environment, job_type))
-    stream = os.popen( "cd syncrator-openshift && ./syncrator_job_dryrun.sh {} {} {}".format(
-            project, environment, job_type
-        )
-    )
+    logger.info(
+        "Dryrun for project={} and env={} job_type={}".format(
+            project,
+            environment,
+            job_type))
+    stream = os.popen(
+        "cd syncrator-openshift && ./syncrator_job_dryrun.sh {} {} {}".format(
+            project, environment, job_type))
     dryrun_result = stream.read()
 
     return "Dryrun {} job on project={}, environment={}...<br/>\n <pre>{}</pre>".format(
         job_type, project, environment, dryrun_result), status.HTTP_200_OK
 
-# run actual startup script that runs real oc commands to create pod and start a sync, delta or delete job_type
+# run actual startup script that runs real oc commands to create pod and
+# start a sync, delta or delete job_type
+
+
 def start_job(project, environment, job_type):
-    logger.info("Starting openshift pod for project={} and env={}".format(project, environment))
-    stream = os.popen( "cd syncrator-openshift && ./syncrator_job.sh {} {} {}".format(
-            project, environment, job_type
-        )
-    )
+    logger.info(
+        "Starting openshift pod for project={} and env={}".format(
+            project, environment))
+    stream = os.popen(
+        "cd syncrator-openshift && ./syncrator_job.sh {} {} {}".format(
+            project, environment, job_type))
     job_result = stream.read()
 
     return "Starting {} job on project={}, environment={}, result={}...".format(

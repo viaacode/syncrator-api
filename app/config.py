@@ -20,6 +20,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = 'somesecret_key_here234232425223faifaf'
+    JOBS_PER_PAGE = 50
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgresql://postgres@localhost:5432/syncrator_dev')
     API_KEY = os.environ.get('API_KEY', 'secret123')

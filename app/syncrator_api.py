@@ -27,8 +27,8 @@ def home():
     page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
-    page += '<li><a href="/jobs">     GET /jobs         </a>   - lists active jobs </li>'
-    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id> </a>   - get job details and progress </li>'
+    page += '<li><a href="/jobs?page=1">     GET /jobs </a>    - paginated list of active jobs </li>'
+    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get job details and progress </li>'
     page += '<li> POST /sync/&lt;project>/&lt;env>             - start a new synchronisation job</li>'
     page += '<li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - job dryrun with openshift template output as result</li></ul>'
     page += '<h2>Health check call</h2>'
@@ -45,8 +45,10 @@ def liveness_check():
 @app.route("/jobs", methods=['GET'])
 def list_jobs():
     try:
+        page = request.args.get('page', 1, type=int)
         job_rows = SyncJobs.query.order_by(
-            SyncJobs.start_time.desc()).limit(100).all()
+            SyncJobs.start_time.desc()
+        ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
         jobs = [j.to_dict() for j in job_rows]
         return jsonify(jobs)
     except OperationalError as pg:

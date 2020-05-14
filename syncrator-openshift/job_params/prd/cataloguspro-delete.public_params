@@ -1,7 +1,6 @@
 ENV=prd
-TARGET=metadatacatalogus
+TARGET=cataloguspro
 ACTION_NAME=delete
 ACTION=delete
 IS_TAG=stable
-CRON_ARGS=0 7 * * *
 OPTIONS=--debug

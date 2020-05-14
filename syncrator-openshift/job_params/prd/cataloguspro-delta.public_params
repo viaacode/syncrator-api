@@ -3,6 +3,5 @@ TARGET=cataloguspro
 ACTION_NAME=delta
 ACTION=delta
 IS_TAG=stable
-CRON_ARGS=0 4 * * *
-OPTIONS=-n 1000 -c 1
+OPTIONS="-n 1000 -c 1"
 

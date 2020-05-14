@@ -28,9 +28,19 @@ def home():
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
     page += '<li><a href="/jobs?page=1">     GET /jobs </a>    - paginated list of active jobs </li>'
-    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get job details and progress </li>'
-    page += '<li> POST /sync/&lt;project>/&lt;env>             - start a new synchronisation job</li>'
-    page += '<li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - job dryrun with openshift template output as result</li></ul>'
+    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get job details and progress </li><br/>'
+
+    page += '<li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - full synchronisation job dryrun</li>'
+    page += '<li> POST /sync/&lt;project>/&lt;env>             - start a new full synchronisation job</li><br/>'
+
+    page += '<li><a href="/delta/avo/qas">GET /delta/avo/qas</a> - delta synchronisation job dryrun</li>'
+    page += '<li> POST /delta/&lt;project>/&lt;env>             - start a new delta synchronisation job</li><br/>'
+
+    page += '<li><a href="/delete/avo/qas">GET /delete/avo/qas</a> - delete synchronisation job dryrun</li>'
+    page += '<li> POST /delete/&lt;project>/&lt;env>             - start a new delete synchronisation job</li>'
+
+    page += '</ul>'
+
     page += '<h2>Health check call</h2>'
     page += '<ul><li> <a href="/health/live"> GET /health/live </a> - healthcheck route for openshift'
     page += '</body></html>'
@@ -66,33 +76,61 @@ def get_job(job_id):
         return "database error: {}".format(str(pg)), 400
 
 
+# GET /sync/avo/qas does dryrun
 @app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
-def dryrun_job(project, environment):
-    # GET with /sync/avo/qas does dryrun
-    logger.info(
-        "Dryrun for project={} and env={} (use POST method to start real job)".format(
-            project, environment))
-    stream = os.popen(
-        "cd syncrator-openshift && ./syncrator_sync_dryrun.sh {} {}".format(project, environment)
+def dryrun_sync_job(project, environment):
+    return dryrun_job(project, environment, 'sync')
+
+# POST /sync/avo/qas creates openshift pod and executes job
+@app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
+def start_sync_job(project, environment):
+    return start_job(project, environment, 'sync')
+
+# GET /delta/avo/qas does dryrun
+@app.route("/delta/<string:project>/<string:environment>", methods=['GET'])
+def dryrun_delta_job(project, environment):
+    return dryrun_job(project, environment, 'delta')
+
+# POST /delta/avo/qas creates openshift pod and executes job
+@app.route("/delta/<string:project>/<string:environment>", methods=['POST'])
+def start_delta_job(project, environment):
+    return start_job(project, environment, 'delta')
+
+# GET /delete/avo/qas does dryrun
+@app.route("/delete/<string:project>/<string:environment>", methods=['GET'])
+def dryrun_delete_job(project, environment):
+    return dryrun_job(project, environment, 'delete')
+
+# POST /delete/avo/qas creates openshift pod and executes job
+@app.route("/delete/<string:project>/<string:environment>", methods=['POST'])
+def start_delete_job(project, environment):
+    return start_job(project, environment, 'delete')
+
+
+
+# run alternate script that echo's all commands that will be run using oc cli
+def dryrun_job(project, environment, job_type):
+    logger.info( "Dryrun for project={} and env={} job_type={}".format(project, environment, job_type))
+    stream = os.popen( "cd syncrator-openshift && ./syncrator_job_dryrun.sh {} {} {}".format(
+            project, environment, job_type
+        )
     )
     dryrun_result = stream.read()
 
-    return "Starting synchronisation job on project={}, environment={}...<br/>\n <pre>{}</pre>".format(
-        project, environment, dryrun_result), status.HTTP_200_OK
+    return "Dryrun {} job on project={}, environment={}...<br/>\n <pre>{}</pre>".format(
+        job_type, project, environment, dryrun_result), status.HTTP_200_OK
 
-
-@app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
-def start_job(project, environment):
-    logger.info(
-        "Starting openshift pod for project={} and env={}".format(
-            project, environment))
-    stream = os.popen(
-        "cd syncrator-openshift && ./syncrator_sync.sh {} {}".format(project, environment)
+# run actual startup script that runs real oc commands to create pod and start a sync, delta or delete job_type
+def start_job(project, environment, job_type):
+    logger.info("Starting openshift pod for project={} and env={}".format(project, environment))
+    stream = os.popen( "cd syncrator-openshift && ./syncrator_job.sh {} {} {}".format(
+            project, environment, job_type
+        )
     )
-    sync_result = stream.read()
+    job_result = stream.read()
 
-    return "Starting synchronisation job on project={}, environment={}, result={}...".format(
-        project, environment, sync_result), status.HTTP_200_OK
+    return "Starting {} job on project={}, environment={}, result={}...".format(
+        job_type, project, environment, job_result), status.HTTP_200_OK
 
 
 @app.errorhandler(404)

@@ -49,9 +49,9 @@ def test_liveness_check(client):
 
 
 def test_dryrun_job():
-    result = dryrun_job('avo', 'qas')
+    result = dryrun_sync_job('avo', 'qas')
 
-    assert 'Starting synchronisation job on project=avo, environment=qas...' in result[0]
+    assert 'Dryrun sync job on project=avo, environment=qas...' in result[0]
     assert 'Syncrator DRYRUN' in result[0]
     assert 'TARGET=avo' in result[0]
     assert 'ACTION=sync' in result[0]

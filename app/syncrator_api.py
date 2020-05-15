@@ -188,9 +188,13 @@ def run(dryrun=False):
     if dryrun:
         stream = os.popen(
             "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
-                openshift_script, target, env, action_name, action, is_tag, options
-            )
-        )
+                openshift_script,
+                target,
+                env,
+                action_name,
+                action,
+                is_tag,
+                options))
         job_result = stream.read()
 
         response['result'] = job_result
@@ -256,8 +260,8 @@ def start_job(project, environment, job_type, dryrun=False):
 
     if dryrun:
         stream = os.popen(
-        "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
-            openshift_script, project, environment, job_type))
+            "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
+                openshift_script, project, environment, job_type))
         job_result = stream.read()
 
         response['result'] = job_result
@@ -283,7 +287,6 @@ def start_job(project, environment, job_type, dryrun=False):
         # handle execution in a worker thread
         syncrator_worker = JobWorker(request_data, api_job.id, logger)
         syncrator_worker.start()
-
 
     return jsonify(response)
 

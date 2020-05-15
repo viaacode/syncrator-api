@@ -63,8 +63,8 @@ def liveness_check():
 def list_jobs():
     try:
         page = request.args.get('page', 1, type=int)
-        job_rows = SyncJobs.query.order_by(
-            SyncJobs.start_time.desc()
+        job_rows = SyncJob.query.order_by(
+            SyncJob.start_time.desc()
         ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
         jobs = [j.to_dict() for j in job_rows]
         return jsonify(jobs)
@@ -75,7 +75,7 @@ def list_jobs():
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
     try:
-        job = SyncJobs.query.filter_by(id=job_id).first()
+        job = SyncJob.query.filter_by(id=job_id).first()
         return jsonify(job.to_dict())
     except AttributeError:
         return "not found", 404

@@ -1,10 +1,11 @@
 from sqlalchemy.dialects.postgresql import JSON
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 db = SQLAlchemy()
 
 
-class SyncJobs(db.Model):
+class SyncJob(db.Model):
     __tablename__ = 'syncs'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -52,4 +53,49 @@ class SyncJobs(db.Model):
             'options': self.options,
             'version': self.version,
             'target_datastore_url': self.target_datastore_url,
+        }
+
+
+class ApiJob(db.Model):
+    __tablename__ = 'api_jobs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    sync_id = db.Column(db.Integer)  # foreign key to SyncJob
+
+    # we keep these handy to reject concurrent jobs running on same
+    # environment and target
+    target = db.Column(db.String())     # avo, metadata_catalogus, ...
+    env = db.Column(db.String())        # qas, prd, ...
+    job_type = db.Column(db.String())   # sync, delta, delete, diff
+    status = db.Column(db.String())     # starting, running, complete, failed
+
+    # TODO: some json field to store all params from call
+    #  job_params = db.Column
+
+    created_at = db.Column(db.DateTime())
+    updated_at = db.Column(db.DateTime())
+
+    def __init__(self, sync_id, target, env, job_type, status):
+        self.sync_id = sync_id
+        self.target = target
+        self.env = env
+        self.job_type = job_type
+        self.status = sync_id
+        self.created_at = datetime.datetime.utcnow()
+        self.updated_at = datetime.datetime.utcnow()
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def to_dict(self):
+        """Export api job to dictionary for later jsonify to work."""
+        return {
+            'id': self.id,
+            'sync_id': self.sync_id,
+            'target': self.target,
+            'env': self.env,
+            'job_type': self.job_type,
+            'status': self.status,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
         }

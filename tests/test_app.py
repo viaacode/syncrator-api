@@ -93,6 +93,37 @@ def test_dryrun_delete_job(client):
     assert 'syncrator delete --debug' in job['result']
 
 
+def test_dryrun_generic_run(client):
+    res_generic = client.post('/dryrun',
+                              json={
+                                  'target': 'avo',
+                                  'env': 'qas',
+                                  'action_name': 'delta',
+                                  'action': 'delta',
+                                  'is_tag': 'latest',
+                                  'options': '-n 1000 -c 1',
+                              })
+    assert res_generic.status_code == status.HTTP_200_OK
+    generic_data = res_generic.get_json()
+
+    res_delta = client.get('/delta/avo/qas')
+    assert res_delta.status_code == status.HTTP_200_OK
+    delta_data = res_delta.get_json()
+
+    # test that a generic run call with correct params gives same
+    # result as a preconfigred delta run (both dryruns)
+    assert generic_data['env'] == delta_data['environment']
+    assert generic_data['target'] == delta_data['project']
+
+    # get substring in result with only the template generated from dryruns
+    gen_template = generic_data['result'][generic_data['result'].find(
+        'parametrised template'):]
+    delta_template = delta_data['result'][delta_data['result'].find(
+        'parametrised template'):]
+
+    assert gen_template == delta_template
+
+
 def test_list_jobs(client, setup):
     res = client.get('/jobs')
 

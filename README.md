@@ -127,3 +127,71 @@ Example:
 ```
 curl http://127.0.0.1:8080/sync/avo/qas | jq .result -r
 ```
+
+
+Just do the dryrun generic call like this:
+
+```
+curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' \
+  -d '{
+    "target":"avo", 
+    "env":"qas",
+    "action_name": "delta",
+    "action": "delta",
+    "is_tag": "latest",
+    "options": "-n 1000 -c 1"
+    }'
+```
+
+This has the same result as doing following request:
+```
+curl http://127.0.0.1:8080/delta/avo/qas
+```
+
+
+To make the actual pod start and execute the openshift commands use the path 'run' instead of 'dryrun'
+
+```
+curl -X POST http://localhost:8080/run -H 'Content-Type:application/json' \
+  -d '{
+    "target":"avo", 
+    "env":"qas",
+    "action_name": "delta",
+    "action": "delta",
+    "is_tag": "latest",
+    "options": "-n 1000 -c 1"
+    }'
+```
+
+This is the same as the shortcut using defined templates with post call:
+
+```
+curl -X POST http://127.0.0.1:8080/delta/avo/qas
+```
+
+### API calls
+```
+GET /jobs - paginated list of active jobs
+GET /jobs/<id> - get job details and progress
+
+GET /sync/avo/qas - full synchronisation job dryrun
+POST /sync/<project>/<env> - start a new full synchronisation job
+
+GET /delta/avo/qas - delta synchronisation job dryrun
+POST /delta/<project>/<env> - start a new delta synchronisation job
+
+GET /delete/avo/qas - delete synchronisation job dryrun
+POST /delete/<project>/<env> - start a new delete synchronisation job
+
+GET /diff/avo/qas - dryrun for delta followed by delete in one go for partial updates
+POST /diff/<project>/<env> - start delta job followed by a delete job
+
+POST /run - start custom syncrator job by passing all template parameters (target, env, action_name, action, is_tag, options)
+POST /dryrun - dryrun custom job by passing all template parameters (target, env, action_name, action, is_tag, options)
+```
+
+
+As mentioned in examples the sync, delta, delete (and to be implemented diff) calls can all be done
+using the /run and /dryrun post's but you will need to exactly specify the 6 parameters that fill in the template.
+
+

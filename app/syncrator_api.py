@@ -163,25 +163,23 @@ def run(dryrun=False):
     else:
         openshift_script = 'syncrator_run.sh'
 
-    # TODO: read from post params after testing this works correctly!
-    target = 'avo'  # project
-    env = 'qas'
-    action_name = 'delta'
-    action = 'delta'
-    is_tag = 'stable'
-    options = '-n 1000 -c 1'
+    request_data = request.json
+    if not request_data:
+        request_data = {}
+    request_data['dryrun'] = dryrun
+    request_data['openshift_script'] = openshift_script
 
-    logger.info(
-        "Run openshift job pod TARGET={}, ENV={}, ACTION_NAME={}, ACTION={}, IS_TAG={}, OPTIONS={}".format(
-            target,
-            env,
-            action_name,
-            action,
-            is_tag,
-            options))
+    target = request_data['target']
+    env = request_data['env']
+    action_name = request_data['action_name']
+    action = request_data['action']
+    is_tag = request_data['is_tag']
+    options = request_data['options']
+
+    logger.info('Syncrator run called with parameters', data=request_data)
 
     stream = os.popen(
-        "cd syncrator-openshift && ./{} {} {} {} {} {} {}".format(
+        "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
             openshift_script, target, env, action_name, action, is_tag, options
         )
     )
@@ -213,7 +211,7 @@ def start_job(project, environment, job_type, dryrun=False):
         "Starting {} job={} for project={} and env={}".format(
             openshift_script, job_type, project, environment))
     stream = os.popen(
-        "cd syncrator-openshift && ./{} {} {} {}".format(
+        "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
             openshift_script, project, environment, job_type))
 
     job_result = stream.read()

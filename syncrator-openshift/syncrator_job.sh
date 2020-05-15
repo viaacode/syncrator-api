@@ -36,8 +36,8 @@ start_syncrator_job(){
 }
 
 # Start sync job
-# oc login $OS_URL
-oc login $OS_URL -p 'admin' -u 'admin' --insecure-skip-tls-verify
+echo "oc login..."
+oc login $OS_URL -p 'admin' -u 'admin' --insecure-skip-tls-verify > /dev/null
 oc project $PROJECT_NAME
 
 start_syncrator_job 

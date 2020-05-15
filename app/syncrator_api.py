@@ -121,24 +121,16 @@ def start_delete_job(project, environment):
 
 @app.route("/diff/<string:project>/<string:environment>", methods=['GET'])
 def dryrun_diff_job(project, environment):
-    # GET /diff/avo/qas does dryrun a diff is a delta followed by a delete
-    # TODO: possibly implement this in syncrator itself as seperate cli
-    # command instead
-    res_delta = dryrun_job(project, environment, 'delta')
-    res_delete = dryrun_job(project, environment, 'delete')
-    res_diff = res_delta[0] + res_delete[0]
-
-    return res_diff, status.HTTP_200_OK
+    # TODO: implement diff job in syncrator and add some templates like
+    # job_params/qas/avo-diff.public_params etc.
+    return start_job(project, environment, 'diff', dryrun=True)
 
 
 @app.route("/diff/<string:project>/<string:environment>", methods=['POST'])
 def start_diff_job(project, environment):
-    # POST /delete/avo/qas creates openshift pod and executes job
-    # TODO: either poll here or probably better just make syncrator have a diff command
-    # res_delta = start_job(project, environment, 'delta')
-    # somehow poll here or alternative make a seperate syncrator cli command for this
-    # res_delete = start_job(project, environment, 'delete')
-
+    # TODO: create syncrator cli command for 'diff' which is
+    # a delta followed by a delete job
+    # return start_job(project, environment, 'diff')
     return "This is work in progress", status.HTTP_200_OK
 
 
@@ -146,8 +138,6 @@ def start_diff_job(project, environment):
 def syncrator_run():
     # POST /run run custom job by passing all template parameters in json
     return run()
-
-# uses alternate script to print template and oc commands
 
 
 @app.route("/dryrun", methods=['POST'])

@@ -72,6 +72,7 @@ def jobs_fixture(db):
             target='avo',
             env='qas',
             job_type='sync',
+            job_params={'env':'qas', 'type':'sync'},
             status='starting'
         )
     )
@@ -83,6 +84,7 @@ def jobs_fixture(db):
             target='avo',
             env='qas',
             job_type='sync',
+            job_params={'env':'qas', 'type':'sync'},
             status='running'))
 
     db.session.commit()

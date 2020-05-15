@@ -68,18 +68,17 @@ class ApiJob(db.Model):
     env = db.Column(db.String())        # qas, prd, ...
     job_type = db.Column(db.String())   # sync, delta, delete, diff
     status = db.Column(db.String())     # starting, running, complete, failed
-
-    # TODO: some json field to store all params from call
-    #  job_params = db.Column
+    job_params = db.Column(db.JSON())   # params passed in api call
 
     created_at = db.Column(db.DateTime())
     updated_at = db.Column(db.DateTime())
 
-    def __init__(self, sync_id, target, env, job_type, status):
+    def __init__(self, sync_id, target, env, job_type, job_params, status):
         self.sync_id = sync_id
         self.target = target
         self.env = env
         self.job_type = job_type
+        self.job_params = job_params
         self.status = sync_id
         self.created_at = datetime.datetime.utcnow()
         self.updated_at = datetime.datetime.utcnow()

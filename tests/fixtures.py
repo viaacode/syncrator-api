@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#
+#  @Author: Walter Schreppers
+#
+#  tests/fixtures.py
+#
 from app.models import *
 import datetime
 

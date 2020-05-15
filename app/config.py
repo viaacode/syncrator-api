@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+#  @Author: Walter Schreppers
+#
+#  app/config.py
+#
 import os
-# basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 def flask_environment():

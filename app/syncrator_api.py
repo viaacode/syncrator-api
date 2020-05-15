@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
+#  @Author: Walter Schreppers
+#
+#  app/syncrator_api.py
+#
+
 from app.models import *
+from app.job_worker import JobWorker
+from app.run_worker import RunWorker
 from flask import request, url_for, jsonify
 from flask_api import FlaskAPI, status, exceptions
 from viaa.configuration import ConfigParser
@@ -177,20 +185,14 @@ def run(dryrun=False):
         'options': options,
     }
 
-    # TODO: for dryrun we can keep execution here, for actual run
-    # we want to move this os.popen call into a worker or thread
-    # where we pass the api_job_id as parameter
-    # after which we can immediately return a api_job_id for later
-    # progess polling
-    stream = os.popen(
-        "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
-            openshift_script, target, env, action_name, action, is_tag, options
-        )
-    )
-    job_result = stream.read()
-
     if dryrun:
-        api_job_id = None
+        stream = os.popen(
+            "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
+                openshift_script, target, env, action_name, action, is_tag, options
+            )
+        )
+        job_result = stream.read()
+
         response['result'] = job_result
     else:
         api_job = ApiJob(
@@ -214,6 +216,10 @@ def run(dryrun=False):
         response['api_job_id'] = api_job.id
         response['result'] = 'starting'
 
+        # handle execution in a worker thread
+        syncrator_worker = RunWorker(request_data, api_job.id, logger)
+        syncrator_worker.start()
+
     return jsonify(response)
 
 
@@ -227,19 +233,19 @@ def start_job(project, environment, job_type, dryrun=False):
     else:
         openshift_script = 'syncrator_job.sh'
 
+    request_data = request.json
+    if not request_data:
+        request_data = {}
+
+    request_data['dryrun'] = dryrun
+    request_data['openshift_script'] = openshift_script
+    request_data['project'] = project
+    request_data['environment'] = environment
+    request_data['job_type'] = job_type
+
     logger.info(
         "Starting {} job={} for project={} and env={}".format(
             openshift_script, job_type, project, environment))
-
-    # TODO: for dryrun we can keep execution here, for actual run
-    # we want to move this os.popen call into a worker or thread
-    # where we pass the api_job_id as parameter
-    # after which we can immediately return a api_job_id for later
-    # progess polling
-    stream = os.popen(
-        "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
-            openshift_script, project, environment, job_type))
-    job_result = stream.read()
 
     response = {
         'api_job_id': None,
@@ -249,6 +255,11 @@ def start_job(project, environment, job_type, dryrun=False):
     }
 
     if dryrun:
+        stream = os.popen(
+        "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
+            openshift_script, project, environment, job_type))
+        job_result = stream.read()
+
         response['result'] = job_result
     else:
         api_job = ApiJob(
@@ -268,6 +279,11 @@ def start_job(project, environment, job_type, dryrun=False):
         db.session.commit()
         response['api_job_id'] = api_job.id
         response['result'] = 'starting'
+
+        # handle execution in a worker thread
+        syncrator_worker = JobWorker(request_data, api_job.id, logger)
+        syncrator_worker.start()
+
 
     return jsonify(response)
 

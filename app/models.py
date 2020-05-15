@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+#
+#  @Author: Walter Schreppers
+#
+#  app/models.py
+#
 from sqlalchemy.dialects.postgresql import JSON
 from flask_sqlalchemy import SQLAlchemy
 import datetime

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
+#  @Author: Walter Schreppers
+#
+#  tests/test_app.py
+#
 
 from flask_api import status
 from app.syncrator_api import *

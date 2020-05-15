@@ -144,7 +144,7 @@ def start_diff_job(project, environment):
 
 @app.route("/run", methods=['POST'])
 def syncrator_run():
-    # POST /run run custom job by passing all template parameters in json 
+    # POST /run run custom job by passing all template parameters in json
     return run()
 
 # uses alternate script to print template and oc commands

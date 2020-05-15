@@ -224,7 +224,7 @@ Result of this call gives back parameters and result of the openshift commands t
   "is_tag": "latest",
   "openshift_script": "syncrator_run.sh",
   "options": "-n 1000 -c 1",
-  "result": "oc login...\n Now using project \"shared-components\" on server \"https://do-prd-okp-m0.do.viaa.be:8443\".\njob.batch/syncrator-qas-avo-delta created\n",
+  "result": "oc login...\nNow using project \"shared-components\" on server \"https://do-prd-okp-m0.do.viaa.be:8443\".\njob.batch \"syncrator-qas-avo-delta\" deleted\njob.batch/syncrator-qas-avo-delta created\n",
   "target": "avo"
 }
 ```

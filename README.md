@@ -194,4 +194,31 @@ POST /dryrun - dryrun custom job by passing all template parameters (target, env
 As mentioned in examples the sync, delta, delete (and to be implemented diff) calls can all be done
 using the /run and /dryrun post's but you will need to exactly specify the 6 parameters that fill in the template.
 
+### Paremetrised jobs
+When using the simplified calls ex /sync/avo/qas or /delta/avo/prd these do a lookup in the parameter files defined 
+in the directory 'syncrator-openshift/job_params'.
+Here is a list of all currently defined params: 
+```
+syncrator-openshift/job_params
+├── prd
+│   ├── avo-delete.public_params
+│   ├── avo-delta.public_params
+│   ├── avo-sync.public_params
+│   ├── cataloguspro-delete.public_params
+│   ├── cataloguspro-delta.public_params
+│   ├── cataloguspro-sync.public_params
+│   ├── metadatacatalogus-delete.public_params
+│   ├── metadatacatalogus-delta.public_params
+│   └── metadatacatalogus-sync.public_params
+└── qas
+    ├── avo-delete.public_params
+    ├── avo-delta.public_params
+    ├── avo-sync.public_params
+    ├── cataloguspro-delete.public_params
+    ├── cataloguspro-delta.public_params
+    ├── cataloguspro-sync.public_params
+    ├── metadatacatalogus-delete.public_params
+    ├── metadatacatalogus-delta.public_params
+    └── metadatacatalogus-sync.public_params
+```
 

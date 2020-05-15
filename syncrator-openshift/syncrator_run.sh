@@ -14,7 +14,7 @@ PROJECT_NAME='shared-components'
 create_template()
 {
   TEMPLATE=$1
-  oc process -f $TEMPLATE -p TARGET=$TARGET -p ENV=$ENV -p ACTION_NAME=$ACTION_NAME -p ACTION=$ACTION -p IS_TAG=$IS_TAG -p OPTIONS=$OPTIONS | oc create -f -
+  oc process -f $TEMPLATE -p TARGET="$TARGET" -p ENV="$ENV" -p ACTION_NAME="$ACTION_NAME" -p ACTION="$ACTION" -p IS_TAG="$IS_TAG" -p OPTIONS="$OPTIONS" | oc create -f -
 }
 
 create_job()

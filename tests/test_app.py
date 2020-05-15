@@ -17,8 +17,10 @@ def setup():
     app.config['TESTING'] = True
 
     with app.app_context():
-        db.create_all()
-        jobs_fixture(db)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            db.create_all()
+            jobs_fixture(db)
 
     yield setup
 
@@ -32,9 +34,7 @@ def teardown():
 @pytest.fixture
 def client():
     with app.test_client() as client:
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-            yield client
+        yield client
 
 
 def test_home(client):

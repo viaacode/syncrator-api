@@ -119,3 +119,11 @@ scripts/debug
 
 ```
 It also runs on port 8080 like the scripts/run and docker builds
+
+
+### Usage
+
+Example:
+```
+curl http://127.0.0.1:8080/sync/avo/qas | jq .result -r
+```

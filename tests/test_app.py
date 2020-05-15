@@ -48,15 +48,49 @@ def test_liveness_check(client):
     assert res.status_code == status.HTTP_200_OK
 
 
-def test_dryrun_job():
-    result = dryrun_sync_job('avo', 'qas')
+def test_dryrun_sync_job(client):
+    res = client.get('/sync/avo/qas')
+    assert res.status_code == status.HTTP_200_OK
 
-    assert 'Dryrun sync job on project=avo, environment=qas...' in result[0]
-    assert 'Syncrator DRYRUN' in result[0]
-    assert 'TARGET=avo' in result[0]
-    assert 'ACTION=sync' in result[0]
-    assert 'name: syncrator-qas-avo-sync' in result[0]
-    assert result[1] == status.HTTP_200_OK
+    job = res.get_json()
+    assert job['environment'] == 'qas'
+    assert job['job_type'] == 'sync'
+    assert job['project'] == 'avo'
+    assert 'DRYRUN' in job['result']
+    assert 'name: syncrator-qas-avo-sync' in job['result']
+    assert 'TARGET=avo' in job['result']
+    assert 'ACTION=sync' in job['result']
+    assert 'syncrator sync -n 1000 -c 1' in job['result']
+
+
+def test_dryrun_delta_job(client):
+    res = client.get('/delta/avo/qas')
+    assert res.status_code == status.HTTP_200_OK
+
+    job = res.get_json()
+    assert job['environment'] == 'qas'
+    assert job['job_type'] == 'delta'
+    assert job['project'] == 'avo'
+    assert 'DRYRUN' in job['result']
+    assert 'name: syncrator-qas-avo-delta' in job['result']
+    assert 'TARGET=avo' in job['result']
+    assert 'ACTION=delta' in job['result']
+    assert 'syncrator delta -n 1000 -c 1' in job['result']
+
+
+def test_dryrun_delete_job(client):
+    res = client.get('/delete/avo/qas')
+    assert res.status_code == status.HTTP_200_OK
+
+    job = res.get_json()
+    assert job['environment'] == 'qas'
+    assert job['job_type'] == 'delete'
+    assert job['project'] == 'avo'
+    assert 'DRYRUN' in job['result']
+    assert 'name: syncrator-qas-avo-delete' in job['result']
+    assert 'TARGET=avo' in job['result']
+    assert 'ACTION=delete' in job['result']
+    assert 'syncrator delete --debug' in job['result']
 
 
 def test_list_jobs(client, setup):

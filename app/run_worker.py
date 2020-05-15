@@ -23,8 +23,8 @@ class RunWorker(threading.Thread):
 
         stream = os.popen(
             "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
-                # self.data['openshift_script'], 
-                'syncrator_dryrun.sh',  #for testing temporarely hard code
+                #'syncrator_dryrun.sh',  #for testing temporarely hard code
+                self.data['openshift_script'], 
                 self.data['target'], 
                 self.data['env'], 
                 self.data['action_name'], 

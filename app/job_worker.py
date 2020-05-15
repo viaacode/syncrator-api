@@ -24,8 +24,8 @@ class JobWorker(threading.Thread):
 
         stream = os.popen(
             "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
-                # self.data['openshift_script'], 
-                'syncrator_job_dryrun.sh', #for testing tempararely hardcoe to dryrun
+                # 'syncrator_job_dryrun.sh', #for testing tempararely hardcoe to dryrun
+                self.data['openshift_script'], 
                 self.data['project'], 
                 self.data['environment'], 
                 self.data['job_type']

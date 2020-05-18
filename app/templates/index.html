@@ -1,28 +1,49 @@
   <html>
    <head>
-      <style>body{background-color: #fff; color: #333;}</style>
+      <style>
+        body{
+          background-color: #ffffff; 
+          color: #333333;
+        }
+        h1, h2, h3, h4 {
+          color: #007487;
+        }
+        a {
+          color: #007487;
+        }
+      </style>
    </head>
    <body>
       <h1>Syncrator-API</h1>
       <ul>
-         <li><a href="/jobs?page=1">     GET /jobs </a>         - paginated list of active api started jobs </li>
+
+         <li><a href="/jobs?page=1">     GET /jobs </a>    - paginated list of active api started jobs </li>
          <li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get api job and related sync_job details and progress </li>
-         <br/>
          <li><a href="/sync_jobs?page=1">     GET /sync_jobs </a>    - paginated list of all sync jobs </li>
+         <br/>
+
          <li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - full synchronisation job dryrun</li>
          <li> POST /sync/&lt;project>/&lt;env>             - start a new full synchronisation job</li>
          <br/>
+
+
          <li><a href="/delta/avo/qas">GET /delta/avo/qas</a> - delta synchronisation job dryrun</li>
          <li> POST /delta/&lt;project>/&lt;env>             - start a new delta synchronisation job</li>
          <br/>
+
          <li><a href="/delete/avo/qas">GET /delete/avo/qas</a> - delete synchronisation job dryrun</li>
          <li> POST /delete/&lt;project>/&lt;env>             - start a new delete synchronisation job</li>
          <br/>
+
          <li><a href="/diff/avo/qas">GET /diff/avo/qas</a> - dryrun for delta followed by delete in one go for partial updates</li>
          <li> POST /diff/&lt;project>/&lt;env>             - start delta job followed by a delete job</li>
          <br/>
+
+
          <li> POST /run             - start custom syncrator job by passing all template parameters (target, env, action_name, action, is_tag, options)</li>
          <li> POST /dryrun          - dryrun custom job by passing all template parameters (target, env, action_name, action, is_tag, options)</li>
+
+
       </ul>
       <h2>Health check call</h2>
       <ul>

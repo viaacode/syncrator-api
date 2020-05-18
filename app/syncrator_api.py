@@ -91,55 +91,25 @@ def get_job(job_id):
         return "database error: {}".format(str(pg)), 400
 
 
-@app.route("/sync/<string:project>/<string:environment>", methods=['GET'])
-def dryrun_sync_job(project, environment):
-    # GET /sync/avo/qas does dryrun
-    return start_job(project, environment, 'sync', dryrun=True)
-
-
-@app.route("/sync/<string:project>/<string:environment>", methods=['POST'])
+@app.route("/sync/<string:project>/<string:environment>", methods=['GET','POST'])
 def start_sync_job(project, environment):
-    # POST /sync/avo/qas creates openshift pod and executes job
-    return start_job(project, environment, 'sync')
+    do_dryrun_only = request.method=='GET'
+    return start_job(project, environment, 'sync', dryrun=do_dryrun_only)
 
-
-@app.route("/delta/<string:project>/<string:environment>", methods=['GET'])
-def dryrun_delta_job(project, environment):
-    # GET /delta/avo/qas does dryrun
-    return start_job(project, environment, 'delta', dryrun=True)
-
-
-@app.route("/delta/<string:project>/<string:environment>", methods=['POST'])
+@app.route("/delta/<string:project>/<string:environment>", methods=['GET', 'POST'])
 def start_delta_job(project, environment):
-    # POST /delta/avo/qas creates openshift pod and executes job
-    return start_job(project, environment, 'delta')
+    do_dryrun_only = request.method=='GET'
+    return start_job(project, environment, 'delta', dryrun=do_dryrun_only)
 
-
-@app.route("/delete/<string:project>/<string:environment>", methods=['GET'])
-def dryrun_delete_job(project, environment):
-    # GET /delete/avo/qas does dryrun
-    return start_job(project, environment, 'delete', dryrun=True)
-
-
-@app.route("/delete/<string:project>/<string:environment>", methods=['POST'])
+@app.route("/delete/<string:project>/<string:environment>", methods=['GET','POST'])
 def start_delete_job(project, environment):
-    # POST /delete/avo/qas creates openshift pod and executes job
-    return start_job(project, environment, 'delete')
+    do_dryrun_only = request.method=='GET'
+    return start_job(project, environment, 'delete', dryrun=do_dryrun_only)
 
-
-@app.route("/diff/<string:project>/<string:environment>", methods=['GET'])
-def dryrun_diff_job(project, environment):
-    # TODO: implement diff job in syncrator and add some templates like
-    # job_params/qas/avo-diff.public_params etc.
-    return start_job(project, environment, 'diff', dryrun=True)
-
-
-@app.route("/diff/<string:project>/<string:environment>", methods=['POST'])
+@app.route("/diff/<string:project>/<string:environment>", methods=['GET', 'POST'])
 def start_diff_job(project, environment):
-    # TODO: create syncrator cli command for 'diff' which is
-    # a delta followed by a delete job
-    # return start_job(project, environment, 'diff')
-    return "This is work in progress", status.HTTP_200_OK
+    do_dryrun_only = request.method=='GET'
+    return start_job(project, environment, 'diff', dryrun = do_dryrun_only)
 
 
 @app.route("/run", methods=['POST'])

@@ -9,15 +9,15 @@
 from app.models import *
 from app.job_worker import JobWorker
 from app.run_worker import RunWorker
-from flask import request, url_for, jsonify
-from flask_api import FlaskAPI, status, exceptions
+from flask import Flask, request, url_for, jsonify, render_template
+from flask_api import status, exceptions
 from viaa.configuration import ConfigParser
 from viaa.observability import logging
 from sqlalchemy.exc import OperationalError
 from app.config import flask_environment
 import os
 
-app = FlaskAPI(__name__)
+app = Flask(__name__)
 config = ConfigParser()
 logger = logging.get_logger(__name__, config=config)
 
@@ -26,41 +26,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 
-@app.route("/")
-def home():
-    # TODO: add some jinja template here
+@app.route('/', methods=['GET'])
+def index():
     logger.info(
         "configuration = ", dictionary={
-            'environment': flask_environment()})
-    page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
-    page += '<h1>Syncrator-API</h1>'
-    page += '<ul>'
-    page += '<li><a href="/jobs?page=1">     GET /jobs </a>         - paginated list of active api started jobs </li>'
-    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get api job and related sync_job details and progress </li><br/>'
-    page += '<li><a href="/sync_jobs?page=1">     GET /sync_jobs </a>    - paginated list of all sync jobs </li>'
-
-    page += '<li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - full synchronisation job dryrun</li>'
-    page += '<li> POST /sync/&lt;project>/&lt;env>             - start a new full synchronisation job</li><br/>'
-
-    page += '<li><a href="/delta/avo/qas">GET /delta/avo/qas</a> - delta synchronisation job dryrun</li>'
-    page += '<li> POST /delta/&lt;project>/&lt;env>             - start a new delta synchronisation job</li><br/>'
-
-    page += '<li><a href="/delete/avo/qas">GET /delete/avo/qas</a> - delete synchronisation job dryrun</li>'
-    page += '<li> POST /delete/&lt;project>/&lt;env>             - start a new delete synchronisation job</li><br/>'
-
-    page += '<li><a href="/diff/avo/qas">GET /diff/avo/qas</a> - dryrun for delta followed by delete in one go for partial updates</li>'
-    page += '<li> POST /diff/&lt;project>/&lt;env>             - start delta job followed by a delete job</li><br/>'
-
-    page += '<li> POST /run             - start custom syncrator job by passing all template parameters (target, env, action_name, action, is_tag, options)</li>'
-
-    page += '<li> POST /dryrun          - dryrun custom job by passing all template parameters (target, env, action_name, action, is_tag, options)</li>'
-
-    page += '</ul>'
-
-    page += '<h2>Health check call</h2>'
-    page += '<ul><li> <a href="/health/live"> GET /health/live </a> - healthcheck route for openshift'
-    page += '</body></html>'
-    return page, status.HTTP_200_OK
+            'environment': flask_environment()
+        })
+    return render_template('index.html')
 
 
 @app.route("/health/live")

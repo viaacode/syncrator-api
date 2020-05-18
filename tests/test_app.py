@@ -43,7 +43,9 @@ def client():
 
 
 def test_home(client):
-    assert home()[1] == status.HTTP_200_OK
+    res = client.get('/')
+    assert res.status_code == status.HTTP_200_OK
+    assert b'Syncrator-API' in res.data
 
 
 def test_liveness_check(client):

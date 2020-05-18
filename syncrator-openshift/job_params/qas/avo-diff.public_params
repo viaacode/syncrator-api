@@ -1,6 +1,6 @@
 ENV=qas
 TARGET=avo
-ACTION_NAME=delta
+ACTION_NAME=diff
 ACTION=diff
 IS_TAG=latest
 OPTIONS=--debug

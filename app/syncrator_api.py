@@ -35,8 +35,9 @@ def home():
     page = '<html><head><style>body{background-color: #fff; color: #333;}</style></head><body>'
     page += '<h1>Syncrator-API</h1>'
     page += '<ul>'
-    page += '<li><a href="/jobs?page=1">     GET /jobs </a>    - paginated list of active jobs </li>'
-    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get job details and progress </li><br/>'
+    page += '<li><a href="/jobs?page=1">     GET /jobs </a>         - paginated list of active api started jobs </li>'
+    page += '<li><a href="/jobs/1"> GET /jobs/&lt;id>  </a>    - get api job and related sync_job details and progress </li><br/>'
+    page += '<li><a href="/sync_jobs?page=1">     GET /sync_jobs </a>    - paginated list of all sync jobs </li>'
 
     page += '<li><a href="/sync/avo/qas">GET /sync/avo/qas</a> - full synchronisation job dryrun</li>'
     page += '<li> POST /sync/&lt;project>/&lt;env>             - start a new full synchronisation job</li><br/>'
@@ -68,17 +69,16 @@ def liveness_check():
 
 
 @app.route("/jobs", methods=['GET'])
-def list_jobs():
+def list_api_jobs():
     try:
         page = request.args.get('page', 1, type=int)
-        job_rows = SyncJob.query.order_by(
-            SyncJob.start_time.desc()
+        rows = ApiJob.query.order_by(
+            ApiJob.created_at.desc()
         ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
-        jobs = [j.to_dict() for j in job_rows]
-        return jsonify(jobs)
+        api_jobs = [j.to_dict() for j in rows]
+        return jsonify(api_jobs)
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
-
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
@@ -94,6 +94,19 @@ def get_job(job_id):
         return "not found", 404
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
+
+@app.route("/sync_jobs", methods=['GET'])
+def list_sync_jobs():
+    try:
+        page = request.args.get('page', 1, type=int)
+        rows = SyncJob.query.order_by(
+            SyncJob.start_time.desc()
+        ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
+        jobs = [j.to_dict() for j in rows]
+        return jsonify(jobs)
+    except OperationalError as pg:
+        return "database error: {}".format(str(pg)), 400
+
 
 
 @app.route("/sync/<string:project>/<string:environment>",

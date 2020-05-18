@@ -129,11 +129,18 @@ def test_dryrun_generic_run(client):
     assert gen_template == delta_template
 
 
-def test_list_jobs(client, setup):
+def test_list_api_jobs(client, setup):
     res = client.get('/jobs')
 
     assert res.status_code == 200
+    assert len(res.get_json()) == 2 
+
+def test_list_sync_jobs(client, setup):
+    res = client.get('/sync_jobs')
+
+    assert res.status_code == 200
     assert len(res.get_json()) == 4
+
 
 
 def test_get_unknown_job(client, setup):

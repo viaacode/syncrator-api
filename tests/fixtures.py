@@ -19,11 +19,9 @@ def jobs_fixture(db):
             data_source='mam harvester-AvO',
             type='sync',
             options='',
-            target_datastore_url='postgres://postgres@localhost:5432/avo_qas',
+            target_datastore_url='postgres://dbmaster:dbmaster_pass@postgresql-qas.sc-avo2.svc:5432/avo_qas',
             total_records='19884',
-            version='2.4.0'
-        )
-    )
+            version='2.4.0'))
 
     # full sync job in progress
     db.session.add(

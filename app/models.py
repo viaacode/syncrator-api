@@ -41,14 +41,14 @@ class SyncJob(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-    def to_dict(self):
+    def to_dict(self, filter_passwords=False):
         """Export sync job to dictionary for later jsonify to work."""
         try:
             total_records = int(self.total_records)
         except TypeError:
             total_records = 0
 
-        return {
+        sync_dict = {
             'id': self.id,
             'start_time': self.start_time,
             'end_time': self.end_time,
@@ -60,6 +60,15 @@ class SyncJob(db.Model):
             'version': self.version,
             'target_datastore_url': self.target_datastore_url,
         }
+
+        # 'postgres://dbmaster:dbmaster_pass@postgresql-qas.sc-avo2.svc:5432/avo_qas'
+        if filter_passwords:
+            db_url = sync_dict['target_datastore_url']
+            sync_dict['target_datastore_url'] = '{}<FILTERED>{}'.format(
+                db_url[:db_url.find('://') + 3],
+                db_url[db_url.find('@'):]
+            )
+        return sync_dict
 
 
 class ApiJob(db.Model):

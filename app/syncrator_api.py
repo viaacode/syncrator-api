@@ -80,6 +80,7 @@ def list_api_jobs():
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
 
+
 @app.route("/jobs/<int:job_id>", methods=['GET'])
 def get_job(job_id):
     try:
@@ -87,13 +88,14 @@ def get_job(job_id):
         result = api_job.to_dict()
         if api_job.sync_id:
             sync_job = SyncJob.query.filter_by(id=api_job.sync_id).first()
-            result['sync_job'] = sync_job.to_dict()
+            result['sync_job'] = sync_job.to_dict(filter_passwords=True)
 
         return jsonify(result)
     except AttributeError:
         return "not found", 404
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
+
 
 @app.route("/sync_jobs", methods=['GET'])
 def list_sync_jobs():
@@ -102,11 +104,10 @@ def list_sync_jobs():
         rows = SyncJob.query.order_by(
             SyncJob.start_time.desc()
         ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
-        jobs = [j.to_dict() for j in rows]
+        jobs = [j.to_dict(filter_passwords=True) for j in rows]
         return jsonify(jobs)
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
-
 
 
 @app.route("/sync/<string:project>/<string:environment>",

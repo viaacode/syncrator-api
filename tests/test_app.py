@@ -129,18 +129,32 @@ def test_dryrun_generic_run(client):
     assert gen_template == delta_template
 
 
+def test_password_filter_api_job_nested(client, setup):
+    res = client.get('/jobs/2')
+    sjob = res.get_json()
+
+    assert res.status_code == 200
+    assert 'dbmaster_pass' not in sjob['sync_job']['target_datastore_url']
+    assert 'dbmaster' not in sjob['sync_job']['target_datastore_url']
+
+
 def test_list_api_jobs(client, setup):
     res = client.get('/jobs')
 
     assert res.status_code == 200
-    assert len(res.get_json()) == 2 
+    assert len(res.get_json()) == 2
 
-def test_list_sync_jobs(client, setup):
+
+def test_list_sync_jobs_and_pass_filter(client, setup):
     res = client.get('/sync_jobs')
+    sjobs = res.get_json()
+
+    for sjob in sjobs:
+        assert 'dbmaster_pass' not in sjob['target_datastore_url']
+        assert 'dbmaster' not in sjob['target_datastore_url']
 
     assert res.status_code == 200
-    assert len(res.get_json()) == 4
-
+    assert len(sjobs) == 4
 
 
 def test_get_unknown_job(client, setup):

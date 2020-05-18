@@ -91,6 +91,6 @@ def jobs_fixture(db):
             env='qas',
             job_type='sync',
             job_params={'env': 'qas', 'type': 'sync'},
-            status='running'))
+            status='completed'))
 
     db.session.commit()

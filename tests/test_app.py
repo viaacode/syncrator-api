@@ -141,10 +141,17 @@ def test_get_unknown_job(client, setup):
     assert res.status_code == 404
 
 
-def test_get_existing_job(client, setup):
+def test_get_existing_starting_job(client, setup):
     res = client.get('/jobs/1')
-    assert res.get_json()['completed']
-    assert res.get_json()['data_source'] == 'mam harvester-AvO'
+    assert res.get_json()['status'] == 'starting'
+    assert res.get_json()['sync_id'] is None
+
+
+def test_get_existing_completed_job(client, setup):
+    res = client.get('/jobs/2')
+    assert res.get_json()['status'] == 'completed'
+    assert res.get_json()['sync_job']['completed']
+    assert res.get_json()['sync_job']['data_source'] == 'mam harvester-AvO'
 
 
 # this will actually fire up a syncrator run now, todo make this also dryrun?

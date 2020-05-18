@@ -123,18 +123,14 @@ def syncrator_dryrun():
     # POST /dryrun same as run but don't execute only return resulting template
     return run(dryrun=True)
 
-
+# generic run method needs all parameters for syncrator as json in post request
+# these are target, env, action_name, action, is_tag and options. look in
+# syncrator-openshift/job_params for examples
 def run(dryrun=False):
-    if dryrun:
-        openshift_script = 'syncrator_dryrun.sh'
-    else:
-        openshift_script = 'syncrator_run.sh'
-
     request_data = request.json
     if not request_data:
         request_data = {}
     request_data['dryrun'] = dryrun
-    request_data['openshift_script'] = openshift_script
 
     target = request_data['target']
     env = request_data['env']
@@ -143,7 +139,6 @@ def run(dryrun=False):
     is_tag = request_data['is_tag']
     options = request_data['options']
 
-    logger.info('Syncrator run called with parameters', data=request_data)
 
     response = {
         'api_job_id': None,
@@ -156,6 +151,7 @@ def run(dryrun=False):
     }
 
     if dryrun:
+        openshift_script = 'syncrator_dryrun.sh'
         stream = os.popen(
             "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
                 openshift_script,
@@ -169,6 +165,10 @@ def run(dryrun=False):
 
         response['result'] = job_result
     else:
+        openshift_script = 'syncrator_run.sh'
+        request_data['openshift_script'] = openshift_script
+
+        #TODO: check if there is a job started or running here before creating new one
         api_job = ApiJob(
             sync_id=None,
             target=target,
@@ -194,33 +194,26 @@ def run(dryrun=False):
         syncrator_worker = RunWorker(request_data, api_job.id, logger)
         syncrator_worker.start()
 
+    logger.info('Syncrator run called with parameters', data=request_data)
+
     return jsonify(response)
 
 
-# if openshift_script is syncrator_job.sh that runs an actual job using the paramter
-# files defined in syncrator-openshift/job_params
+# if openshift_script is syncrator_job.sh that runs an actual job using the 
+# parameter files defined in syncrator-openshift/job_params
 # if openshift script is syncrator_job_dryrun.sh we do a dryrun and return the resulting
 # template as specified by the parameter files
 def start_job(project, environment, job_type, dryrun=False):
-    if dryrun:
-        openshift_script = 'syncrator_job_dryrun.sh'
-    else:
-        openshift_script = 'syncrator_job.sh'
-
     request_data = request.json
     if not request_data:
         request_data = {}
 
-    request_data['dryrun'] = dryrun
-    request_data['openshift_script'] = openshift_script
     request_data['project'] = project
     request_data['environment'] = environment
     request_data['job_type'] = job_type
+    request_data['dryrun'] = dryrun
 
-    logger.info(
-        "Starting {} job={} for project={} and env={}".format(
-            openshift_script, job_type, project, environment))
-
+    
     response = {
         'api_job_id': None,
         'job_type': job_type,
@@ -229,6 +222,7 @@ def start_job(project, environment, job_type, dryrun=False):
     }
 
     if dryrun:
+        openshift_script = 'syncrator_job_dryrun.sh'
         stream = os.popen(
             "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
                 openshift_script, project, environment, job_type))
@@ -236,6 +230,10 @@ def start_job(project, environment, job_type, dryrun=False):
 
         response['result'] = job_result
     else:
+        openshift_script = 'syncrator_job.sh'
+        request_data['openshift_script'] = openshift_script
+
+        #TODO: check if there is a job started or running here before creating new one
         api_job = ApiJob(
             sync_id=None,
             target=project,
@@ -254,9 +252,15 @@ def start_job(project, environment, job_type, dryrun=False):
         response['api_job_id'] = api_job.id
         response['result'] = 'starting'
 
-        # handle execution in a worker thread
+        # handle execution in a worker thread, pass request_data to configure
+        # worker 
         syncrator_worker = JobWorker(request_data, api_job.id, logger)
         syncrator_worker.start()
+
+    logger.info(
+        "Starting {} job={} for project={} and env={} dryrun={}".format(
+            openshift_script, job_type, project, environment, dryrun))
+
 
     return jsonify(response)
 

@@ -6,11 +6,11 @@ OC_USER = os.environ.get('OC_USER', 'configure_user')
 OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
 
 
-def run(cmd, path=None):
+def run(cmd, path=None, dryrun=False):
     if path:
         cmd = f'cd {path} && {cmd}'
 
-    if os.environ.get('FLASK_ENV') == 'TESTING':
+    if dryrun or os.environ.get('FLASK_ENV') == 'TESTING':
         print(f"DRYRUN cmd: {cmd}")
         return cmd
     else:
@@ -38,15 +38,12 @@ def oc_logout():
 def oc_delete_job(pod_name):
     return run(f"oc delete jobs {pod_name}")
 
-# oc_create_job example:
-# oc process -f $TEMPLATE -p TARGET="$TARGET" -p ENV="$ENV" -p
-# ACTION_NAME="$ACTION_NAME" -p ACTION="$ACTION" -p IS_TAG="$IS_TAG" -p
-# OPTIONS="$OPTIONS" | oc create -f -
-
 
 def oc_create_job(
         template_params,
-        template='syncrator-openshift/job_template.yaml'):
+        template='syncrator-openshift/job_template.yaml',
+        dryrun=False
+):
     job_command = f"oc process -f {template} "
 
     for key, val in template_params.items():
@@ -55,10 +52,7 @@ def oc_create_job(
     job_command += "| oc create -f -"
     print("create job cmd: {}".format(job_command))
 
-    return run(job_command)
-
-# TODO: when above python version works ok replace current calling of the
-# .sh commands
+    return run(job_command, dryrun)
 
 
 def read_params_file(

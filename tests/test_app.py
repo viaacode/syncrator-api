@@ -211,6 +211,42 @@ def test_param_parsing():
     assert result == 'oc process -f syncrator-openshift/job_template.yaml -p ENV="qas" -p TARGET="avo" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1" | oc create -f -'
 
 
+def test_run_python_version(client):
+    resp = client.post('/runp',
+                       json={
+                           'target': 'avo',
+                           'env': 'qas',
+                                  'action_name': 'delta',
+                                  'action': 'delta',
+                                  'is_tag': 'latest',
+                                  'options': '-n 1000 -c 1',
+                       })
+    assert resp.status_code == status.HTTP_200_OK
+    generic_data = resp.get_json()
+
+    res_delta = client.get('/delta/avo/qas')
+    assert res_delta.status_code == status.HTTP_200_OK
+    delta_data = res_delta.get_json()
+
+    # test that a generic run call with correct params gives same
+    # result as a preconfigred delta run (both dryruns)
+    assert generic_data['ENV'] == delta_data['environment']
+    assert generic_data['TARGET'] == delta_data['project']
+    assert generic_data['ACTION'] == delta_data['job_type']
+
+    # assert generic_data['result'] == 'starting' #use this when refactor is
+    # finished
+    assert generic_data['result'] == 'oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 -api_job_id 4" | oc create -f -'
+
+    # getting back filled in template will be deprecated...
+    # get substring in result with only the template generated from dryruns
+    # gen_template = generic_data['result'][generic_data['result'].find(
+    #    'parametrised template'):]
+    # delta_template = delta_data['result'][delta_data['result'].find(
+    #    'parametrised template'):]
+    #assert gen_template == delta_template
+
+
 # this will actually fire up a syncrator run now, todo make this also dryrun?
 # TODO: during refactor to python code instead of executing job shell
 # we can test on os.environ == TESTING and then use dryrun instead

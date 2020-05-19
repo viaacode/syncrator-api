@@ -149,9 +149,65 @@ def syncrator_dryrun():
     # POST /dryrun same as run but don't execute only return resulting template
     return run(dryrun=True)
 
+
+# test out python version that is shorter and allows elimination of
+# the 4 shell scripts
+@app.route("/runp", methods=['POST'])
+def syncrator_run_python():
+    # POST /run run custom job by passing all template parameters in json
+    return runp()
+
 # generic run method needs all parameters for syncrator as json in post request
 # these are target, env, action_name, action, is_tag and options. look in
 # syncrator-openshift/job_params for examples
+
+
+# this version will replace the next 2 longer existing run functions once we test it works, it uses straight
+# python to execute the necessary oc commands
+def runp(dryrun=False):
+    request_data = request.json
+
+    job_params = {
+        'TARGET': request_data['target'],
+        'ENV': request_data['env'],
+        'ACTION_NAME': request_data['action_name'],
+        'ACTION': request_data['action'],
+        'IS_TAG': request_data['is_tag'],
+        'OPTIONS': request_data['options']
+    }
+
+    # TODO: check if there is a job started or running here before creating
+    # another
+    if not dryrun:
+        api_job = ApiJob(
+            sync_id=None,
+            target=job_params['TARGET'],
+            env=job_params['ENV'],
+            job_type=job_params['ACTION'],
+            job_params=job_params,
+            status='starting'
+        )
+        db.session.add(api_job)
+        db.session.commit()
+
+        # piggy back the job id onto options that are templated as command parameter to syncrator
+        # so that syncrator is able to set correct sync_id at startup
+        job_params['OPTIONS'] = '{} -api_job_id {}'.format(
+            job_params['OPTIONS'],
+            api_job.id
+        )
+
+    # TODO: move this into a worker once tested and then deprecate
+    # other workers
+    # handle execution in a worker thread
+    # syncrator_worker = RunWorker(request_data, api_job.id, logger)
+    # syncrator_worker.start()
+    result = oc_create_job(job_params, dryrun=dryrun)
+    job_params['result'] = result
+
+    logger.info('Syncrator run called with parameters', data=request_data)
+
+    return jsonify(job_params)
 
 
 def run(dryrun=False):
@@ -290,80 +346,6 @@ def start_job(project, environment, job_type, dryrun=False):
             openshift_script, job_type, project, environment, dryrun))
 
     return jsonify(response)
-
-
-# this version will replace the above 2 once we test it works, it uses straight
-# python to execute the necessary oc commands
-# we also ditch dryrun here for making it simpler.
-# def runp(dryrun=False):
-#    request_data = request.json
-#
-#    target = request_data['target']
-#    env = request_data['env']
-#    action_name = request_data['action_name']
-#    action = request_data['action']
-#    is_tag = request_data['is_tag']
-#    options = request_data['options']
-#
-#    response = {
-#        'api_job_id': None,
-#        'target': target,
-#        'env': env,
-#        'action_name': action_name,
-#        'action': action,
-#        'is_tag': is_tag,
-#        'options': options,
-#    }
-#
-
-# we need a worker that in essence does this, we'll refactor some more
-# tomorrow... it's 10pm again, days are long enough..
-#   template_params == {
-#        'ACTION': 'delta',
-#        'ACTION_NAME': 'delta',
-#        'ENV': 'qas',
-#        'IS_TAG': 'latest',
-#        'OPTIONS': '-n 1000 -c 1',
-#        'TARGET': 'avo'
-#    }
-#
-#    result = oc_create_job(template_params)
-#
-#
-#    openshift_script = 'syncrator_run.sh'
-#    request_data['openshift_script'] = openshift_script
-#
-#    # TODO: check if there is a job started or running here before creating
-#    # new one
-#    api_job = ApiJob(
-#        sync_id=None,
-#        target=target,
-#        env=env,
-#        job_type=action,
-#        job_params={
-#            'script': openshift_script,
-#            'target': target,
-#            'env': env,
-#            'action_name': action_name,
-#            'action': action,
-#            'is_tag': is_tag,
-#            'options': options
-#        },
-#        status='starting'
-#    )
-#    db.session.add(api_job)
-#    db.session.commit()
-#    response['api_job_id'] = api_job.id
-#    response['result'] = 'starting'
-#
-#    # handle execution in a worker thread
-#    syncrator_worker = RunWorker(request_data, api_job.id, logger)
-#    syncrator_worker.start()
-#
-#    logger.info('Syncrator run called with parameters', data=request_data)
-#
-#    return jsonify(response)
-#
 
 
 @app.errorhandler(404)

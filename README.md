@@ -352,3 +352,24 @@ as result on the /jobs/8 call:
 ... WORK IN PROGRES, syncrator still needs to set this sync_id
 ```
 
+
+If you notice a pod is crashing or you want to cancel a run midway you can call delete on a job
+this sets status to deleted and removes the pods that we're started with a previous run/delta/delete/diff call.
+
+example:
+
+```
+curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/9
+{
+  "created_at": "Tue, 19 May 2020 16:26:26 GMT",
+  "env": "qas",
+  "id": 9,
+  "job_type": "diff",
+  "status": "deleted",
+  "sync_id": null,
+  "target": "avo",
+  "updated_at": "Tue, 19 May 2020 16:26:26 GMT"
+}
+```
+
+

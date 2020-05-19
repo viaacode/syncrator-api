@@ -68,6 +68,33 @@ def get_job(job_id):
     except OperationalError as pg:
         return "database error: {}".format(str(pg)), 400
 
+@app.route("/jobs/<int:job_id>", methods=['DELETE'])
+def delete_job(job_id):
+    try:
+        api_job = ApiJob.query.filter_by(id=job_id).first()
+        api_job.status="deleted"
+        db.session.commit()
+
+        oc_job_name = "syncrator-{}-{}-{}".format(
+            api_job.env,
+            api_job.target,
+            api_job.job_type
+        )
+        # oc login
+        # oc project shared-components
+        # oc delete jobs syncrator-<env>-file
+        # example: oc delete jobs 
+        # oc delete jobs syncrator-qas-avo-diff
+
+        print("TODO: oc delete jobs {}".format(oc_job_name))
+        return jsonify(api_job.to_dict())
+    except AttributeError:
+        return "not found", 404
+    except OperationalError as pg:
+        return "database error: {}".format(str(pg)), 400
+
+    
+
 
 @app.route("/sync_jobs", methods=['GET'])
 def list_sync_jobs():

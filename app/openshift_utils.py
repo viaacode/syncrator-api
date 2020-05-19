@@ -28,25 +28,58 @@ def oc_login():
 
 
 def oc_project(project_name):
-    res = run(f"oc project {project_name}")
-    return res
+    return run(f"oc project {project_name}")
 
 
 def oc_logout():
-    res = run("oc logout")
-    return res
+    return run("oc logout")
 
 
 def oc_delete_job(pod_name):
-    res = run(f"oc delete jobs {pod_name}")
-    return res
+    return run(f"oc delete jobs {pod_name}")
+
+# oc_create_job example:
+# oc process -f $TEMPLATE -p TARGET="$TARGET" -p ENV="$ENV" -p
+# ACTION_NAME="$ACTION_NAME" -p ACTION="$ACTION" -p IS_TAG="$IS_TAG" -p
+# OPTIONS="$OPTIONS" | oc create -f -
 
 
-def oc_create_job():
-    # TODO:...
-    pass
+def oc_create_job(
+        template_params,
+        template='syncrator-openshift/job_template.yaml'):
+    job_command = f"oc process -f {template} "
+
+    for key, val in template_params.items():
+        job_command += f'-p {key}="{val}" '
+
+    job_command += "| oc create -f -"
+    print("create job cmd: {}".format(job_command))
+
+    return run(job_command)
+
+# TODO: when above python version works ok replace current calling of the
+# .sh commands
 
 
-def oc_create_template():
-    # TODO:...
-    pass
+def read_params_file(
+        environment,
+        target,
+        job_type,
+        params_path="syncrator-openshift/job_params"):
+    # ex: qas, avo, delta
+    params_filename = f"{params_path}/{environment}/{target}-{job_type}.public_params"
+
+    template_params = {}
+    pf = open(params_filename)
+    params = pf.read().split('\n')
+
+    for p in params:
+        if len(p) > 0:
+            key, value = p.split('=')
+            # template_params[key] = value # in future this is ok
+            # we need to strip some extra quotes added last week in OPTIONS
+            # that was mostly for getting the shell scripts working nicely
+            template_params[key] = value.replace('"', '')
+    pf.close()
+
+    return template_params

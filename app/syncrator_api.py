@@ -292,6 +292,80 @@ def start_job(project, environment, job_type, dryrun=False):
     return jsonify(response)
 
 
+# this version will replace the above 2 once we test it works, it uses straight
+# python to execute the necessary oc commands
+# we also ditch dryrun here for making it simpler.
+# def runp(dryrun=False):
+#    request_data = request.json
+#
+#    target = request_data['target']
+#    env = request_data['env']
+#    action_name = request_data['action_name']
+#    action = request_data['action']
+#    is_tag = request_data['is_tag']
+#    options = request_data['options']
+#
+#    response = {
+#        'api_job_id': None,
+#        'target': target,
+#        'env': env,
+#        'action_name': action_name,
+#        'action': action,
+#        'is_tag': is_tag,
+#        'options': options,
+#    }
+#
+
+# we need a worker that in essence does this, we'll refactor some more
+# tomorrow... it's 10pm again, days are long enough..
+#   template_params == {
+#        'ACTION': 'delta',
+#        'ACTION_NAME': 'delta',
+#        'ENV': 'qas',
+#        'IS_TAG': 'latest',
+#        'OPTIONS': '-n 1000 -c 1',
+#        'TARGET': 'avo'
+#    }
+#
+#    result = oc_create_job(template_params)
+#
+#
+#    openshift_script = 'syncrator_run.sh'
+#    request_data['openshift_script'] = openshift_script
+#
+#    # TODO: check if there is a job started or running here before creating
+#    # new one
+#    api_job = ApiJob(
+#        sync_id=None,
+#        target=target,
+#        env=env,
+#        job_type=action,
+#        job_params={
+#            'script': openshift_script,
+#            'target': target,
+#            'env': env,
+#            'action_name': action_name,
+#            'action': action,
+#            'is_tag': is_tag,
+#            'options': options
+#        },
+#        status='starting'
+#    )
+#    db.session.add(api_job)
+#    db.session.commit()
+#    response['api_job_id'] = api_job.id
+#    response['result'] = 'starting'
+#
+#    # handle execution in a worker thread
+#    syncrator_worker = RunWorker(request_data, api_job.id, logger)
+#    syncrator_worker.start()
+#
+#    logger.info('Syncrator run called with parameters', data=request_data)
+#
+#    return jsonify(response)
+#
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404

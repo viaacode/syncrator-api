@@ -9,6 +9,8 @@
 from flask_api import status
 from app.syncrator_api import *
 from app.models import *
+from app.openshift_utils import *
+
 from .fixtures import *
 import tempfile
 import pytest
@@ -186,6 +188,27 @@ def test_delete_job(client, setup):
     res = client.delete('/jobs/3')
     job_after = res.get_json()
     assert job_after['status'] == 'deleted'
+
+
+def test_param_parsing():
+    template_params = read_params_file(
+        'qas', 'avo', 'delta',
+        params_path='syncrator-openshift/job_params'
+    )
+
+    assert template_params == {
+        'ACTION': 'delta',
+        'ACTION_NAME': 'delta',
+        'ENV': 'qas',
+        'IS_TAG': 'latest',
+        'OPTIONS': '-n 1000 -c 1',
+        'TARGET': 'avo'
+    }
+
+    # test these params in oc_create command
+
+    result = oc_create_job(template_params)
+    assert result == 'oc process -f syncrator-openshift/job_template.yaml -p ENV="qas" -p TARGET="avo" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1" | oc create -f -'
 
 
 # this will actually fire up a syncrator run now, todo make this also dryrun?

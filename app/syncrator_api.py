@@ -9,6 +9,8 @@
 from app.models import *
 from app.job_worker import JobWorker
 from app.run_worker import RunWorker
+from app.openshift_utils import *
+
 from flask import Flask, request, url_for, jsonify, render_template
 from flask_api import status, exceptions
 from viaa.configuration import ConfigParser
@@ -76,19 +78,19 @@ def delete_job(job_id):
         api_job.status = "deleted"
         db.session.commit()
 
-        oc_job_name = "syncrator-{}-{}-{}".format(
+        pod_name = "syncrator-{}-{}-{}".format(
             api_job.env,
             api_job.target,
             api_job.job_type
         )
-        # oc login
-        # oc project shared-components
-        # oc delete jobs syncrator-<env>-file
-        # example: oc delete jobs
-        # oc delete jobs syncrator-qas-avo-diff
 
-        print("TODO: oc delete jobs {}".format(oc_job_name))
+        # using openshift_utils goodies
+        oc_login()
+        oc_delete_job(pod_name)
+        oc_logout()
+
         return jsonify(api_job.to_dict())
+
     except AttributeError:
         return "not found", 404
     except OperationalError as pg:

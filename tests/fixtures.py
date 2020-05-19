@@ -91,4 +91,14 @@ def jobs_fixture(db):
             job_params={'env': 'qas', 'type': 'sync'},
             status='completed'))
 
+    db.session.add(
+        ApiJob(
+            sync_id=SyncJob.query.filter_by(
+                data_source='mam harvester-AvO').first().id,
+            target='avo',
+            env='qas',
+            job_type='sync',
+            job_params={'env': 'qas', 'type': 'sync'},
+            status='starting'))
+
     db.session.commit()

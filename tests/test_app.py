@@ -144,7 +144,7 @@ def test_list_api_jobs(client, setup):
     res = client.get('/jobs')
 
     assert res.status_code == 200
-    assert len(res.get_json()) == 2
+    assert len(res.get_json()) == 3
 
 
 def test_list_sync_jobs_and_pass_filter(client, setup):
@@ -177,6 +177,19 @@ def test_get_existing_completed_job(client, setup):
     assert res.get_json()['sync_job']['data_source'] == 'mam harvester-AvO'
 
 
+def test_delete_job(client, setup):
+    res = client.get('/jobs/3')
+    job_before = res.get_json()
+    assert res.status_code == 200
+    assert job_before['status'] != 'deleted'
+
+    res = client.delete('/jobs/3')
+    job_after = res.get_json()
+    assert job_after['status'] == 'deleted'
+
+
 # this will actually fire up a syncrator run now, todo make this also dryrun?
+# TODO: during refactor to python code instead of executing job shell
+# we can test on os.environ == TESTING and then use dryrun instead
 # def test_start_job():
 #    assert start_job('avo', 'qas') == ('started job on project=avo, environment=qas...', status.HTTP_200_OK)

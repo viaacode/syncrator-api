@@ -1,1 +1,2 @@
+source python_env/bin/activate
 python debug.py

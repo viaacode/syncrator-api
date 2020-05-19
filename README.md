@@ -270,3 +270,85 @@ this takes roughly 10 seconds and during that time where pod is starting etc we 
 
 
 
+Diff dryrun example and use jq utility to fetch the result and pretty print generated yml file:
+```
+curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' \
+  -d '{
+    "target":"avo",
+    "env":"qas",
+    "action_name": "diff",
+    "action": "diff",
+    "is_tag": "latest",
+    "options": "-n 1000 -c 1"
+    }' | jq -r .result
+
+Syncrator DRYRUN:
+=================
+oc login https://do-prd-okp-m0.do.viaa.be:8443
+oc project shared-components
+oc delete jobs syncrator-qas-avo-diff
+oc process -f job_template.yaml -p TARGET=avo -p ENV=qas -p ACTION_NAME=diff -p ACTION=diff -p IS_TAG=latest -p OPTIONS=-n 1000 -c 1 | oc create -f -
+
+parametrised template:
+======================
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: syncrator
+  env: qas
+  target: avo
+
+```
+
+Now running same job as above for real:
+
+```
+curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' \
+  -d '{
+    "target":"avo",
+    "env":"qas",
+    "action_name": "diff",
+    "action": "diff",
+    "is_tag": "latest",
+    "options": "-n 1000 -c 1"
+    }'
+```
+
+output:
+```
+{
+  "action": "diff",
+  "action_name": "diff",
+  "api_job_id": 8,
+  "env": "qas",
+  "is_tag": "latest",
+  "options": "-n 1000 -c 1",
+  "result": "starting",
+  "target": "avo"
+}
+
+```
+
+
+Checking status of above job with id 8:
+```
+ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/8
+{
+  "created_at": "Tue, 19 May 2020 11:53:49 GMT",
+  "env": "qas",
+  "id": 8,
+  "job_type": "diff",
+  "status": "starting",
+  "sync_id": null,
+  "target": "avo",
+  "updated_at": "Tue, 19 May 2020 11:53:49 GMT"
+}
+```
+
+When pod is started, status will update and sync_id is filled in and then you see this
+as result on the /jobs/8 call:
+
+```
+... WORK IN PROGRES, syncrator still needs to set this sync_id
+```
+

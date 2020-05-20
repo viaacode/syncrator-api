@@ -78,15 +78,14 @@ def delete_job(job_id):
         api_job.status = "deleted"
         db.session.commit()
 
-        pod_name = "syncrator-{}-{}-{}".format(
-            api_job.env,
-            api_job.target,
-            api_job.job_type
-        )
-
-        # using openshift_utils goodies
         oc_login()
-        oc_delete_job(pod_name)
+        oc_delete_job(
+            "syncrator-{}-{}-{}".format(
+                api_job.env,
+                api_job.target,
+                api_job.job_type
+            )
+        )
         oc_logout()
 
         return jsonify(api_job.to_dict())
@@ -202,7 +201,17 @@ def runp(dryrun=False):
     # handle execution in a worker thread
     # syncrator_worker = RunWorker(request_data, api_job.id, logger)
     # syncrator_worker.start()
+    oc_login()
+    oc_delete_job(
+        "syncrator-{}-{}-{}".format(
+            job_params['ENV'],
+            job_params['TARGET'],
+            job_params['ACTION']
+        )
+    )
     result = oc_create_job(job_params, dryrun=dryrun)
+    oc_logout()
+
     job_params['result'] = result
 
     logger.info('Syncrator run called with parameters', data=request_data)

@@ -178,7 +178,7 @@ def run(dryrun=False):
         
     # piggy back the job id onto options that are templated as command parameter to syncrator
     # so that syncrator is able to set correct sync_id at startup
-    job_params['OPTIONS'] = '{} -api_job_id {}'.format(
+    job_params['OPTIONS'] = '{} --api_job_id {}'.format(
         job_params['OPTIONS'],
         api_job_id
     )

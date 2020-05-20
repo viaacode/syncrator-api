@@ -125,14 +125,6 @@ def test_dryrun_generic_run(client):
     assert generic_data['TARGET'] == delta_data['project']
     assert generic_data['ACTION'] == delta_data['job_type']
 
-    ## get substring in result with only the template generated from dryruns
-    #gen_template = generic_data['result'][generic_data['result'].find(
-    #    'parametrised template'):]
-    #delta_template = delta_data['result'][delta_data['result'].find(
-    #    'parametrised template'):]
-
-    #assert gen_template == delta_template
-
 
 def test_password_filter_api_job_nested(client, setup):
     res = client.get('/jobs/2')
@@ -250,6 +242,6 @@ def test_dryrun(client, setup):
 
     dryrun = resp.get_json()
 
-    assert dryrun['result'] == 'oc login https://do-prd-okp-m0.do.viaa.be:8443 -p "configure_user" -u "configure_pass" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 -api_job_id dryrun" | oc create -f -'
+    assert dryrun['result'] == 'oc login https://do-prd-okp-m0.do.viaa.be:8443 -p "configure_user" -u "configure_pass" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 --api_job_id dryrun" | oc create -f -'
 
 

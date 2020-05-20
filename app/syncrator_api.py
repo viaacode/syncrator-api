@@ -92,9 +92,6 @@ def delete_job(job_id):
                 api_job.job_type
             )
         )
-        # watch out use ; here instead of && in case delete does not find a
-        # previous pod job
-        cmd += " ; " + oc_logout()
 
         oc_execute(cmd)
 
@@ -226,7 +223,6 @@ def runp(dryrun=False):
     )
     # gotcha the delete might fail if not are found!
     cmd += " ; " + oc_create_job(job_params)
-    cmd += " ; " + oc_logout()
 
     logger.info("command to execute=", data={'oc_commands': cmd})
 

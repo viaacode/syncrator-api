@@ -7,9 +7,6 @@ OC_USER = os.environ.get('OC_USER', 'configure_user')
 OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
 
 
-# we need to chain all commands to avoid
-# session issues, next refactor is putting this in class
-# and then we can chain them here to execute_cmd
 def oc_run(cmd):
     return cmd
 
@@ -60,6 +57,34 @@ def oc_create_job(
     job_command += "| oc create -f -"
 
     return oc_run(job_command)
+
+
+def oc_create_syncrator_pod( job_params, dryrun=False):
+    # chaining commands to keep oc session available
+    cmd = oc_login()
+    cmd += " ; " + oc_delete_job(
+        "syncrator-{}-{}-{}".format(
+            job_params['ENV'],
+            job_params['TARGET'],
+            job_params['ACTION']
+        )
+    )
+    # gotcha the delete might fail if not are found!
+    cmd += " ; " + oc_create_job(job_params)
+    return oc_execute(cmd, dryrun=dryrun)
+
+def oc_delete_syncrator_pod(env, target, job_type):
+    # chaining commands to keep oc session available
+    cmd = oc_login()
+    cmd += " ; " + oc_delete_job(
+        "syncrator-{}-{}-{}".format(
+            env,
+            target,
+            job_type
+        )
+    )
+    return oc_execute(cmd)
+
 
 
 def read_params_file(

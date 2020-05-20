@@ -121,16 +121,17 @@ def test_dryrun_generic_run(client):
 
     # test that a generic run call with correct params gives same
     # result as a preconfigred delta run (both dryruns)
-    assert generic_data['env'] == delta_data['environment']
-    assert generic_data['target'] == delta_data['project']
+    assert generic_data['ENV'] == delta_data['environment']
+    assert generic_data['TARGET'] == delta_data['project']
+    assert generic_data['ACTION'] == delta_data['job_type']
 
-    # get substring in result with only the template generated from dryruns
-    gen_template = generic_data['result'][generic_data['result'].find(
-        'parametrised template'):]
-    delta_template = delta_data['result'][delta_data['result'].find(
-        'parametrised template'):]
+    ## get substring in result with only the template generated from dryruns
+    #gen_template = generic_data['result'][generic_data['result'].find(
+    #    'parametrised template'):]
+    #delta_template = delta_data['result'][delta_data['result'].find(
+    #    'parametrised template'):]
 
-    assert gen_template == delta_template
+    #assert gen_template == delta_template
 
 
 def test_password_filter_api_job_nested(client, setup):
@@ -212,7 +213,7 @@ def test_param_parsing():
 
 
 def test_run_python_version(client):
-    resp = client.post('/runp',
+    resp = client.post('/run',
                        json={
                            'target': 'avo',
                            'env': 'qas',
@@ -233,14 +234,22 @@ def test_run_python_version(client):
     assert generic_data['ENV'] == delta_data['environment']
     assert generic_data['TARGET'] == delta_data['project']
     assert generic_data['ACTION'] == delta_data['job_type']
+    assert generic_data['result'] == 'starting'
 
-    # assert generic_data['result'] == 'starting' #use this when refactor is
-    # finished
-    assert generic_data['result'] == 'oc login https://do-prd-okp-m0.do.viaa.be:8443 -p "configure_user" -u "configure_pass" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 -api_job_id 4" | oc create -f -'
+def test_dryrun(client, setup):
+    resp = client.post('/dryrun',
+                       json={
+                           'target': 'avo',
+                           'env': 'qas',
+                                  'action_name': 'delta',
+                                  'action': 'delta',
+                                  'is_tag': 'latest',
+                                  'options': '-n 1000 -c 1',
+                       })
 
 
-# this will actually fire up a syncrator run now, todo make this also dryrun?
-# TODO: during refactor to python code instead of executing job shell
-# we can test on os.environ == TESTING and then use dryrun instead
-# def test_start_job():
-#    assert start_job('avo', 'qas') == ('started job on project=avo, environment=qas...', status.HTTP_200_OK)
+    dryrun = resp.get_json()
+
+    assert dryrun['result'] == 'oc login https://do-prd-okp-m0.do.viaa.be:8443 -p "configure_user" -u "configure_pass" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 -api_job_id dryrun" | oc create -f -'
+
+

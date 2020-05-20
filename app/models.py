@@ -82,7 +82,7 @@ class ApiJob(db.Model):
     target = db.Column(db.String())     # avo, metadata_catalogus, ...
     env = db.Column(db.String())        # qas, prd, ...
     job_type = db.Column(db.String())   # sync, delta, delete, diff
-    status = db.Column(db.String())     # starting, running, completed, failed
+    status = db.Column(db.String())     # starting, started, running, completed, failed
     job_params = db.Column(db.JSON())   # params passed in api call
 
     created_at = db.Column(db.DateTime())

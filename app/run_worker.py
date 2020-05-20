@@ -8,33 +8,38 @@
 import threading
 import os
 from datetime import datetime
-
+from app.openshift_utils import oc_create_syncrator_pod
+from app.models import *
 
 class RunWorker(threading.Thread):
-    def __init__(self, request_data, api_job_id, logger):
+    def __init__(self, api_job_id, job_params, logger):
         threading.Thread.__init__(self)
-        self.data = request_data
-        self.logger = logger
         self.api_job_id = api_job_id
+        self.job_params = job_params
+        self.logger = logger
 
     def run(self):
-        self.logger.info( 'RunWorker starting openshift pod for api_job_id={}'.format(
-            self.api_job_id), data=self.data)
+        self.logger.info('Runworker creating syncrator pod', data={
+            'api_job_id': self.api_job_id,
+            'job_params': self.job_params
+        })
+        
+        print("DEBUG DRYRUN={}".format(
 
-        stream = os.popen(
-            "cd syncrator-openshift && ./{} '{}' '{}' '{}' '{}' '{}' '{}'".format(
-                #'syncrator_dryrun.sh',  #for testing temporarely hard code
-                self.data['openshift_script'], 
-                self.data['target'], 
-                self.data['env'], 
-                self.data['action_name'], 
-                self.data['action'], 
-                self.data['is_tag'], 
-                self.data['options']
-            )
-        )
-        job_result = stream.read()
+                oc_create_syncrator_pod( self.job_params, dryrun=True) 
+            ))
 
-        self.logger.info('RunWorker openshift result = {}'.format(job_result))
+        result = oc_create_syncrator_pod( self.job_params )
+        
+        # problem, we have no valid db session here!
+        #api_job = ApiJob.query.filter_by(id=api_job_id).first()
+        #api_job.status = "started"
+        #db.session.commit()
 
         # TODO: some checks in result if something fails then we set ApiJob.status = failed
+        # we can do this conveniently using passed api_job_id here
+
+        self.logger.info( 'RunWorker for api_job_id={} succesfully started syncrator'.format(self.api_job_id), data=result)
+
+
+       

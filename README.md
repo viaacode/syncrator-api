@@ -270,33 +270,31 @@ this takes roughly 10 seconds and during that time where pod is starting etc we 
 
 
 
-Diff dryrun example and use jq utility to fetch the result and pretty print generated yml file:
+Delta dryrun example
 ```
 curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' \
   -d '{
     "target":"avo",
     "env":"qas",
-    "action_name": "diff",
-    "action": "diff",
+    "action_name": "delta",
+    "action": "delta",
     "is_tag": "latest",
     "options": "-n 1000 -c 1"
-    }' | jq -r .result
+    }'
+```
 
-Syncrator DRYRUN:
-=================
-oc login https://do-prd-okp-m0.do.viaa.be:8443
-oc project shared-components
-oc delete jobs syncrator-qas-avo-diff
-oc process -f job_template.yaml -p TARGET=avo -p ENV=qas -p ACTION_NAME=diff -p ACTION=diff -p IS_TAG=latest -p OPTIONS=-n 1000 -c 1 | oc create -f -
-
-parametrised template:
-======================
-apiVersion: template.openshift.io/v1
-kind: Template
-labels:
-  app: syncrator
-  env: qas
-  target: avo
+Dryrun result
+```
+ {
+  "ACTION": "delta",
+  "ACTION_NAME": "delta",
+  "ENV": "qas",
+  "IS_TAG": "latest",
+  "OPTIONS": "-n 1000 -c 1 --api_job_id dryrun",
+  "TARGET": "avo",
+  "job_id": "dryrun",
+  "result": "oc login https://do-prd-okp-m0.do.viaa.be:8443 -p \"admin\" -u \"admin\" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET=\"avo\" -p ENV=\"qas\" -p ACTION_NAME=\"delta\" -p ACTION=\"delta\" -p IS_TAG=\"latest\" -p OPTIONS=\"-n 1000 -c 1 --api_job_id dryrun\" | oc create -f -"
+}
 
 ```
 
@@ -307,8 +305,8 @@ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.vi
   -d '{
     "target":"avo",
     "env":"qas",
-    "action_name": "diff",
-    "action": "diff",
+    "action_name": "delta",
+    "action": "delta",
     "is_tag": "latest",
     "options": "-n 1000 -c 1"
     }'
@@ -317,9 +315,9 @@ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.vi
 output:
 ```
 {
-  "action": "diff",
-  "action_name": "diff",
-  "api_job_id": 8,
+  "action": "delta",
+  "action_name": "delta",
+  "api_job_id": 20,
   "env": "qas",
   "is_tag": "latest",
   "options": "-n 1000 -c 1",
@@ -332,12 +330,12 @@ output:
 
 Checking status of above job with id 8:
 ```
- curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/8
+ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/20
 {
   "created_at": "Tue, 19 May 2020 11:53:49 GMT",
   "env": "qas",
-  "id": 8,
-  "job_type": "diff",
+  "id": 20,
+  "job_type": "delta",
   "status": "starting",
   "sync_id": null,
   "target": "avo",
@@ -349,7 +347,29 @@ When pod is started, status will update and sync_id is filled in and then you se
 as result on the /jobs/8 call:
 
 ```
-... WORK IN PROGRES, syncrator still needs to set this sync_id
+curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/20
+{
+  "created_at": "Wed, 20 May 2020 16:27:27 GMT",
+  "env": "qas",
+  "id": 20,
+  "job_type": "delta",
+  "status": "starting",
+  "sync_id": 1989,
+  "sync_job": {
+    "completed": true,
+    "data_source": "mam harvester-AvO",
+    "end_time": "Wed, 20 May 2020 18:28:13 GMT",
+    "id": 1989,
+    "options": "[\"2020-05-19T00:00:00Z\", \"2020-05-21\"]",
+    "start_time": "Wed, 20 May 2020 18:28:10 GMT",
+    "target_datastore_url": "postgres://<FILTERED>@postgresql-qas.sc-avo2.svc:5432/avo_qas",
+    "total_records": 20,
+    "type": "delta",
+    "version": "2.4.0"
+  },
+  "target": "avo",
+  "updated_at": "Wed, 20 May 2020 16:27:27 GMT"
+}
 ```
 
 
@@ -372,4 +392,26 @@ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
 }
 ```
 
+
+```
+ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' \
+  -d '{
+    "target":"avo",
+    "env":"qas",
+    "action_name": "delete",
+    "action": "delete",
+    "is_tag": "latest",
+    "options": "--debug"
+    }'
+{
+  "ACTION": "delete",
+  "ACTION_NAME": "delete",
+  "ENV": "qas",
+  "IS_TAG": "latest",
+  "OPTIONS": "--debug --api_job_id 21",
+  "TARGET": "avo",
+  "job_id": 21,
+  "result": "starting"
+}
+```
 

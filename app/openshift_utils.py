@@ -59,7 +59,7 @@ def oc_create_job(
     return oc_run(job_command)
 
 
-def oc_create_syncrator_pod( job_params, dryrun=False):
+def oc_create_syncrator_pod(job_params, dryrun=False):
     # chaining commands to keep oc session available
     cmd = oc_login()
     cmd += " ; " + oc_delete_job(
@@ -73,6 +73,7 @@ def oc_create_syncrator_pod( job_params, dryrun=False):
     cmd += " ; " + oc_create_job(job_params)
     return oc_execute(cmd, dryrun=dryrun)
 
+
 def oc_delete_syncrator_pod(env, target, job_type):
     # chaining commands to keep oc session available
     cmd = oc_login()
@@ -84,7 +85,6 @@ def oc_delete_syncrator_pod(env, target, job_type):
         )
     )
     return oc_execute(cmd)
-
 
 
 def read_params_file(

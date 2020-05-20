@@ -84,7 +84,7 @@ def delete_job(job_id):
             api_job.job_type
         )
 
-        logger.info('Delete syncrator pod', data={'result': delete_result} )
+        logger.info('Delete syncrator pod', data={'result': delete_result})
         return jsonify(api_job.to_dict())
 
     except AttributeError:
@@ -175,7 +175,6 @@ def run(dryrun=False):
         db.session.commit()
         api_job_id = api_job.id
 
-        
     # piggy back the job id onto options that are templated as command parameter to syncrator
     # so that syncrator is able to set correct sync_id at startup
     job_params['OPTIONS'] = '{} --api_job_id {}'.format(
@@ -183,21 +182,19 @@ def run(dryrun=False):
         api_job_id
     )
 
-
     response = job_params.copy()
     if dryrun:
-        #run inline and give back dryrun result
-        result = oc_create_syncrator_pod( job_params, dryrun=True )
+        # run inline and give back dryrun result
+        result = oc_create_syncrator_pod(job_params, dryrun=True)
         response['result'] = result
     else:
-        syncrator_worker = RunWorker( api_job_id, job_params, logger)
+        syncrator_worker = RunWorker(api_job_id, job_params, logger)
         syncrator_worker.start()
         response['result'] = 'starting'
 
     response['job_id'] = api_job_id
 
     return jsonify(response)
-
 
 
 # TODO: deprecate start_job by loading the params file with python and

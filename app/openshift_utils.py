@@ -13,6 +13,7 @@ OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
 def oc_run(cmd):
     return cmd
 
+
 def oc_execute(cmd, path=None, dryrun=False):
     if path:
         cmd = f'cd {path} && {cmd}'
@@ -21,8 +22,9 @@ def oc_execute(cmd, path=None, dryrun=False):
         print(f"DRYRUN cmd: {cmd}")
         return cmd
     else:
-        output_stream = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE).stdout
-        return output_stream.read()
+        output_stream = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE).stdout
+        return output_stream.read().decode("utf-8")
 
 
 def oc_login():

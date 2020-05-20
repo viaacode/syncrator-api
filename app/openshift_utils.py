@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 OC_URL = os.environ.get('OC_URL', 'https://do-prd-okp-m0.do.viaa.be:8443')
 OC_PROJECT_NAME = os.environ.get('OC_PROJECT_NAME', 'shared-components')
@@ -12,9 +13,6 @@ OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
 def oc_run(cmd):
     return cmd
 
-# execute chain of commands
-
-
 def oc_execute(cmd, path=None, dryrun=False):
     if path:
         cmd = f'cd {path} && {cmd}'
@@ -23,7 +21,7 @@ def oc_execute(cmd, path=None, dryrun=False):
         print(f"DRYRUN cmd: {cmd}")
         return cmd
     else:
-        output_stream = os.popen(cmd)
+        output_stream = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE).stdout
         return output_stream.read()
 
 

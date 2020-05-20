@@ -29,10 +29,10 @@ def oc_execute(cmd, path=None, dryrun=False):
 
 def oc_login():
     res = oc_run(
-        f'oc login {OC_URL} -p "{OC_USER}" -u "{OC_PASSWORD}" --insecure-skip-tls-verify')
+        f'oc login {OC_URL} -p "{OC_USER}" -u "{OC_PASSWORD}" --insecure-skip-tls-verify > /dev/null')
 
     # for ease of use also switch to configured project
-    oc_project(OC_PROJECT_NAME)
+    res += " ; " + oc_project(OC_PROJECT_NAME)
     return res
 
 
@@ -58,7 +58,6 @@ def oc_create_job(
         job_command += f'-p {key}="{val}" '
 
     job_command += "| oc create -f -"
-    print("create job cmd: {}".format(job_command))
 
     return oc_run(job_command)
 

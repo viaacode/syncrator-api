@@ -85,14 +85,16 @@ def delete_job(job_id):
         # noticed a design flaw, the session can be lost in between commands by
         # chaining it should work again
         cmd = oc_login()
-        cmd += " && " + oc_delete_job(
+        cmd += " ; " + oc_delete_job(
             "syncrator-{}-{}-{}".format(
                 api_job.env,
                 api_job.target,
                 api_job.job_type
             )
         )
-        cmd += " && " + oc_logout()
+        # watch out use ; here instead of && in case delete does not find a
+        # previous pod job
+        cmd += " ; " + oc_logout()
 
         oc_execute(cmd)
 
@@ -183,9 +185,10 @@ def runp(dryrun=False):
         'OPTIONS': request_data['options']
     }
 
-    # TODO: check if there is a job started or running here before creating
-    # another
+    api_job_id = 'dryrun, no actual id available'
     if not dryrun:
+        # TODO: check if there is a job started or running here before creating
+        # another
         api_job = ApiJob(
             sync_id=None,
             target=job_params['TARGET'],
@@ -196,12 +199,13 @@ def runp(dryrun=False):
         )
         db.session.add(api_job)
         db.session.commit()
+        api_job_id = api_job.id
 
         # piggy back the job id onto options that are templated as command parameter to syncrator
         # so that syncrator is able to set correct sync_id at startup
         job_params['OPTIONS'] = '{} -api_job_id {}'.format(
             job_params['OPTIONS'],
-            api_job.id
+            api_job_id
         )
 
     # TODO: move this into a worker once tested and then deprecate
@@ -213,19 +217,21 @@ def runp(dryrun=False):
     # noticed a design flaw, the session can be lost in between commands by
     # chaining it should work again
     cmd = oc_login()
-    cmd += " && " + oc_delete_job(
+    cmd += " ; " + oc_delete_job(
         "syncrator-{}-{}-{}".format(
             job_params['ENV'],
             job_params['TARGET'],
             job_params['ACTION']
         )
     )
-    cmd += " && " + oc_create_job(job_params)
-    cmd += " && " + oc_logout()
+    # gotcha the delete might fail if not are found!
+    cmd += " ; " + oc_create_job(job_params)
+    cmd += " ; " + oc_logout()
 
     result = oc_execute(cmd, dryrun=dryrun)
 
     job_params['result'] = result
+    job_params['job_id'] = api_job_id
 
     logger.info('Syncrator run called with parameters', data=request_data)
 

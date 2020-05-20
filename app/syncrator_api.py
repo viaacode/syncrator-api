@@ -228,6 +228,8 @@ def runp(dryrun=False):
     cmd += " ; " + oc_create_job(job_params)
     cmd += " ; " + oc_logout()
 
+    logger.info("command to execute=", data={'oc_commands':cmd})
+
     result = oc_execute(cmd, dryrun=dryrun)
 
     job_params['result'] = result

@@ -79,14 +79,22 @@ def delete_job(job_id):
         db.session.commit()
 
         oc_login()
-        oc_delete_job(
+
+        oc_logout()
+
+        # noticed a design flaw, the session can be lost in between commands by
+        # chaining it should work again
+        cmd = oc_login()
+        cmd += " && " + oc_delete_job(
             "syncrator-{}-{}-{}".format(
                 api_job.env,
                 api_job.target,
                 api_job.job_type
             )
         )
-        oc_logout()
+        cmd += " && " + oc_logout()
+
+        oc_execute(cmd)
 
         return jsonify(api_job.to_dict())
 
@@ -201,16 +209,21 @@ def runp(dryrun=False):
     # handle execution in a worker thread
     # syncrator_worker = RunWorker(request_data, api_job.id, logger)
     # syncrator_worker.start()
-    oc_login()
-    oc_delete_job(
+
+    # noticed a design flaw, the session can be lost in between commands by
+    # chaining it should work again
+    cmd = oc_login()
+    cmd += " && " + oc_delete_job(
         "syncrator-{}-{}-{}".format(
             job_params['ENV'],
             job_params['TARGET'],
             job_params['ACTION']
         )
     )
-    result = oc_create_job(job_params, dryrun=dryrun)
-    oc_logout()
+    cmd += " && " + oc_create_job(job_params)
+    cmd += " && " + oc_logout()
+
+    result = oc_execute(cmd, dryrun=dryrun)
 
     job_params['result'] = result
 

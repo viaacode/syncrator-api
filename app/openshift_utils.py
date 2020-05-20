@@ -6,7 +6,16 @@ OC_USER = os.environ.get('OC_USER', 'configure_user')
 OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
 
 
-def run(cmd, path=None, dryrun=False):
+# we need to chain all commands to avoid
+# session issues, next refactor is putting this in class
+# and then we can chain them here to execute_cmd
+def oc_run(cmd):
+    return cmd
+
+# execute chain of commands
+
+
+def oc_execute(cmd, path=None, dryrun=False):
     if path:
         cmd = f'cd {path} && {cmd}'
 
@@ -19,30 +28,29 @@ def run(cmd, path=None, dryrun=False):
 
 
 def oc_login():
-    res = run(
-        f"oc login {OC_URL} -p '{OC_USER}' -u '{OC_PASSWORD}' --insecure-skip-tls-verify > /dev/null")
+    res = oc_run(
+        f'oc login {OC_URL} -p "{OC_USER}" -u "{OC_PASSWORD}" --insecure-skip-tls-verify')
 
     # for ease of use also switch to configured project
     oc_project(OC_PROJECT_NAME)
     return res
 
 
-def oc_project(project_name):
-    return run(f"oc project {project_name}")
-
-
 def oc_logout():
-    return run("oc logout")
+    return oc_run("oc logout")
+
+
+def oc_project(project_name):
+    return oc_run(f"oc project {project_name}")
 
 
 def oc_delete_job(pod_name):
-    return run(f"oc delete jobs {pod_name}")
+    return oc_run(f"oc delete jobs {pod_name}")
 
 
 def oc_create_job(
         template_params,
-        template='syncrator-openshift/job_template.yaml',
-        dryrun=False
+        template='syncrator-openshift/job_template.yaml'
 ):
     job_command = f"oc process -f {template} "
 
@@ -52,7 +60,7 @@ def oc_create_job(
     job_command += "| oc create -f -"
     print("create job cmd: {}".format(job_command))
 
-    return run(job_command, dryrun)
+    return oc_run(job_command)
 
 
 def read_params_file(

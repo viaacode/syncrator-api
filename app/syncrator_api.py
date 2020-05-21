@@ -7,7 +7,6 @@
 #
 
 from app.models import *
-from app.job_worker import JobWorker
 from app.run_worker import RunWorker
 from app.openshift_utils import *
 
@@ -72,7 +71,7 @@ def get_job(job_id):
 
 
 @app.route("/jobs/<int:job_id>", methods=['DELETE'])
-def delete_job(job_id):
+def destroy_job(job_id):
     try:
         api_job = ApiJob.query.filter_by(id=job_id).first()
         api_job.status = "deleted"
@@ -109,48 +108,58 @@ def list_sync_jobs():
 @app.route("/sync/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_sync_job(project, environment):
-    do_dryrun_only = request.method == 'GET'
-    return start_job(project, environment, 'sync', dryrun=do_dryrun_only)
+    return run(
+        read_params_file(environment, project, 'sync'),
+        dryrun=request.method == 'GET'
+    )
 
 
 @app.route("/delta/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_delta_job(project, environment):
-    do_dryrun_only = request.method == 'GET'
-    return start_job(project, environment, 'delta', dryrun=do_dryrun_only)
+    return run(
+        read_params_file(environment, project, 'delta'),
+        dryrun=request.method == 'GET'
+    )
 
 
 @app.route("/delete/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_delete_job(project, environment):
-    do_dryrun_only = request.method == 'GET'
-    return start_job(project, environment, 'delete', dryrun=do_dryrun_only)
+    return run(
+        read_params_file(environment, project, 'delete'),
+        dryrun=request.method == 'GET'
+    )
 
 
 @app.route("/diff/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_diff_job(project, environment):
-    do_dryrun_only = request.method == 'GET'
-    return start_job(project, environment, 'diff', dryrun=do_dryrun_only)
+    return run(
+        read_params_file(environment, project, 'diff'),
+        dryrun=request.method == 'GET'
+    )
 
 
 @app.route("/run", methods=['POST'])
 def syncrator_run():
     # POST /run run custom job by passing all template parameters in json
-    return run()
+    request_data = request.json
+    return run(job_params_from_request())
 
 
 @app.route("/dryrun", methods=['POST'])
 def syncrator_dryrun():
     # POST /dryrun same as run but don't execute only return resulting template
-    return run(dryrun=True)
+    return run(
+        job_params_from_request(),
+        dryrun=True
+    )
 
 
-def run(dryrun=False):
+def job_params_from_request():
     request_data = request.json
-    logger.info('Syncrator run called with parameters', data=request_data)
-
-    job_params = {
+    return {
         'TARGET': request_data['target'],
         'ENV': request_data['env'],
         'ACTION_NAME': request_data['action_name'],
@@ -159,6 +168,9 @@ def run(dryrun=False):
         'OPTIONS': request_data['options']
     }
 
+
+def run(job_params, dryrun=False):
+    logger.info('Syncrator run called with parameters', data=job_params)
     api_job_id = 'dryrun'
     if not dryrun:
         # TODO: check if there is a job started or running here before creating
@@ -193,74 +205,6 @@ def run(dryrun=False):
         response['result'] = 'starting'
 
     response['job_id'] = api_job_id
-
-    return jsonify(response)
-
-
-# TODO: deprecate start_job by loading the params file with python and
-# then calling generic run instead.
-
-# if openshift_script is syncrator_job.sh that runs an actual job using the
-# parameter files defined in syncrator-openshift/job_params
-# if openshift script is syncrator_job_dryrun.sh we do a dryrun and return the resulting
-# template as specified by the parameter files
-def start_job(project, environment, job_type, dryrun=False):
-    request_data = request.json
-    if not request_data:
-        request_data = {}
-
-    request_data['project'] = project
-    request_data['environment'] = environment
-    request_data['job_type'] = job_type
-    request_data['dryrun'] = dryrun
-
-    response = {
-        'api_job_id': None,
-        'job_type': job_type,
-        'project': project,
-        'environment': environment,
-    }
-
-    if dryrun:
-        openshift_script = 'syncrator_job_dryrun.sh'
-        stream = os.popen(
-            "cd syncrator-openshift && ./{} '{}' '{}' '{}'".format(
-                openshift_script, project, environment, job_type))
-        job_result = stream.read()
-
-        response['result'] = job_result
-    else:
-        openshift_script = 'syncrator_job.sh'
-        request_data['openshift_script'] = openshift_script
-
-        # TODO: check if there is a job started or running here before creating
-        # new one
-        api_job = ApiJob(
-            sync_id=None,
-            target=project,
-            env=environment,
-            job_type=job_type,
-            job_params={
-                'script': openshift_script,
-                'project': project,
-                'environment': environment,
-                'job_type': job_type,
-            },
-            status='starting'
-        )
-        db.session.add(api_job)
-        db.session.commit()
-        response['api_job_id'] = api_job.id
-        response['result'] = 'starting'
-
-        # handle execution in a worker thread, pass request_data to configure
-        # worker
-        syncrator_worker = JobWorker(request_data, api_job.id, logger)
-        syncrator_worker.start()
-
-    logger.info(
-        "Starting {} job={} for project={} and env={} dryrun={}".format(
-            openshift_script, job_type, project, environment, dryrun))
 
     return jsonify(response)
 

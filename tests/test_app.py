@@ -62,14 +62,10 @@ def test_dryrun_sync_job(client):
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
-    assert job['environment'] == 'qas'
-    assert job['job_type'] == 'sync'
-    assert job['project'] == 'avo'
-    assert 'DRYRUN' in job['result']
-    assert 'name: syncrator-qas-avo-sync' in job['result']
-    assert 'TARGET=avo' in job['result']
-    assert 'ACTION=sync' in job['result']
-    assert 'syncrator sync -n 1000 -c 1' in job['result']
+    assert job['ENV'] == 'qas'
+    assert job['ACTION'] == 'sync'
+    assert job['TARGET'] == 'avo'
+    assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id dryrun'
 
 
 def test_dryrun_delta_job(client):
@@ -77,14 +73,10 @@ def test_dryrun_delta_job(client):
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
-    assert job['environment'] == 'qas'
-    assert job['job_type'] == 'delta'
-    assert job['project'] == 'avo'
-    assert 'DRYRUN' in job['result']
-    assert 'name: syncrator-qas-avo-delta' in job['result']
-    assert 'TARGET=avo' in job['result']
-    assert 'ACTION=delta' in job['result']
-    assert 'syncrator delta -n 1000 -c 1' in job['result']
+    assert job['ENV'] == 'qas'
+    assert job['ACTION'] == 'delta'
+    assert job['TARGET'] == 'avo'
+    assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id dryrun'
 
 
 def test_dryrun_delete_job(client):
@@ -92,14 +84,10 @@ def test_dryrun_delete_job(client):
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
-    assert job['environment'] == 'qas'
-    assert job['job_type'] == 'delete'
-    assert job['project'] == 'avo'
-    assert 'DRYRUN' in job['result']
-    assert 'name: syncrator-qas-avo-delete' in job['result']
-    assert 'TARGET=avo' in job['result']
-    assert 'ACTION=delete' in job['result']
-    assert 'syncrator delete --debug' in job['result']
+    assert job['ENV'] == 'qas'
+    assert job['ACTION'] == 'delete'
+    assert job['TARGET'] == 'avo'
+    assert job['OPTIONS'] == '--debug --api_job_id dryrun'
 
 
 def test_dryrun_generic_run(client):
@@ -110,7 +98,7 @@ def test_dryrun_generic_run(client):
                                   'action_name': 'delta',
                                   'action': 'delta',
                                   'is_tag': 'latest',
-                                  'options': '-n 1000 -c 1',
+                                  'options': '-n 1000 -c 1'
                               })
     assert res_generic.status_code == status.HTTP_200_OK
     generic_data = res_generic.get_json()
@@ -119,11 +107,15 @@ def test_dryrun_generic_run(client):
     assert res_delta.status_code == status.HTTP_200_OK
     delta_data = res_delta.get_json()
 
-    # test that a generic run call with correct params gives same
-    # result as a preconfigred delta run (both dryruns)
-    assert generic_data['ENV'] == delta_data['environment']
-    assert generic_data['TARGET'] == delta_data['project']
-    assert generic_data['ACTION'] == delta_data['job_type']
+    # they are same but env and target ordering is different
+    # not much control over this json is non sortable
+    assert len(generic_data['result']) == len(delta_data['result'])
+
+    # we verify that all 6 actual params are same
+    del generic_data['result']
+    del delta_data['result']
+
+    assert generic_data == delta_data
 
 
 def test_password_filter_api_job_nested(client, setup):
@@ -217,15 +209,15 @@ def test_run_python_version(client):
     assert resp.status_code == status.HTTP_200_OK
     generic_data = resp.get_json()
 
-    res_delta = client.get('/delta/avo/qas')
+    res_delta = client.post('/delta/avo/qas')
     assert res_delta.status_code == status.HTTP_200_OK
     delta_data = res_delta.get_json()
 
     # test that a generic run call with correct params gives same
     # result as a preconfigred delta run (both dryruns)
-    assert generic_data['ENV'] == delta_data['environment']
-    assert generic_data['TARGET'] == delta_data['project']
-    assert generic_data['ACTION'] == delta_data['job_type']
+    assert generic_data['ENV'] == delta_data['ENV']
+    assert generic_data['TARGET'] == delta_data['TARGET']
+    assert generic_data['ACTION'] == delta_data['ACTION']
     assert generic_data['result'] == 'starting'
 
 

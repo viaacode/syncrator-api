@@ -215,11 +215,11 @@ def run(job_params, dryrun=False):
 
     response = job_params.copy()
     response['job_id'] = api_job_id
-    
+
     if existing_job:
         response['result'] = 'starting'
         return jsonify(response)
-    
+
     if dryrun:
         # run inline and give back dryrun result
         result = oc_create_syncrator_pod(job_params, dryrun=True)
@@ -229,12 +229,9 @@ def run(job_params, dryrun=False):
         syncrator_worker.start()
         response['result'] = 'starting'
 
-
     return jsonify(response)
 
 
 @app.errorhandler(404)
 def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404
-
-

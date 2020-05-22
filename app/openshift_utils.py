@@ -110,9 +110,7 @@ def read_params_file(
     for p in params:
         if len(p) > 0:
             key, value = p.split('=')
-            # template_params[key] = value # strip quotes in OPTIONS in
-            # configfiles first
-            template_params[key] = value.replace('"', '')
+            template_params[key] = value
     pf.close()
 
     return template_params

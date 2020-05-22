@@ -415,3 +415,34 @@ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
 }
 ```
 
+
+
+### Testing coverage.
+
+use the scripts/coverage helper to show testing coverage report. You can open htmlcov dir in browser and see detailed report.
+
+```
+(python_env) ➜  syncrator-api git:(development) ✗ scripts/coverage
+================================================================================ test session starts ================================================================================
+platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1
+rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
+plugins: cov-2.8.1
+collected 20 items
+
+tests/test_app.py ....................                                                                                                                                        [100%]
+
+---------- coverage: platform darwin, python 3.7.6-final-0 -----------
+Name                     Stmts   Miss  Cover
+--------------------------------------------
+app/__init__.py              0      0   100%
+app/config.py               22      0   100%
+app/models.py               62      4    94%
+app/openshift_utils.py      47      4    91%
+app/run_worker.py           15      0   100%
+app/syncrator_api.py       102      8    92%
+--------------------------------------------
+TOTAL                      248     16    94%
+
+
+================================================================================ 20 passed in 0.89s =================================================================================
+```

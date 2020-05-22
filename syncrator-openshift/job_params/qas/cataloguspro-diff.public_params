@@ -1,5 +1,5 @@
 ENV=qas
-TARGET=avo
+TARGET=cataloguspro
 ACTION_NAME=diff
 ACTION=diff
 IS_TAG=latest

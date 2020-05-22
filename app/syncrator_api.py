@@ -169,26 +169,45 @@ def job_params_from_request():
     }
 
 
+def create_or_find_job(job_params, dryrun=False):
+    if dryrun:
+        return 'dryrun'
+
+    # check for existing job
+    api_job = ApiJob.query.filter_by(
+        target=job_params['TARGET'],
+        env=job_params['ENV'],
+        job_type=job_params['ACTION']
+    ).order_by(
+        ApiJob.created_at.desc()
+    ).first()
+
+    # return existing running job
+    if api_job and (
+            api_job.status == 'starting' or api_job.status == 'running'):
+        return api_job.id
+
+    # create new one because status is : failed, completed, deleted
+    api_job = ApiJob(
+        sync_id=None,
+        target=job_params['TARGET'],
+        env=job_params['ENV'],
+        job_type=job_params['ACTION'],
+        job_params=job_params,
+        status='starting'
+    )
+    db.session.add(api_job)
+    db.session.commit()
+
+    return api_job.id
+
+
 def run(job_params, dryrun=False):
     logger.info('Syncrator run called with parameters', data=job_params)
-    api_job_id = 'dryrun'
-    if not dryrun:
-        # TODO: check if there is a job started or running here before creating
-        # another
-        api_job = ApiJob(
-            sync_id=None,
-            target=job_params['TARGET'],
-            env=job_params['ENV'],
-            job_type=job_params['ACTION'],
-            job_params=job_params,
-            status='starting'
-        )
-        db.session.add(api_job)
-        db.session.commit()
-        api_job_id = api_job.id
 
     # piggy back the job id onto options that are templated as command parameter to syncrator
     # so that syncrator is able to set correct sync_id at startup
+    api_job_id = create_or_find_job(job_params, dryrun=dryrun)
     job_params['OPTIONS'] = '{} --api_job_id {}'.format(
         job_params['OPTIONS'],
         api_job_id
@@ -214,5 +233,5 @@ def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+#if __name__ == "__main__":
+#    app.run(debug=True, port=8080)

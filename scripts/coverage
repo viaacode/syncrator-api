@@ -1,0 +1,7 @@
+source python_env/bin/activate
+pytest --cov-config=.coveragerc --cov . .
+
+# generate html report which is more detailed
+pytest --cov-config=.coveragerc --cov . .  --cov-report html
+echo "open htmlcov in browser"
+

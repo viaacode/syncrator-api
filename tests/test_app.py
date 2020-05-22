@@ -89,6 +89,16 @@ def test_dryrun_delete_job(client):
     assert job['TARGET'] == 'avo'
     assert job['OPTIONS'] == '--debug --api_job_id dryrun'
 
+def test_diff_job_dryrun(client):
+    res = client.get('/diff/avo/qas')
+    assert res.status_code == status.HTTP_200_OK
+
+    job = res.get_json()
+    assert job['ENV'] == 'qas'
+    assert job['ACTION'] == 'diff'
+    assert job['TARGET'] == 'avo'
+    assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id dryrun'
+
 
 def test_dryrun_generic_run(client):
     res_generic = client.post('/dryrun',
@@ -235,3 +245,35 @@ def test_dryrun(client, setup):
     dryrun = resp.get_json()
 
     assert dryrun['result'] == 'oc login https://do-prd-okp-m0.do.viaa.be:8443 -p "configure_user" -u "configure_pass" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 --api_job_id dryrun" | oc create -f -'
+
+
+def test_delete_unknown_job(client, setup):
+    resp = client.delete('/jobs/2000')
+    assert resp.status_code == 404
+
+
+def test_random_404(client, setup):
+    resp = client.delete('/somepage')
+    assert resp.status_code == 404
+
+    resp = client.get('/somepage')
+    assert resp.status_code == 404
+
+    resp = client.post('/somepage')
+    assert resp.status_code == 404
+
+    resp = client.put('/somepage')
+    assert resp.status_code == 404
+
+
+def test_diff_job(client):
+    res = client.post('/diff/avo/qas')
+    assert res.status_code == status.HTTP_200_OK
+
+    job = res.get_json()
+    assert job['ENV'] == 'qas'
+    assert job['ACTION'] == 'diff'
+    assert job['TARGET'] == 'avo'
+    assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id 5'
+
+

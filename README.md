@@ -89,6 +89,36 @@ tests/test_app.py::test_get_existing_job PASSED                   [100%]
 =========================== 9 passed in 0.79s ===========================
 ```
 
+
+use the scripts/coverage helper to show testing coverage report. You can open htmlcov dir in browser and see detailed report.
+
+```
+scripts/coverage
+================================================================================ test session starts ================================================================================
+platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1
+rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
+plugins: cov-2.8.1
+collected 20 items
+
+tests/test_app.py ....................                                                                                                                                        [100%]
+
+---------- coverage: platform darwin, python 3.7.6-final-0 -----------
+Name                     Stmts   Miss  Cover
+--------------------------------------------
+app/__init__.py              0      0   100%
+app/config.py               22      0   100%
+app/models.py               62      4    94%
+app/openshift_utils.py      47      4    91%
+app/run_worker.py           15      0   100%
+app/syncrator_api.py       102      8    92%
+--------------------------------------------
+TOTAL                      248     16    94%
+
+
+================================================================================ 20 passed in 0.89s =================================================================================
+```
+
+
 To run a server on port 8080:
 
 ``` 
@@ -141,29 +171,38 @@ using the /run and /dryrun post's but you will need to exactly specify the 6 par
 ### Paremetrised jobs
 When using the simplified calls ex /sync/avo/qas or /delta/avo/prd these do a lookup in the parameter files defined 
 in the directory 'syncrator-openshift/job_params'.
-Here is a list of all currently defined params: 
+Here is a list of all currently predefined params: 
 ```
 syncrator-openshift/job_params
 ├── prd
 │   ├── avo-delete.public_params
 │   ├── avo-delta.public_params
+│   ├── avo-diff.public_params
 │   ├── avo-sync.public_params
 │   ├── cataloguspro-delete.public_params
 │   ├── cataloguspro-delta.public_params
+│   ├── cataloguspro-diff.public_params
 │   ├── cataloguspro-sync.public_params
 │   ├── metadatacatalogus-delete.public_params
 │   ├── metadatacatalogus-delta.public_params
+│   ├── metadatacatalogus-diff.public_params
 │   └── metadatacatalogus-sync.public_params
 └── qas
     ├── avo-delete.public_params
     ├── avo-delta.public_params
+    ├── avo-diff.public_params
     ├── avo-sync.public_params
     ├── cataloguspro-delete.public_params
     ├── cataloguspro-delta.public_params
+    ├── cataloguspro-diff.public_params
     ├── cataloguspro-sync.public_params
     ├── metadatacatalogus-delete.public_params
     ├── metadatacatalogus-delta.public_params
+    ├── metadatacatalogus-diff.public_params
     └── metadatacatalogus-sync.public_params
+
+2 directories, 24 files
+
 ```
 
 
@@ -172,12 +211,12 @@ syncrator-openshift/job_params
 
 Example run a full sync on avo project in qas environment as dryrun we first want to see the template output. We use jq to show only the template result:
 ```
-curl http://127.0.0.1:8080/sync/avo/qas | jq .result -r
+curl http://127.0.0.1:8080/sync/avo/qas 
 ```
 
 To now have an actual syncrator pod startup just make same request but then with a post call:
 ```
-curl -X POST http://127.0.0.1:8080/sync/avo/qas | jq .result -r
+curl -X POST http://127.0.0.1:8080/sync/avo/qas
 ```
 
 
@@ -201,73 +240,6 @@ curl http://127.0.0.1:8080/delta/avo/qas
 ```
 
 To make the actual pod start and execute the openshift commands use the path 'run' instead of 'dryrun'
-
-
-```
-curl -X POST http://localhost:8080/run -H 'Content-Type:application/json' \
-  -d '{
-    "target":"avo", 
-    "env":"qas",
-    "action_name": "delta",
-    "action": "delta",
-    "is_tag": "latest",
-    "options": "-n 1000 -c 1"
-    }'
-```
-
-Result of this call gives back parameters and result of the openshift commands that are run to delete and create the syncrator pod:
-```
-{
-  "action": "delta",
-  "action_name": "delta",
-  "env": "qas",
-  "is_tag": "latest",
-  "openshift_script": "syncrator_run.sh",
-  "options": "-n 1000 -c 1",
-  "result": "oc login...\nNow using project \"shared-components\" on server \"https://do-prd-okp-m0.do.viaa.be:8443\".\njob.batch \"syncrator-qas-avo-delta\" deleted\njob.batch/syncrator-qas-avo-delta created\n",
-  "target": "avo"
-}
-```
-
-
-
-This is the same as the shortcut using defined templates with post call:
-
-```
-curl -X POST http://127.0.0.1:8080/delta/avo/qas
-```
-
-After executing any job the pod starts up and after some time (approx 13 seconds) you will see it in the jobs table.
-
-```
-curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs?page=1
-```
-
-Example output:
-```
-[
-  {
-    "completed": nill,
-    "data_source": "mam harvester-AvO",
-    "end_time": "Fri, 15 May 2020 15:37:04 GMT",
-    "id": 1948,
-    "options": "[\"2020-05-14T00:00:00Z\", \"2020-05-16\"]",
-    "start_time": "Fri, 15 May 2020 15:36:59 GMT",
-    "target_datastore_url": "postgres://dbmaster:o2_Bs8-Nu@postgresql-qas.sc-avo2.svc:5432/avo_qas",
-    "total_records": 41,
-    "type": "delta",
-    "version": "2.4.0"
-  },
-  ...
-```
-
-When the job is finished running completed will be true.
-
-I'm currently working on having current_records also update besides
-having total_records so you can have an indication of progress and
-we will be adding a seperate table to make the api more robust against concurrent requests. Currently when making a post call to run an actual job
-this takes roughly 10 seconds and during that time where pod is starting etc we need to be able to reject new requests for same job parameters.
-
 
 
 Delta dryrun example
@@ -393,56 +365,105 @@ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
 ```
 
 
+### Complete run with progress checking example:
+
+Start actual syncrator sync job with progress by calling it with a post request:
+
 ```
- curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' \
-  -d '{
-    "target":"avo",
-    "env":"qas",
-    "action_name": "delete",
-    "action": "delete",
-    "is_tag": "latest",
-    "options": "--debug"
-    }'
+curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo/qas
 {
-  "ACTION": "delete",
-  "ACTION_NAME": "delete",
+  "ACTION": "sync",
+  "ACTION_NAME": "sync",
   "ENV": "qas",
   "IS_TAG": "latest",
-  "OPTIONS": "--debug --api_job_id 21",
+  "OPTIONS": "-n 1000 -c 1 --api_job_id 34",
   "TARGET": "avo",
-  "job_id": 21,
+  "job_id": 34,
   "result": "starting"
 }
 ```
 
 
+We notice job_id is 34 and can fetch it status (also if we would post again while it's running we would just get back the same job_id because
+syncrator-api sees that a similar job is already running);
+Fetching status, by going to /jobs/<job_id>
+```
+curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
+{
+  "created_at": "Fri, 22 May 2020 14:30:35 GMT",
+  "env": "qas",
+  "id": 34,
+  "job_type": "sync",
+  "status": "starting",
+  "sync_id": null,
+  "target": "avo",
+  "updated_at": "Fri, 22 May 2020 14:30:35 GMT"
+}
+```
 
-### Testing coverage.
+This means the openshift commands are running and pod is starting up.
 
-use the scripts/coverage helper to show testing coverage report. You can open htmlcov dir in browser and see detailed report.
+Waiting a few more seconds we then get this (status running and sync_id is filled in meaning the syncrator pod is now started
+correctly and running the specified job). For delete, diff and delta jobs this goes really fast in under a minute most of the time, 
+however a sync job lasts 15 to 20 minutes before reaching complete status.
 
 ```
-(python_env) ➜  syncrator-api git:(development) ✗ scripts/coverage
-================================================================================ test session starts ================================================================================
-platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1
-rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
-plugins: cov-2.8.1
-collected 20 items
+curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
 
-tests/test_app.py ....................                                                                                                                                        [100%]
-
----------- coverage: platform darwin, python 3.7.6-final-0 -----------
-Name                     Stmts   Miss  Cover
---------------------------------------------
-app/__init__.py              0      0   100%
-app/config.py               22      0   100%
-app/models.py               62      4    94%
-app/openshift_utils.py      47      4    91%
-app/run_worker.py           15      0   100%
-app/syncrator_api.py       102      8    92%
---------------------------------------------
-TOTAL                      248     16    94%
-
-
-================================================================================ 20 passed in 0.89s =================================================================================
+{
+  "created_at": "Fri, 22 May 2020 18:11:44 GMT",
+  "env": "qas",
+  "id": 34,
+  "job_type": "sync",
+  "status": "running",
+  "sync_id": 2017,
+  "sync_job": {
+    "completed": null,
+    "data_source": "mam harvester-AvO",
+    "end_time": null,
+    "id": 2017,
+    "options": "[nil, nil]",
+    "start_time": "Fri, 22 May 2020 20:12:12 GMT",
+    "target_datastore_url": "postgres://<FILTERED>@postgresql-qas.sc-avo2.svc:5432/avo_qas",
+    "total_records": 0,
+    "type": "sync",
+    "version": "2.4.0"
+  },
+  "target": "avo",
+  "updated_at": "Fri, 22 May 2020 18:11:44 GMT"
+}
 ```
+
+Job status is now running and the sync_id is also finished, so we get back the progress of the actual sync_job also. 
+We wait a little longer, make another request:
+
+```
+curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
+
+{
+  "created_at": "Fri, 22 May 2020 18:11:44 GMT", 
+  "env": "qas", 
+  "id": 34, 
+  "job_type": "sync", 
+  "status": "completed", 
+  "sync_id": 2017, 
+  "sync_job": {
+    "completed": true, 
+    "data_source": "mam harvester-AvO", 
+    "end_time": "Fri, 22 May 2020 20:21:35 GMT", 
+    "id": 2017, 
+    "options": "[nil, nil]", 
+    "start_time": "Fri, 22 May 2020 20:12:12 GMT", 
+    "target_datastore_url": "postgres://<FILTERED>@postgresql-qas.sc-avo2.svc:5432/avo_qas", 
+    "total_records": 19945, 
+    "type": "sync", 
+    "version": "2.4.0"
+  }, 
+  "target": "avo", 
+  "updated_at": "Fri, 22 May 2020 18:11:44 GMT"
+}
+```
+We see job status is now completed here. all went well the syncrator pod finished. If we call the above POST request again we now see a new pod will be started again and
+the whole cycle repeats.
+If anything goes wrong status will be 'failed' this is set by syncrator itself when api_job_id is passed you may also do another post or delete the job in this case.
+

@@ -89,6 +89,7 @@ def test_dryrun_delete_job(client):
     assert job['TARGET'] == 'avo'
     assert job['OPTIONS'] == '--debug --api_job_id dryrun'
 
+
 def test_diff_job_dryrun(client):
     res = client.get('/diff/avo/qas')
     assert res.status_code == status.HTTP_200_OK
@@ -275,5 +276,3 @@ def test_diff_job(client):
     assert job['ACTION'] == 'diff'
     assert job['TARGET'] == 'avo'
     assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id 5'
-
-

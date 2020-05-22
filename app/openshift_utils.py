@@ -87,10 +87,11 @@ def oc_delete_syncrator_pod(env, target, job_type):
     )
 
     # chaining commands to keep oc session available
-    return oc_execute('{} ; {}'.format(
-        oc_login(),
-        delete_pod
-    )
+    return oc_execute(
+        '{} ; {}'.format(
+            oc_login(),
+            delete_pod
+        )
     )
 
 

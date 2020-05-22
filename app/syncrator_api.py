@@ -233,5 +233,5 @@ def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404
 
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    app.run(debug=True, port=8080)

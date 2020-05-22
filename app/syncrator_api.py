@@ -171,7 +171,7 @@ def job_params_from_request():
 
 def create_or_find_job(job_params, dryrun=False):
     if dryrun:
-        return 'dryrun'
+        return 'dryrun', False
 
     # check for existing job
     api_job = ApiJob.query.filter_by(
@@ -185,7 +185,7 @@ def create_or_find_job(job_params, dryrun=False):
     # return existing running job
     if api_job and (
             api_job.status == 'starting' or api_job.status == 'running'):
-        return api_job.id
+        return api_job.id, True
 
     # create new one because status is : failed, completed, deleted
     api_job = ApiJob(
@@ -199,7 +199,7 @@ def create_or_find_job(job_params, dryrun=False):
     db.session.add(api_job)
     db.session.commit()
 
-    return api_job.id
+    return api_job.id, False
 
 
 def run(job_params, dryrun=False):
@@ -207,13 +207,19 @@ def run(job_params, dryrun=False):
 
     # piggy back the job id onto options that are templated as command parameter to syncrator
     # so that syncrator is able to set correct sync_id at startup
-    api_job_id = create_or_find_job(job_params, dryrun=dryrun)
+    api_job_id, existing_job = create_or_find_job(job_params, dryrun=dryrun)
     job_params['OPTIONS'] = '{} --api_job_id {}'.format(
         job_params['OPTIONS'],
         api_job_id
     )
 
     response = job_params.copy()
+    response['job_id'] = api_job_id
+    
+    if existing_job:
+        response['result'] = 'starting'
+        return jsonify(response)
+    
     if dryrun:
         # run inline and give back dryrun result
         result = oc_create_syncrator_pod(job_params, dryrun=True)
@@ -223,7 +229,6 @@ def run(job_params, dryrun=False):
         syncrator_worker.start()
         response['result'] = 'starting'
 
-    response['job_id'] = api_job_id
 
     return jsonify(response)
 
@@ -233,5 +238,3 @@ def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404
 
 
-# if __name__ == "__main__":
-#    app.run(debug=True, port=8080)

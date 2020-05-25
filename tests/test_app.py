@@ -276,3 +276,19 @@ def test_diff_job(client):
     assert job['ACTION'] == 'diff'
     assert job['TARGET'] == 'avo'
     assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id 5'
+
+
+def test_missing_template(client):
+    resp = client.get('/sync/unknownproject/qas')
+    assert resp.status_code == 400
+
+    resp = client.get('/delete/unknownproject/qas')
+    assert resp.status_code == 400
+
+    resp = client.get('/delta/unknownproject/qas')
+    assert resp.status_code == 400
+
+    resp = client.get('/diff/unknownproject/prd')
+    assert resp.status_code == 400
+
+

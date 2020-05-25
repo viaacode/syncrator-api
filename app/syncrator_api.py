@@ -108,37 +108,53 @@ def list_sync_jobs():
 @app.route("/sync/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_sync_job(project, environment):
-    return run(
-        read_params_file(environment, project, 'sync'),
-        dryrun=request.method == 'GET'
-    )
+    try:
+        return run(
+            read_params_file(environment, project, 'sync'),
+            dryrun=request.method == 'GET'
+        )
+    except FileNotFoundError as fe:
+        return 'Configuration file for project {} with environment {} not found at {}'.format(
+            project, environment, fe), 400
 
 
 @app.route("/delta/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_delta_job(project, environment):
-    return run(
-        read_params_file(environment, project, 'delta'),
-        dryrun=request.method == 'GET'
-    )
+    try:
+        return run(
+            read_params_file(environment, project, 'delta'),
+            dryrun=request.method == 'GET'
+        )
+    except FileNotFoundError as fe:
+        return 'Configuration file for project {} with environment {} not found at {}'.format(
+            project, environment, fe), 400
 
 
 @app.route("/delete/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_delete_job(project, environment):
-    return run(
-        read_params_file(environment, project, 'delete'),
-        dryrun=request.method == 'GET'
-    )
+    try:
+        return run(
+            read_params_file(environment, project, 'delete'),
+            dryrun=request.method == 'GET'
+        )
+    except FileNotFoundError as fe:
+        return 'Configuration file for project {} with environment {} not found at {}'.format(
+            project, environment, fe), 400
 
 
 @app.route("/diff/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
 def start_diff_job(project, environment):
-    return run(
-        read_params_file(environment, project, 'diff'),
-        dryrun=request.method == 'GET'
-    )
+    try:
+        return run(
+            read_params_file(environment, project, 'diff'),
+            dryrun=request.method == 'GET'
+        )
+    except FileNotFoundError as fe:
+        return 'Configuration file for project {} with environment {} not found at {}'.format(
+            project, environment, fe), 400
 
 
 @app.route("/run", methods=['POST'])

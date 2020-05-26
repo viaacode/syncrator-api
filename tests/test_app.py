@@ -312,7 +312,7 @@ def test_solr_preperation(client):
     job_params = res.get_json()
     assert '--switch-solr-alias' not in job_params['result']
 
-def test_sync_to_standby(client):
+def test_sync_to_standby_calls(client):
     sync_to_standby('cataloguspro', 'qas')
     assert True
 

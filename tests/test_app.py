@@ -10,7 +10,7 @@ from flask_api import status
 from app.syncrator_api import *
 from app.models import *
 from app.openshift_utils import *
-from app.solr_utils import sync_to_standby
+from app.solr_utils import sync_to_standby, list_aliases
 
 from .fixtures import *
 import tempfile
@@ -292,6 +292,7 @@ def test_missing_template(client):
     resp = client.get('/diff/unknownproject/prd')
     assert resp.status_code == 400
 
+
 def test_solr_preperation(client):
     res = client.get('/sync/metadatacatalogus/qas')
     assert res.status_code == 200
@@ -312,8 +313,10 @@ def test_solr_preperation(client):
     job_params = res.get_json()
     assert '--switch-solr-alias' not in job_params['result']
 
+
 def test_sync_to_standby_calls(client):
-    sync_to_standby('cataloguspro', 'qas')
+    res = list_aliases('http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
+    assert res == {'metadatacatalogus-standby': 'metadatacatalogus-2', 'cataloguspro-standby': 'cataloguspro-1', 'metadatacatalogus': 'metadatacatalogus-1', 'cataloguspro': 'cataloguspro-2', 'metadatacatalogus-sync': 'metadatacatalogus-1', 'cataloguspro-sync': 'cataloguspro-2'}
+
+    #sync_to_standby('cataloguspro', 'qas')
     assert True
-
-

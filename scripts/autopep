@@ -5,6 +5,7 @@ autopep8 --in-place --aggressive --aggressive app/syncrator_api.py
 autopep8 --in-place --aggressive --aggressive app/config.py
 autopep8 --in-place --aggressive --aggressive app/models.py
 autopep8 --in-place --aggressive --aggressive app/openshift_utils.py
+autopep8 --in-place --aggressive --aggressive app/solr_utils.py
 autopep8 --in-place --aggressive --aggressive tests/__init__.py
 autopep8 --in-place --aggressive --aggressive tests/fixtures.py
 autopep8 --in-place --aggressive --aggressive tests/test_app.py

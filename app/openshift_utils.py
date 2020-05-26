@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#
+#  @Author: Walter Schreppers
+#
+#  file: app/openshift_utils.py
+#  description: methods to create and manage openshift pods
+
 import os
 import subprocess
 

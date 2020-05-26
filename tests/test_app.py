@@ -290,5 +290,3 @@ def test_missing_template(client):
 
     resp = client.get('/diff/unknownproject/prd')
     assert resp.status_code == 400
-
-

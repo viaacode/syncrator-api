@@ -2,8 +2,9 @@
 #
 #  @Author: Walter Schreppers
 #
-#  app/config.py
-#
+#  file: app/config.py
+#  description: database connection and flags per environment
+
 import os
 
 

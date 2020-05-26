@@ -3,7 +3,8 @@
 #
 #  @Author: Walter Schreppers
 #
-#  app/syncrator_api.py
+#  file: app/syncrator_api.py
+#  description: routes for the api calls and main flask application initialization
 #
 
 from app.models import *

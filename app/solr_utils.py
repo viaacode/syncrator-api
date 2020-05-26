@@ -8,6 +8,10 @@
 #
 import os
 import subprocess
+
+# extra cli command to append for solr sync jobs
+SYNCRATOR_SOLR_CLI = '--switch-solr-alias'
+
 #from app.openshift_utils import *
 #OC_URL = os.environ.get('OC_URL', 'https://do-prd-okp-m0.do.viaa.be:8443')
 #OC_PROJECT_NAME = os.environ.get('OC_PROJECT_NAME', 'shared-components')
@@ -15,8 +19,38 @@ import subprocess
 #OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
 
 
-def prepare_solr_standby(app, environment):
-    print("todo convert below ruby script")
+def job_requires_solr(app):
+    if app == 'cataloguspro':
+        return True
+
+    if app == 'metadatacatalogus':
+        return True
+
+    # avo and future projects won't use solr but ES + indexer
+    # which already handles alias switching
+    return False
+
+
+def sync_to_standby(app, environment):
+    print("todo convert below ruby script for app={}, env={}".format(
+        app, environment
+    ))
+
+
+def prepare_solr_standby(job_params, dryrun=False):
+    app = job_params.get('TARGET')
+    environment = job_params.get('ENV')
+
+    if job_requires_solr(app):
+        job_params['OPTIONS'] = '{} {}'.format( 
+            job_params.get('OPTIONS'),
+            SYNCRATOR_SOLR_CLI 
+        )
+        if not dryrun:
+            sync_to_standby(app, environment)
+
+    return job_params
+
 
 # ruby resync solr script to be converted to python
 # so we can easily call it in run_worker.py

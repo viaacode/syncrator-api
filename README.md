@@ -20,73 +20,69 @@
 
 ### Running locally
 
-1. Start by creating a virtual environment:
-
-    `$ python -m venv ./venv`
+1. Start by installing pip packages and setting up environment:
+    `scripts/install`
 
 2. Activate the virtual environment:
 
-    `$ source ./venv/bin/activate`
-
-3. Install the external modules:
-
-    ```shell
-    $ pip install -r requirements.txt \
-        --extra-index-url http://do-prd-mvn-01.do.viaa.be:8081/repository/pypi-all/simple \
-        --trusted-host do-prd-mvn-01.do.viaa.be && \
-      pip install -r requirements-test.txt
-    ```
+    `source python_env/bin/activate`
 
 4. Run the tests with:
 
-    `$ python -m pytest -v`
+    `scripts/test`
 
 5. Run the application:
 
-   `$ uwsgi -i uwsgi.ini`
+   `scrits/run`
 
 The application is now serving requests on `localhost:8080`. Try it with:
 
-    `$ curl -v -X GET http://127.0.0.1:8080/`
+    `curl -v -X GET http://127.0.0.1:8080/`
 
 
 ### Running using Docker
 
-1. Build the container:
+1. Build the container and run it:
 
-   `$ docker build . -t syncrator-api`
-
-2. Run the container:
-
-   `$ docker run -p 8080:8080 syncrator-api`
-
-You can try the same cURL commands as specified above.
+   `scripts/build`
 
 ### Helper scripts
-To quickly install everything in a virtual env just run
-``` scripts/install ```
-
 To run the tests locally:
+  `scripts/test`
+
 ``` 
-scripts/test
 ========================== test session starts ==========================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- /Users/wschrep/FreelanceWork/VIAA/syncrator-api/python_env/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
 plugins: cov-2.8.1
-collected 9 items
+collected 23 items
 
-tests/test_app.py::test_home PASSED                               [ 11%]
-tests/test_app.py::test_liveness_check PASSED                     [ 22%]
-tests/test_app.py::test_dryrun_sync_job PASSED                    [ 33%]
-tests/test_app.py::test_dryrun_delta_job PASSED                   [ 44%]
-tests/test_app.py::test_dryrun_delete_job PASSED                  [ 55%]
-tests/test_app.py::test_dryrun_generic_run PASSED                 [ 66%]
-tests/test_app.py::test_list_jobs PASSED                          [ 77%]
-tests/test_app.py::test_get_unknown_job PASSED                    [ 88%]
-tests/test_app.py::test_get_existing_job PASSED                   [100%]
+tests/test_app.py::test_home PASSED                               [  4%]
+tests/test_app.py::test_liveness_check PASSED                     [  8%]
+tests/test_app.py::test_dryrun_sync_job PASSED                    [ 13%]
+tests/test_app.py::test_dryrun_delta_job PASSED                   [ 17%]
+tests/test_app.py::test_dryrun_delete_job PASSED                  [ 21%]
+tests/test_app.py::test_diff_job_dryrun PASSED                    [ 26%]
+tests/test_app.py::test_dryrun_generic_run PASSED                 [ 30%]
+tests/test_app.py::test_password_filter_api_job_nested PASSED     [ 34%]
+tests/test_app.py::test_list_api_jobs PASSED                      [ 39%]
+tests/test_app.py::test_list_sync_jobs_and_pass_filter PASSED     [ 43%]
+tests/test_app.py::test_get_unknown_job PASSED                    [ 47%]
+tests/test_app.py::test_get_existing_starting_job PASSED          [ 52%]
+tests/test_app.py::test_get_existing_completed_job PASSED         [ 56%]
+tests/test_app.py::test_delete_job PASSED                         [ 60%]
+tests/test_app.py::test_param_parsing PASSED                      [ 65%]
+tests/test_app.py::test_run_python_version PASSED                 [ 69%]
+tests/test_app.py::test_dryrun PASSED                             [ 73%]
+tests/test_app.py::test_delete_unknown_job PASSED                 [ 78%]
+tests/test_app.py::test_random_404 PASSED                         [ 82%]
+tests/test_app.py::test_diff_job PASSED                           [ 86%]
+tests/test_app.py::test_missing_template PASSED                   [ 91%]
+tests/test_app.py::test_solr_preperation PASSED                   [ 95%]
+tests/test_app.py::test_sync_to_standby PASSED                    [100%]
 
-=========================== 9 passed in 0.79s ===========================
+========================== 23 passed in 0.86s ===========================
 ```
 
 
@@ -117,6 +113,9 @@ TOTAL                      248     16    94%
 
 ================================================================================ 20 passed in 0.89s =================================================================================
 ```
+
+Then open htmlcov/index.html to see detailed code coverage from tests
+
 
 
 To run a server on port 8080:

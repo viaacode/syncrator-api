@@ -7,6 +7,7 @@
 
 import os
 import subprocess
+from app.solr_utils import prepare_solr_standby
 
 OC_URL = os.environ.get('OC_URL', 'https://do-prd-okp-m0.do.viaa.be:8443')
 OC_PROJECT_NAME = os.environ.get('OC_PROJECT_NAME', 'shared-components')
@@ -65,6 +66,9 @@ def oc_create_job(
 
 
 def oc_create_syncrator_pod(job_params, dryrun=False):
+    # extra preperation needed for cataloguspro and metadatacatalogs
+    job_params = prepare_solr_standby(job_params, dryrun=dryrun)
+
     delete_previous_job = oc_delete_job(
         "syncrator-{}-{}-{}".format(
             job_params['ENV'],

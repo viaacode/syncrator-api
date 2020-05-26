@@ -10,6 +10,7 @@ from flask_api import status
 from app.syncrator_api import *
 from app.models import *
 from app.openshift_utils import *
+from app.solr_utils import sync_to_standby
 
 from .fixtures import *
 import tempfile
@@ -290,3 +291,29 @@ def test_missing_template(client):
 
     resp = client.get('/diff/unknownproject/prd')
     assert resp.status_code == 400
+
+def test_solr_preperation(client):
+    res = client.get('/sync/metadatacatalogus/qas')
+    assert res.status_code == 200
+
+    job_params = res.get_json()
+    assert '--switch-solr-alias' in job_params['result']
+
+    res = client.get('/sync/cataloguspro/qas')
+    assert res.status_code == 200
+
+    job_params = res.get_json()
+    assert '--switch-solr-alias' in job_params['result']
+
+    # test for avo we don't need the solr commands
+    res = client.get('/sync/avo/qas')
+    assert res.status_code == 200
+
+    job_params = res.get_json()
+    assert '--switch-solr-alias' not in job_params['result']
+
+def test_sync_to_standby(client):
+    sync_to_standby('cataloguspro', 'qas')
+    assert True
+
+

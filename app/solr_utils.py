@@ -31,7 +31,7 @@ def job_requires_solr(app):
 
 def modify_alias(base_solr_url, name, collections):
     modify_alias = 'admin/collections?action=CREATEALIAS&name={}&collections={}'.format(
-        name, ",".join(collections) )
+        name, ",".join(collections))
 
     modify_alias_url = '{}{}&wt=json'.format(
         base_solr_url,

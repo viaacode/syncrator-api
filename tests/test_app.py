@@ -315,8 +315,15 @@ def test_solr_preperation(client):
 
 
 def test_sync_to_standby_calls(client):
-    res = list_aliases('http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
-    assert res == {'metadatacatalogus-standby': 'metadatacatalogus-2', 'cataloguspro-standby': 'cataloguspro-1', 'metadatacatalogus': 'metadatacatalogus-1', 'cataloguspro': 'cataloguspro-2', 'metadatacatalogus-sync': 'metadatacatalogus-1', 'cataloguspro-sync': 'cataloguspro-2'}
+    res = list_aliases(
+        'http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
+    assert res == {
+        'metadatacatalogus-standby': 'metadatacatalogus-2',
+        'cataloguspro-standby': 'cataloguspro-1',
+        'metadatacatalogus': 'metadatacatalogus-1',
+        'cataloguspro': 'cataloguspro-2',
+        'metadatacatalogus-sync': 'metadatacatalogus-1',
+        'cataloguspro-sync': 'cataloguspro-2'}
 
     #sync_to_standby('cataloguspro', 'qas')
     assert True

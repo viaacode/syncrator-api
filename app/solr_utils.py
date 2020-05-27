@@ -38,6 +38,9 @@ def modify_alias(base_solr_url, name, collections):
         modify_alias
     )
 
+    result = requests.get(modify_alias_url)
+    return result.json()
+
 
 def verify_same_collections(base_solr_url, alias1, alias2):
     return (
@@ -57,7 +60,7 @@ def list_aliases(base_solr_url):
 
 
 def list_collections_of_alias(base_solr_url, name):
-    print("list collections of alias {}".format(name))
+    print("list collections of base_url={} name={}".format(base_solr_url,name))
     collections = list_aliases(base_solr_url)[name].split(",")
     print("collections={}", collections)
 
@@ -65,8 +68,6 @@ def list_collections_of_alias(base_solr_url, name):
 
 
 def delete_standby(base_solr_url, standby_alias):
-    __import__('pdb').set_trace()
-
     solr_url = "{}{}/update".format(
         base_solr_url,
         standby_alias
@@ -102,15 +103,17 @@ def sync_to_standby(app, environment):
         raise ValueError('Solr standby alias is same as primary alias')
 
     delete_standby(base_solr_url, standby_alias)
-    modify_alias(
+    result = modify_alias(
         base_solr_url,
         sync_alias,
-        list_collections_of_alias(standby_alias)
+        list_collections_of_alias(base_solr_url, standby_alias)
     )
 
     # disable until other methods are implemented and stubbed in tests
     if not verify_same_collections(base_solr_url, sync_alias, standby_alias):
-        raise ValueError('-sync tag is still on primary, not on backup')
+        raise ValueError(f'-sync tag is still on primary, not on backup sync_alias={sync_alias} standby_alias={standby_alias}')
+
+    return result
 
 
 def prepare_solr_standby(job_params, dryrun=False):

@@ -1,23 +1,20 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  @Author: Walter Schreppers
 #
 #  tests/test_app.py
 #
+import warnings
+import tempfile
+import pytest
 
 from flask_api import status
 from app.syncrator_api import *
 from app.models import *
 from app.openshift_utils import *
-from app.solr_utils import sync_to_standby, list_aliases
 
 from .fixtures import *
-import tempfile
-import pytest
-import warnings
 from sqlalchemy import exc as sa_exc
-
 
 @pytest.fixture(scope="module")
 def setup():
@@ -37,12 +34,6 @@ def setup():
 def teardown():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
-
-
-@pytest.fixture
-def client():
-    with app.test_client() as client:
-        yield client
 
 
 def test_home(client):
@@ -293,37 +284,3 @@ def test_missing_template(client):
     assert resp.status_code == 400
 
 
-def test_solr_preperation(client):
-    res = client.get('/sync/metadatacatalogus/qas')
-    assert res.status_code == 200
-
-    job_params = res.get_json()
-    assert '--switch-solr-alias' in job_params['result']
-
-    res = client.get('/sync/cataloguspro/qas')
-    assert res.status_code == 200
-
-    job_params = res.get_json()
-    assert '--switch-solr-alias' in job_params['result']
-
-    # test for avo we don't need the solr commands
-    res = client.get('/sync/avo/qas')
-    assert res.status_code == 200
-
-    job_params = res.get_json()
-    assert '--switch-solr-alias' not in job_params['result']
-
-
-def test_sync_to_standby_calls(client):
-    res = list_aliases(
-        'http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
-    assert res == {
-        'metadatacatalogus-standby': 'metadatacatalogus-2',
-        'cataloguspro-standby': 'cataloguspro-1',
-        'metadatacatalogus': 'metadatacatalogus-1',
-        'cataloguspro': 'cataloguspro-2',
-        'metadatacatalogus-sync': 'metadatacatalogus-1',
-        'cataloguspro-sync': 'cataloguspro-2'}
-
-    #sync_to_standby('cataloguspro', 'qas')
-    assert True

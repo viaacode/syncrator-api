@@ -1,0 +1,266 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=LISTALIASES&wt=json
+  response:
+    body:
+      string: '{"responseHeader":{"status":0,"QTime":0},"aliases":{"metadatacatalogus-standby":"metadatacatalogus-2","cataloguspro-standby":"cataloguspro-1","metadatacatalogus":"metadatacatalogus-1","cataloguspro":"cataloguspro-2","metadatacatalogus-sync":"metadatacatalogus-1","cataloguspro-sync":"cataloguspro-1"}}
+
+        '
+    headers:
+      Cache-control:
+      - private
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=LISTALIASES&wt=json
+  response:
+    body:
+      string: '{"responseHeader":{"status":0,"QTime":0},"aliases":{"metadatacatalogus-standby":"metadatacatalogus-2","cataloguspro-standby":"cataloguspro-1","metadatacatalogus":"metadatacatalogus-1","cataloguspro":"cataloguspro-2","metadatacatalogus-sync":"metadatacatalogus-1","cataloguspro-sync":"cataloguspro-1"}}
+
+        '
+    headers:
+      Cache-control:
+      - private
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: <delete><query>*:*</query></delete>
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '35'
+      Content-type:
+      - text/xml; charset=utf-8
+      User-Agent:
+      - python-requests/2.23.0
+    method: POST
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/cataloguspro-standby/update
+  response:
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
+
+        <response>
+
+        <lst name="responseHeader"><int name="status">0</int><int name="QTime">79</int></lst>
+
+        </response>
+
+        '
+    headers:
+      Content-Length:
+      - '148'
+      Content-Type:
+      - application/xml; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: <commit/>
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '9'
+      Content-type:
+      - text/xml; charset=utf-8
+      User-Agent:
+      - python-requests/2.23.0
+    method: POST
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/cataloguspro-standby/update
+  response:
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
+
+        <response>
+
+        <lst name="responseHeader"><int name="status">0</int><int name="QTime">52</int></lst>
+
+        </response>
+
+        '
+    headers:
+      Content-Length:
+      - '148'
+      Content-Type:
+      - application/xml; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=LISTALIASES&wt=json
+  response:
+    body:
+      string: '{"responseHeader":{"status":0,"QTime":0},"aliases":{"metadatacatalogus-standby":"metadatacatalogus-2","cataloguspro-standby":"cataloguspro-1","metadatacatalogus":"metadatacatalogus-1","cataloguspro":"cataloguspro-2","metadatacatalogus-sync":"metadatacatalogus-1","cataloguspro-sync":"cataloguspro-1"}}
+
+        '
+    headers:
+      Cache-control:
+      - private
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=CREATEALIAS&name=cataloguspro-sync&collections=cataloguspro-1&wt=json
+  response:
+    body:
+      string: '{"responseHeader":{"status":0,"QTime":245}}
+
+        '
+    headers:
+      Cache-control:
+      - private
+      Content-Length:
+      - '44'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=LISTALIASES&wt=json
+  response:
+    body:
+      string: '{"responseHeader":{"status":0,"QTime":0},"aliases":{"metadatacatalogus-standby":"metadatacatalogus-2","cataloguspro-standby":"cataloguspro-1","metadatacatalogus":"metadatacatalogus-1","cataloguspro":"cataloguspro-2","metadatacatalogus-sync":"metadatacatalogus-1","cataloguspro-sync":"cataloguspro-1"}}
+
+        '
+    headers:
+      Cache-control:
+      - private
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.23.0
+    method: GET
+    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=LISTALIASES&wt=json
+  response:
+    body:
+      string: '{"responseHeader":{"status":0,"QTime":0},"aliases":{"metadatacatalogus-standby":"metadatacatalogus-2","cataloguspro-standby":"cataloguspro-1","metadatacatalogus":"metadatacatalogus-1","cataloguspro":"cataloguspro-2","metadatacatalogus-sync":"metadatacatalogus-1","cataloguspro-sync":"cataloguspro-1"}}
+
+        '
+    headers:
+      Cache-control:
+      - private
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Set-Cookie:
+      - e4946d58fcfb74a60f9be65cefa153cc=e0eda9c4f7310b8b126e9bdb932b9dea; path=/;
+        HttpOnly
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -16,6 +16,7 @@ from app.openshift_utils import *
 from .fixtures import *
 from sqlalchemy import exc as sa_exc
 
+
 @pytest.fixture(scope="module")
 def setup():
     db_fd, app.config['DATABASE'] = tempfile.mkstemp()
@@ -93,34 +94,6 @@ def test_diff_job_dryrun(client):
     assert job['OPTIONS'] == '-n 1000 -c 1 --api_job_id dryrun'
 
 
-def test_dryrun_generic_run(client):
-    res_generic = client.post('/dryrun',
-                              json={
-                                  'target': 'avo',
-                                  'env': 'qas',
-                                  'action_name': 'delta',
-                                  'action': 'delta',
-                                  'is_tag': 'latest',
-                                  'options': '-n 1000 -c 1'
-                              })
-    assert res_generic.status_code == status.HTTP_200_OK
-    generic_data = res_generic.get_json()
-
-    res_delta = client.get('/delta/avo/qas')
-    assert res_delta.status_code == status.HTTP_200_OK
-    delta_data = res_delta.get_json()
-
-    # they are same but env and target ordering is different
-    # not much control over this json is non sortable
-    assert len(generic_data['result']) == len(delta_data['result'])
-
-    # we verify that all 6 actual params are same
-    del generic_data['result']
-    del delta_data['result']
-
-    assert generic_data == delta_data
-
-
 def test_password_filter_api_job_nested(client, setup):
     res = client.get('/jobs/2')
     sjob = res.get_json()
@@ -178,6 +151,11 @@ def test_delete_job(client, setup):
     assert job_after['status'] == 'deleted'
 
 
+def test_delete_unknown_job(client, setup):
+    resp = client.delete('/jobs/2000')
+    assert resp.status_code == 404
+
+
 def test_param_parsing():
     template_params = read_params_file(
         'qas', 'avo', 'delta',
@@ -196,10 +174,44 @@ def test_param_parsing():
     # test these params in oc_create command
 
     result = oc_create_job(template_params)
-    assert result == 'oc process -f syncrator-openshift/job_template.yaml -p ENV="qas" -p TARGET="avo" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1" | oc create -f -'
+    assert result == ' '.join((
+        'oc process -f syncrator-openshift/job_template.yaml',
+        '-p ENV="qas" -p TARGET="avo"',
+        '-p ACTION_NAME="delta" -p ACTION="delta"',
+        '-p IS_TAG="latest"',
+        '-p OPTIONS="-n 1000 -c 1" | oc create -f -'
+    ))
 
 
-def test_run_python_version(client):
+def test_dryrun_matches_templated_get(client):
+    res_generic = client.post('/dryrun',
+                              json={
+                                  'target': 'avo',
+                                  'env': 'qas',
+                                  'action_name': 'delta',
+                                  'action': 'delta',
+                                  'is_tag': 'latest',
+                                  'options': '-n 1000 -c 1'
+                              })
+    assert res_generic.status_code == status.HTTP_200_OK
+    generic_data = res_generic.get_json()
+
+    res_delta = client.get('/delta/avo/qas')
+    assert res_delta.status_code == status.HTTP_200_OK
+    delta_data = res_delta.get_json()
+
+    # they are same but env and target ordering is different
+    # not much control over this json is non sortable
+    assert len(generic_data['result']) == len(delta_data['result'])
+
+    # we verify that all 6 actual params are same
+    del generic_data['result']
+    del delta_data['result']
+
+    assert generic_data == delta_data
+
+
+def test_general_job_run(client):
     resp = client.post('/run',
                        json={
                            'target': 'avo',
@@ -224,7 +236,7 @@ def test_run_python_version(client):
     assert generic_data['result'] == 'starting'
 
 
-def test_dryrun(client, setup):
+def test_dryrun_openshift_commands(client, setup):
     resp = client.post('/dryrun',
                        json={
                            'target': 'avo',
@@ -237,12 +249,20 @@ def test_dryrun(client, setup):
 
     dryrun = resp.get_json()
 
-    assert dryrun['result'] == 'oc login https://do-prd-okp-m0.do.viaa.be:8443 -p "configure_user" -u "configure_pass" --insecure-skip-tls-verify > /dev/null ; oc project shared-components ; oc delete jobs syncrator-qas-avo-delta ; oc process -f syncrator-openshift/job_template.yaml -p TARGET="avo" -p ENV="qas" -p ACTION_NAME="delta" -p ACTION="delta" -p IS_TAG="latest" -p OPTIONS="-n 1000 -c 1 --api_job_id dryrun" | oc create -f -'
-
-
-def test_delete_unknown_job(client, setup):
-    resp = client.delete('/jobs/2000')
-    assert resp.status_code == 404
+    assert dryrun['result'] == ' '.join((
+        'oc login https://do-prd-okp-m0.do.viaa.be:8443',
+        '-p "configure_user" -u "configure_pass"',
+        '--insecure-skip-tls-verify > /dev/null ;',
+        'oc project shared-components ;',
+        'oc delete jobs syncrator-qas-avo-delta ;',
+        'oc process -f syncrator-openshift/job_template.yaml',
+        '-p TARGET="avo" -p ENV="qas"',
+        '-p ACTION_NAME="delta"',
+        '-p ACTION="delta"',
+        '-p IS_TAG="latest"',
+        '-p OPTIONS="-n 1000 -c 1 --api_job_id dryrun" |',
+        'oc create -f -'
+    ))
 
 
 def test_random_404(client, setup):
@@ -282,5 +302,3 @@ def test_missing_template(client):
 
     resp = client.get('/diff/unknownproject/prd')
     assert resp.status_code == 400
-
-

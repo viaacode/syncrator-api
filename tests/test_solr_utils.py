@@ -14,11 +14,11 @@ from app.solr_utils import sync_to_standby, list_aliases
 
 pytestmark = [pytest.mark.vcr(ignore_localhost=True)]
 
+
 @pytest.fixture(scope="module")
 def vcr_config():
-    #return {"record_mode": "all"} #do new record, requires vpn connection
+    # return {"record_mode": "all"} #do new record, requires vpn connection
     return {"record_mode": "once"}
-
 
 
 def test_solr_preperation(client):
@@ -44,7 +44,8 @@ def test_solr_preperation(client):
 
 @pytest.mark.vcr
 def test_list_aliases(client):
-    res = list_aliases('http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
+    res = list_aliases(
+        'http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
     assert res == {
         'metadatacatalogus-standby': 'metadatacatalogus-2',
         'cataloguspro-standby': 'cataloguspro-1',
@@ -61,4 +62,3 @@ def test_list_aliases(client):
 def test_sync_to_standby_calls(client):
     res = sync_to_standby('cataloguspro', 'qas')
     assert res
-

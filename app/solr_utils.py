@@ -11,7 +11,6 @@ import subprocess
 import requests
 
 SYNCRATOR_SOLR_FLAG = '--switch-solr-alias'
-#CONTENT_TYPE = "-H 'Content-type:text/xml; charset=utf-8'"
 CONTENT_TYPE = {
     'Content-type': 'text/xml; charset=utf-8'
 }
@@ -60,7 +59,7 @@ def list_aliases(base_solr_url):
 
 
 def list_collections_of_alias(base_solr_url, name):
-    print("list collections of base_url={} name={}".format(base_solr_url,name))
+    print("list collections of base_url={} name={}".format(base_solr_url, name))
     collections = list_aliases(base_solr_url)[name].split(",")
     print("collections={}", collections)
 
@@ -73,15 +72,12 @@ def delete_standby(base_solr_url, standby_alias):
         standby_alias
     )
 
-    # system "curl #{solr_url}/update --data
-    # '<delete><query>*:*</query></delete>' #{CONTENT_TYPE}"
     res = requests.post(
         solr_url,
         data='<delete><query>*:*</query></delete>',
         headers=CONTENT_TYPE
     )
 
-    #  system "curl #{solr_url}/update --data '<commit/>' #{CONTENT_TYPE}"
     res = requests.post(
         solr_url,
         data='<commit/>',
@@ -111,7 +107,8 @@ def sync_to_standby(app, environment):
 
     # disable until other methods are implemented and stubbed in tests
     if not verify_same_collections(base_solr_url, sync_alias, standby_alias):
-        raise ValueError(f'-sync tag is still on primary, not on backup sync_alias={sync_alias} standby_alias={standby_alias}')
+        raise ValueError(
+            f'-sync tag is still on primary, not on backup sync_alias={sync_alias} standby_alias={standby_alias}')
 
     return result
 

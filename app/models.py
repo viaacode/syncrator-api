@@ -8,8 +8,7 @@
 #  api_jobs entries are created before starting an actual job and the sync_id is
 #  filled in by syncrator when the job starts.
 #
-
-from sqlalchemy.dialects.postgresql import JSON
+# from sqlalchemy.dialects.postgresql import JSON
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 

@@ -160,8 +160,8 @@ def start_diff_job(project, environment):
         )
     except FileNotFoundError as fe:
         return 'Configuration file for '\
-                'project {} with environment {} not found at {}'.format(
-            project, environment, fe), 400
+            'project {} with environment {} not found at {}'.format(
+                project, environment, fe), 400
 
 
 @app.route("/run", methods=['POST'])
@@ -227,7 +227,8 @@ def create_or_find_job(job_params, dryrun=False):
 def run(job_params, dryrun=False):
     logger.info('Syncrator run called with parameters', data=job_params)
 
-    # piggy back the job id onto options that are templated as command parameter to syncrator
+    # piggy back the job id onto options that are templated
+    # as command parameter to syncrator
     # so that syncrator is able to set correct sync_id at startup
     api_job_id, existing_job = create_or_find_job(job_params, dryrun=dryrun)
     job_params['OPTIONS'] = '{} --api_job_id {}'.format(

@@ -6,10 +6,6 @@
 #
 
 import pytest
-from flask_api import status
-from app.syncrator_api import *
-from app.models import *
-from app.openshift_utils import *
 from app.solr_utils import sync_to_standby, list_aliases
 
 pytestmark = [pytest.mark.vcr(ignore_localhost=True)]

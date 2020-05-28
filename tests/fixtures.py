@@ -4,7 +4,7 @@
 #
 #  tests/fixtures.py
 #
-from app.models import *
+from app.models import SyncJob, ApiJob, db
 import datetime
 
 

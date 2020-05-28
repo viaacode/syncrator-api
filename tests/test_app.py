@@ -7,14 +7,17 @@
 import warnings
 import tempfile
 import pytest
+import os
 
 from flask_api import status
-from app.syncrator_api import *
-from app.models import *
-from app.openshift_utils import *
+from app.syncrator_api import app
+from app.models import db, SyncJob, ApiJob
+from app.openshift_utils import read_params_file, oc_create_job
 
-from .fixtures import *
+from .fixtures import jobs_fixture
 from sqlalchemy import exc as sa_exc
+
+db_fd = None
 
 
 @pytest.fixture(scope="module")

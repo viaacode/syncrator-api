@@ -17,13 +17,12 @@ class RunWorker(threading.Thread):
         self.job_params = job_params
         self.logger = logger
 
- 
     def run(self):
         self.logger.info('Runworker creating syncrator pod', data={
             'api_job_id': self.api_job_id,
             'job_params': self.job_params
         })
- 
+
         # syncrator pod will update the api_job.status first with "running"
         # later on with "completed" or "failed" etc.
         result = oc_create_syncrator_pod(self.job_params)

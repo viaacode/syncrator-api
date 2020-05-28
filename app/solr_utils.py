@@ -6,10 +6,9 @@
 #  description: python version of resync_solr.rb in syncrator
 #  it methods to make requests to prepare new solr alias before starting a sync job
 #
-import os
-import subprocess
 import requests
 
+OC_SERVER = 'do-prd-okp-m0.do.viaa.be'
 SYNCRATOR_SOLR_FLAG = '--switch-solr-alias'
 CONTENT_TYPE = {
     'Content-type': 'text/xml; charset=utf-8'
@@ -72,13 +71,13 @@ def delete_standby(base_solr_url, standby_alias):
         standby_alias
     )
 
-    res = requests.post(
+    requests.post(
         solr_url,
         data='<delete><query>*:*</query></delete>',
         headers=CONTENT_TYPE
     )
 
-    res = requests.post(
+    requests.post(
         solr_url,
         data='<commit/>',
         headers=CONTENT_TYPE
@@ -86,8 +85,10 @@ def delete_standby(base_solr_url, standby_alias):
 
 
 def sync_to_standby(app, environment):
-    base_solr_url = 'http://solr-{}-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/'.format(
-        environment)
+    base_solr_url = 'http://solr-{}-catalogi.apps.{}/solr/'.format(
+        environment,
+        OC_SERVER
+    )
     primary_alias = "{}".format(app)
     sync_alias = "{}-sync".format(app)
     standby_alias = "{}-standby".format(app)

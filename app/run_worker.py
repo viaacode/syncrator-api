@@ -9,10 +9,7 @@
 #
 
 import threading
-import os
-from datetime import datetime
 from app.openshift_utils import oc_create_syncrator_pod
-from app.models import *
 
 class RunWorker(threading.Thread):
     def __init__(self, api_job_id, job_params, logger):
@@ -32,8 +29,6 @@ class RunWorker(threading.Thread):
         # later on with "completed" or "failed" etc.
         result = oc_create_syncrator_pod( self.job_params )
 
-        self.logger.info( 'RunWorker for api_job_id={} succesfully started syncrator'.format(
+        self.logger.info( 
+            'RunWorker for api_job_id={} succesfully started syncrator'.format(
             self.api_job_id), data=result)
-
-
-       

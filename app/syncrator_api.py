@@ -7,17 +7,19 @@
 #  description: routes for the api calls and main flask application initialization
 #
 
-from app.models import *
+from app.models import ApiJob, SyncJob, db
 from app.run_worker import RunWorker
-from app.openshift_utils import *
-
-from flask import Flask, request, url_for, jsonify, render_template
-from flask_api import status, exceptions
+from app.openshift_utils import (
+    oc_delete_syncrator_pod,
+    oc_create_syncrator_pod,
+    read_params_file
+)
+from flask import Flask, request, jsonify, render_template
+from flask_api import status
 from viaa.configuration import ConfigParser
 from viaa.observability import logging
 from sqlalchemy.exc import OperationalError
 from app.config import flask_environment
-import os
 
 app = Flask(__name__)
 config = ConfigParser()
@@ -115,8 +117,9 @@ def start_sync_job(project, environment):
             dryrun=request.method == 'GET'
         )
     except FileNotFoundError as fe:
-        return 'Configuration file for project {} with environment {} not found at {}'.format(
-            project, environment, fe), 400
+        return 'Configuration file for ' \
+            'project {} with environment {} not found at {}'.format(
+                project, environment, fe), 400
 
 
 @app.route("/delta/<string:project>/<string:environment>",
@@ -128,8 +131,9 @@ def start_delta_job(project, environment):
             dryrun=request.method == 'GET'
         )
     except FileNotFoundError as fe:
-        return 'Configuration file for project {} with environment {} not found at {}'.format(
-            project, environment, fe), 400
+        return 'Configuration file for ' \
+            'project {} with environment {} not found at {}'.format(
+                project, environment, fe), 400
 
 
 @app.route("/delete/<string:project>/<string:environment>",
@@ -141,8 +145,9 @@ def start_delete_job(project, environment):
             dryrun=request.method == 'GET'
         )
     except FileNotFoundError as fe:
-        return 'Configuration file for project {} with environment {} not found at {}'.format(
-            project, environment, fe), 400
+        return 'Configuration file for '\
+            'project {} with environment {} not found at {}'.format(
+                project, environment, fe), 400
 
 
 @app.route("/diff/<string:project>/<string:environment>",
@@ -154,14 +159,14 @@ def start_diff_job(project, environment):
             dryrun=request.method == 'GET'
         )
     except FileNotFoundError as fe:
-        return 'Configuration file for project {} with environment {} not found at {}'.format(
+        return 'Configuration file for '\
+                'project {} with environment {} not found at {}'.format(
             project, environment, fe), 400
 
 
 @app.route("/run", methods=['POST'])
 def syncrator_run():
     # POST /run run custom job by passing all template parameters in json
-    request_data = request.json
     return run(job_params_from_request())
 
 

@@ -130,9 +130,11 @@ def prepare_solr_standby(job_params, dryrun=False):
     environment = job_params.get('ENV')
 
     if job_requires_solr(app):
-        job_params['OPTIONS'] = '{} {}'.format(
+        solr_env_and_target = f'--target_env {environment} --target {app}'
+        job_params['OPTIONS'] = '{} {} {}'.format(
             job_params.get('OPTIONS'),
-            SYNCRATOR_SOLR_FLAG
+            SYNCRATOR_SOLR_FLAG,
+            solr_env_and_target
         )
         if not dryrun:
             sync_to_standby(app, environment)

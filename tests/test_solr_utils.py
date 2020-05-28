@@ -28,6 +28,8 @@ def test_solr_preperation(client):
 
     job_params = res.get_json()
     assert '--switch_solr_alias' in job_params['result']
+    assert '--target cataloguspro' in job_params['result']
+    assert '--target_env qas' in job_params['result']
 
     # test for avo we don't need the solr commands
     res = client.get('/sync/avo/qas')

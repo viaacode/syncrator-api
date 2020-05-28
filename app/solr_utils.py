@@ -3,8 +3,10 @@
 #  @Author: Walter Schreppers
 #
 #  file: app/solr_utils.py
-#  description: python version of resync_solr.rb in syncrator
-#  it methods to make requests to prepare new solr alias before starting a sync job
+#  description:
+#   python version of resync_solr.rb in syncrator
+#   it methods to make requests to prepare new solr alias
+#   before starting a sync job
 #
 import requests
 
@@ -28,16 +30,19 @@ def job_requires_solr(app):
 
 
 def modify_alias(base_solr_url, name, collections):
-    modify_alias = 'admin/collections?action=CREATEALIAS&name={}&collections={}'.format(
-        name, ",".join(collections))
+    modify_alias = '{}?{}&name={}&collections={}'.format(
+        'admin/collections',
+        'action=CREATEALIAS',
+        name,
+        ",".join(collections)
+    )
 
     modify_alias_url = '{}{}&wt=json'.format(
         base_solr_url,
         modify_alias
     )
 
-    result = requests.get(modify_alias_url)
-    return result.json()
+    return requests.get(modify_alias_url).json()
 
 
 def verify_same_collections(base_solr_url, alias1, alias2):
@@ -58,7 +63,10 @@ def list_aliases(base_solr_url):
 
 
 def list_collections_of_alias(base_solr_url, name):
-    print("list collections of base_url={} name={}".format(base_solr_url, name))
+    print("list collections of base_url={} name={}".format(
+        base_solr_url,
+        name
+    ))
     collections = list_aliases(base_solr_url)[name].split(",")
     print("collections={}", collections)
 

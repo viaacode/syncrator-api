@@ -4,7 +4,6 @@
 #
 #  tests/test_solr_utils.py
 #
-
 import pytest
 from app.solr_utils import sync_to_standby, list_aliases
 
@@ -52,8 +51,6 @@ def test_list_aliases(client):
     }
 
 
-# solr_base_url == 'http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/'
-# standby_alias == 'cataloguspro-standby'
 @pytest.mark.vcr
 def test_sync_to_standby_calls(client):
     res = sync_to_standby('cataloguspro', 'qas')

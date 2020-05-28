@@ -4,9 +4,9 @@
 #  @Author: Walter Schreppers
 #
 #  file: app/syncrator_api.py
-#  description: routes for the api calls and main flask application initialization
+#  description:
+#    routes for the api calls and main flask application initialization
 #
-
 from app.models import ApiJob, SyncJob, db
 from app.run_worker import RunWorker
 from app.openshift_utils import (
@@ -46,15 +46,13 @@ def liveness_check():
 
 @app.route("/jobs", methods=['GET'])
 def list_api_jobs():
-    try:
-        page = request.args.get('page', 1, type=int)
-        rows = ApiJob.query.order_by(
-            ApiJob.created_at.desc()
-        ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
-        api_jobs = [j.to_dict() for j in rows]
-        return jsonify(api_jobs)
-    except OperationalError as pg:
-        return "database error: {}".format(str(pg)), 400
+    page = request.args.get('page', 1, type=int)
+    rows = ApiJob.query.order_by(
+        ApiJob.created_at.desc()
+    ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
+    api_jobs = [j.to_dict() for j in rows]
+
+    return jsonify(api_jobs)
 
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
@@ -69,8 +67,6 @@ def get_job(job_id):
         return jsonify(result)
     except AttributeError:
         return "not found", 404
-    except OperationalError as pg:
-        return "database error: {}".format(str(pg)), 400
 
 
 @app.route("/jobs/<int:job_id>", methods=['DELETE'])
@@ -91,21 +87,17 @@ def destroy_job(job_id):
 
     except AttributeError:
         return "not found", 404
-    except OperationalError as pg:
-        return "database error: {}".format(str(pg)), 400
 
 
 @app.route("/sync_jobs", methods=['GET'])
 def list_sync_jobs():
-    try:
-        page = request.args.get('page', 1, type=int)
-        rows = SyncJob.query.order_by(
-            SyncJob.start_time.desc()
-        ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
-        jobs = [j.to_dict(filter_passwords=True) for j in rows]
-        return jsonify(jobs)
-    except OperationalError as pg:
-        return "database error: {}".format(str(pg)), 400
+    page = request.args.get('page', 1, type=int)
+    rows = SyncJob.query.order_by(
+        SyncJob.start_time.desc()
+    ).paginate(page, app.config['JOBS_PER_PAGE'], False).items
+    jobs = [j.to_dict(filter_passwords=True) for j in rows]
+
+    return jsonify(jobs)
 
 
 @app.route("/sync/<string:project>/<string:environment>",
@@ -258,3 +250,8 @@ def run(job_params, dryrun=False):
 @app.errorhandler(404)
 def page_not_found(e):
     return "<h1>404</h1><p>Page not found</p>", 404
+
+
+@app.errorhandler(OperationalError)
+def database_connect_error(pg):
+    return 'Database connection error', 400

@@ -12,7 +12,6 @@ import os
 from flask_api import status
 from app.syncrator_api import app
 from app.models import db
-from app.openshift_utils import read_params_file, oc_create_job
 
 from .fixtures import jobs_fixture
 from sqlalchemy import exc as sa_exc
@@ -157,33 +156,6 @@ def test_delete_job(client, setup):
 def test_delete_unknown_job(client, setup):
     resp = client.delete('/jobs/2000')
     assert resp.status_code == 404
-
-
-def test_param_parsing():
-    template_params = read_params_file(
-        'qas', 'avo', 'delta',
-        params_path='syncrator-openshift/job_params'
-    )
-
-    assert template_params == {
-        'ACTION': 'delta',
-        'ACTION_NAME': 'delta',
-        'ENV': 'qas',
-        'IS_TAG': 'latest',
-        'OPTIONS': '-n 1000 -c 1',
-        'TARGET': 'avo'
-    }
-
-    # test these params in oc_create command
-
-    result = oc_create_job(template_params)
-    assert result == ' '.join((
-        'oc process -f syncrator-openshift/job_template.yaml',
-        '-p ENV="qas" -p TARGET="avo"',
-        '-p ACTION_NAME="delta" -p ACTION="delta"',
-        '-p IS_TAG="latest"',
-        '-p OPTIONS="-n 1000 -c 1" | oc create -f -'
-    ))
 
 
 def test_dryrun_matches_templated_get(client):

@@ -29,18 +29,19 @@ def oc_execute(cmd, path=None, dryrun=False):
 
 
 def oc_login():
-    login = 'oc login {} -p "{}" -u "{}" --insecure-skip-tls-verify > /dev/null'.format(
-        OC_URL, OC_USER, OC_PASSWORD)
+    login = 'oc login {} -p "{}" -u "{}" {} > /dev/null'.format(
+        OC_URL,
+        OC_USER,
+        OC_PASSWORD,
+        '--insecure-skip-tls-verify'
+    )
+
     commands = "{} ; {}".format(
         login,
         oc_project(OC_PROJECT_NAME)
     )
 
     return commands
-
-
-def oc_logout():
-    return "oc logout"
 
 
 def oc_project(project_name):
@@ -110,9 +111,9 @@ def read_params_file(
         environment,
         target,
         job_type,
-        params_path=JOB_TEMPLATE_PARAMETER_PATH):
+        path=JOB_TEMPLATE_PARAMETER_PATH):
     # ex: qas, avo, delta
-    params_filename = f"{params_path}/{environment}/{target}-{job_type}.public_params"
+    params_filename = f"{path}/{environment}/{target}-{job_type}.public_params"
 
     template_params = {}
     pf = open(params_filename)

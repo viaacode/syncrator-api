@@ -3,12 +3,12 @@
 #  @Author: Walter Schreppers
 #
 #  file: app/models.py
-#  description: Database models for tables 'syncs' and 'api_jobs'
-#  syncrator itself manages syncs table but it can also be views through api here.
-#  api_jobs entries are created before starting an actual job and the sync_id is
-#  filled in by syncrator when the job starts.
+#  description:
+#   Database models for tables 'syncs' and 'api_jobs'
+#   syncrator itself manages syncs table.
+#   api_jobs entries are created before starting an actual job and
+#   the sync_id is filled in by syncrator when the job starts.
 #
-# from sqlalchemy.dialects.postgresql import JSON
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 

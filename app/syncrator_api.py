@@ -164,7 +164,7 @@ def syncrator_run():
 
 @app.route("/dryrun", methods=['POST'])
 def syncrator_dryrun():
-    # POST /dryrun same as /run but don't execute, show shell commands instead
+    # POST /dryrun same as /run but don't execute, show openshift commands instead
     return run(
         job_params_from_request(),
         dryrun=True

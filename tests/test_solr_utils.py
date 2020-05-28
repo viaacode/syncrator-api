@@ -21,20 +21,20 @@ def test_solr_preperation(client):
     assert res.status_code == 200
 
     job_params = res.get_json()
-    assert '--switch-solr-alias' in job_params['result']
+    assert '--switch_solr_alias' in job_params['result']
 
     res = client.get('/sync/cataloguspro/qas')
     assert res.status_code == 200
 
     job_params = res.get_json()
-    assert '--switch-solr-alias' in job_params['result']
+    assert '--switch_solr_alias' in job_params['result']
 
     # test for avo we don't need the solr commands
     res = client.get('/sync/avo/qas')
     assert res.status_code == 200
 
     job_params = res.get_json()
-    assert '--switch-solr-alias' not in job_params['result']
+    assert '--switch_solr_alias' not in job_params['result']
 
 
 @pytest.mark.vcr

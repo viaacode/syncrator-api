@@ -11,7 +11,7 @@
 import requests
 
 OC_SERVER = 'do-prd-okp-m0.do.viaa.be'
-SYNCRATOR_SOLR_FLAG = '--switch-solr-alias'
+SYNCRATOR_SOLR_FLAG = '--switch_solr_alias'
 CONTENT_TYPE = {
     'Content-type': 'text/xml; charset=utf-8'
 }

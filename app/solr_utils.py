@@ -109,9 +109,10 @@ def sync_to_standby(app, environment):
     # disable until other methods are implemented and stubbed in tests
     if not verify_same_collections(base_solr_url, sync_alias, standby_alias):
         raise ValueError(
-            f'-sync tag is still on primary, '
-            'not on backup sync_alias={sync_alias} '
-            'standby_alias={standby_alias}')
+            '-sync tag is still on primary, '
+            f'not on backup sync_alias={sync_alias} '
+            f'standby_alias={standby_alias}'
+        )
 
     return result
 

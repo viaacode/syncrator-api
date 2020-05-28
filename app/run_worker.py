@@ -10,6 +10,7 @@
 import threading
 from app.openshift_utils import oc_create_syncrator_pod
 
+
 class RunWorker(threading.Thread):
 
     def __init__(self, api_job_id, job_params, logger):
@@ -34,4 +35,3 @@ class RunWorker(threading.Thread):
             ),
             data=result
         )
-

@@ -151,11 +151,11 @@ It also runs on port 8080 like the scripts/run and docker builds
 
 ### API calls available
 ```
-GET /jobs - paginated list of active jobs
-GET /jobs/<id> - get job details and progress
+GET /jobs - paginated list of active api started jobs
+GET /jobs/<id> - get api job and related sync_job details and progress
+DELETE /jobs/<id> - get api job, set status to "deleted" and run openshift oc call to delete any openshift jobs started with these parameters.
 
-GET /sync/avo/qas - full synchronisation job dryrun
-POST /sync/<project>/<env> - start a new full synchronisation job
+GET /sync_jobs - paginated list of all sync jobs (these include syncrator runs started with CRON)
 
 GET /delta/avo/qas - delta synchronisation job dryrun
 POST /delta/<project>/<env> - start a new delta synchronisation job
@@ -165,6 +165,9 @@ POST /delete/<project>/<env> - start a new delete synchronisation job
 
 GET /diff/avo/qas - dryrun for delta followed by delete in one go for partial updates
 POST /diff/<project>/<env> - start delta job followed by a delete job
+
+GET /sync/avo/qas - full synchronisation job dryrun
+POST /sync/<project>/<env> - start a new full synchronisation job
 
 POST /run - start custom syncrator job by passing all template parameters (target, env, action_name, action, is_tag, options)
 POST /dryrun - dryrun custom job by passing all template parameters (target, env, action_name, action, is_tag, options)

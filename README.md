@@ -86,8 +86,10 @@ tests/test_solr_utils.py::test_sync_to_standby_calls PASSED                 [100
 Running flake8 linter...
 ALL OK
 ```
-If tests fail or linter finds warnings you will be presented with them here now. The jenkins build won't
-fail if there are linter warnings but it's nice to have and can prevent future bugs.
+If tests fail or flake8 gives warnings you will be presented with them here now. The jenkins build won't
+fail if there are linter warnings but it's nice to get an 'ALL OK' which means 0 issues found by flake8.
+The tests do have to all pass, if one fails the build won't be deployed by the jenkins pipeline.
+
 
 
 You can use the scripts/coverage helper to show testing coverage report.

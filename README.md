@@ -47,43 +47,49 @@ The application is now serving requests on `localhost:8080`. Try it with:
    `scripts/build`
 
 ### Helper scripts
-To run the tests locally:
+To run the tests locally and also run flake8 linter/code checking:
   `scripts/test`
 
 ``` 
-========================== test session starts ==========================
+(python_env) ➜  syncrator-api git:(development) ✗ scripts/test
+=============================== test session starts ===============================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- /Users/wschrep/FreelanceWork/VIAA/syncrator-api/python_env/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
-plugins: cov-2.8.1
-collected 23 items
+plugins: recording-0.7.0, cov-2.8.1
+collected 24 items
 
-tests/test_app.py::test_home PASSED                               [  4%]
-tests/test_app.py::test_liveness_check PASSED                     [  8%]
-tests/test_app.py::test_dryrun_sync_job PASSED                    [ 13%]
-tests/test_app.py::test_dryrun_delta_job PASSED                   [ 17%]
-tests/test_app.py::test_dryrun_delete_job PASSED                  [ 21%]
-tests/test_app.py::test_diff_job_dryrun PASSED                    [ 26%]
-tests/test_app.py::test_dryrun_generic_run PASSED                 [ 30%]
-tests/test_app.py::test_password_filter_api_job_nested PASSED     [ 34%]
-tests/test_app.py::test_list_api_jobs PASSED                      [ 39%]
-tests/test_app.py::test_list_sync_jobs_and_pass_filter PASSED     [ 43%]
-tests/test_app.py::test_get_unknown_job PASSED                    [ 47%]
-tests/test_app.py::test_get_existing_starting_job PASSED          [ 52%]
-tests/test_app.py::test_get_existing_completed_job PASSED         [ 56%]
-tests/test_app.py::test_delete_job PASSED                         [ 60%]
-tests/test_app.py::test_param_parsing PASSED                      [ 65%]
-tests/test_app.py::test_run_python_version PASSED                 [ 69%]
-tests/test_app.py::test_dryrun PASSED                             [ 73%]
-tests/test_app.py::test_delete_unknown_job PASSED                 [ 78%]
-tests/test_app.py::test_random_404 PASSED                         [ 82%]
-tests/test_app.py::test_diff_job PASSED                           [ 86%]
-tests/test_app.py::test_missing_template PASSED                   [ 91%]
-tests/test_app.py::test_solr_preperation PASSED                   [ 95%]
-tests/test_app.py::test_sync_to_standby PASSED                    [100%]
+tests/test_app.py::test_home PASSED                                         [  4%]
+tests/test_app.py::test_liveness_check PASSED                               [  8%]
+tests/test_app.py::test_dryrun_sync_job PASSED                              [ 12%]
+tests/test_app.py::test_dryrun_delta_job PASSED                             [ 16%]
+tests/test_app.py::test_dryrun_delete_job PASSED                            [ 20%]
+tests/test_app.py::test_diff_job_dryrun PASSED                              [ 25%]
+tests/test_app.py::test_password_filter_api_job_nested PASSED               [ 29%]
+tests/test_app.py::test_list_api_jobs PASSED                                [ 33%]
+tests/test_app.py::test_list_sync_jobs_and_pass_filter PASSED               [ 37%]
+tests/test_app.py::test_get_unknown_job PASSED                              [ 41%]
+tests/test_app.py::test_get_existing_starting_job PASSED                    [ 45%]
+tests/test_app.py::test_get_existing_completed_job PASSED                   [ 50%]
+tests/test_app.py::test_delete_job PASSED                                   [ 54%]
+tests/test_app.py::test_delete_unknown_job PASSED                           [ 58%]
+tests/test_app.py::test_param_parsing PASSED                                [ 62%]
+tests/test_app.py::test_dryrun_matches_templated_get PASSED                 [ 66%]
+tests/test_app.py::test_general_job_run PASSED                              [ 70%]
+tests/test_app.py::test_dryrun_openshift_commands PASSED                    [ 75%]
+tests/test_app.py::test_random_404 PASSED                                   [ 79%]
+tests/test_app.py::test_diff_job PASSED                                     [ 83%]
+tests/test_app.py::test_missing_template PASSED                             [ 87%]
+tests/test_solr_utils.py::test_solr_preperation PASSED                      [ 91%]
+tests/test_solr_utils.py::test_list_aliases PASSED                          [ 95%]
+tests/test_solr_utils.py::test_sync_to_standby_calls PASSED                 [100%]
 
-========================== 23 passed in 0.86s ===========================
+=============================== 24 passed in 0.47s ================================
+Running flake8 linter...
+ALL OK
 ```
+If tests fail or linter finds warnings you will be presented with them here now. The jenkins build won't
+fail if there are linter warnings but it's nice to have and can prevent future bugs.
 
 
 use the scripts/coverage helper to show testing coverage report. You can open htmlcov dir in browser and see detailed report.

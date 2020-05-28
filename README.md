@@ -96,28 +96,31 @@ use the scripts/coverage helper to show testing coverage report. You can open ht
 
 ```
 scripts/coverage
-================================================================================ test session starts ================================================================================
+================================== test session starts ===================================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1
 rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
-plugins: cov-2.8.1
-collected 20 items
+plugins: recording-0.7.0, cov-2.8.1
+collected 25 items
 
-tests/test_app.py ....................                                                                                                                                        [100%]
+tests/test_app.py ....................                                             [ 80%]
+tests/test_openshift_utils.py ..                                                   [ 88%]
+tests/test_solr_utils.py ...                                                       [100%]
 
 ---------- coverage: platform darwin, python 3.7.6-final-0 -----------
 Name                     Stmts   Miss  Cover
 --------------------------------------------
 app/__init__.py              0      0   100%
 app/config.py               22      0   100%
-app/models.py               62      4    94%
-app/openshift_utils.py      47      4    91%
-app/run_worker.py           15      0   100%
-app/syncrator_api.py       102      8    92%
+app/models.py               61      4    93%
+app/openshift_utils.py      47      2    96%
+app/run_worker.py           12      0   100%
+app/solr_utils.py           49      3    94%
+app/syncrator_api.py       107      1    99%
 --------------------------------------------
-TOTAL                      248     16    94%
+TOTAL                      298     10    97%
 
 
-================================================================================ 20 passed in 0.89s =================================================================================
+=================================== 25 passed in 0.69s ===================================
 ```
 
 Then open htmlcov/index.html to see detailed code coverage from tests

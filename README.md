@@ -25,33 +25,31 @@
 
 2. Activate the virtual environment:
 
-    `source python_env/bin/activate`
+    `$ source python_env/bin/activate`
 
 4. Run the tests with:
 
-    `scripts/test`
+    `$ scripts/test`
 
 5. Run the application:
 
-   `scrits/run`
+   `$ scrits/run`
 
 The application is now serving requests on `localhost:8080`. Try it with:
 
-    `curl -v -X GET http://127.0.0.1:8080/`
+    `$ curl -v -X GET http://127.0.0.1:8080/`
 
 
 ### Running using Docker
 
 1. Build the container and run it:
 
-   `scripts/build`
+   `$ scripts/build`
 
 ### Helper scripts
 To run the tests locally and also run flake8 linter/code checking:
-  `scripts/test`
-
 ``` 
-(python_env) ➜  syncrator-api git:(development) ✗ scripts/test
+$ scripts/test
 =============================== test session starts ===============================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- /Users/wschrep/FreelanceWork/VIAA/syncrator-api/python_env/bin/python
 cachedir: .pytest_cache
@@ -95,7 +93,7 @@ fail if there are linter warnings but it's nice to have and can prevent future b
 use the scripts/coverage helper to show testing coverage report. You can open htmlcov dir in browser and see detailed report.
 
 ```
-scripts/coverage
+$ scripts/coverage
 ================================== test session starts ===================================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1
 rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api
@@ -130,7 +128,7 @@ Then open htmlcov/index.html to see detailed code coverage from tests
 To run a server on port 8080:
 
 ``` 
-scripts/run 
+$ scripts/run 
 ```
 The root page has links and some minimal description of other available routes for api calls, open in your browser by
 following this link <a href="http://127.0.0.1:8080/">Syncrator API</a> after you have the server running.
@@ -140,13 +138,13 @@ following this link <a href="http://127.0.0.1:8080/">Syncrator API</a> after you
 To build the docker containers:
 
 ```
-scripts/build
+$ scripts/build
 ```
 
 During development you can autoformat using scripts/autopep and to make changes and see response instantly without restarting the application
 theres the scripts/debug helper script now
 ```
-scripts/debug
+$ scripts/debug
 ```
 It also runs on port 8080 like the scripts/run and docker builds
 
@@ -219,19 +217,19 @@ syncrator-openshift/job_params
 
 Example run a full sync on avo project in qas environment as dryrun we first want to see the template output. We use jq to show only the template result:
 ```
-curl http://127.0.0.1:8080/sync/avo/qas 
+$ curl http://127.0.0.1:8080/sync/avo/qas 
 ```
 
 To now have an actual syncrator pod startup just make same request but then with a post call:
 ```
-curl -X POST http://127.0.0.1:8080/sync/avo/qas
+$ curl -X POST http://127.0.0.1:8080/sync/avo/qas
 ```
 
 
 If you don't want or don't have a predifined template (.public_params file) you can start a custom syncrator job like so:
 
 ```
-curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' \
+$ curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' \
   -d '{
     "target":"avo", 
     "env":"qas",
@@ -244,7 +242,7 @@ curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' \
 
 This has the same result as doing following request as this already exists:
 ```
-curl http://127.0.0.1:8080/delta/avo/qas
+$ curl http://127.0.0.1:8080/delta/avo/qas
 ```
 
 To make the actual pod start and execute the openshift commands use the path 'run' instead of 'dryrun'
@@ -252,7 +250,7 @@ To make the actual pod start and execute the openshift commands use the path 'ru
 
 Delta dryrun example
 ```
-curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' \
   -d '{
     "target":"avo",
     "env":"qas",
@@ -281,7 +279,7 @@ Dryrun result
 Now running same job as above for real:
 
 ```
-curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' \
   -d '{
     "target":"avo",
     "env":"qas",
@@ -310,7 +308,7 @@ output:
 
 Checking status of above job with id 8:
 ```
- curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/20
+$ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/20
 {
   "created_at": "Tue, 19 May 2020 11:53:49 GMT",
   "env": "qas",
@@ -327,7 +325,7 @@ When pod is started, status will update and sync_id is filled in and then you se
 as result on the /jobs/8 call:
 
 ```
-curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/20
+$ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/20
 {
   "created_at": "Wed, 20 May 2020 16:27:27 GMT",
   "env": "qas",
@@ -359,7 +357,7 @@ this sets status to deleted and removes the pods that we're started with a previ
 example:
 
 ```
-curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/9
+$ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/9
 {
   "created_at": "Tue, 19 May 2020 16:26:26 GMT",
   "env": "qas",
@@ -378,7 +376,7 @@ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
 Start actual syncrator sync job with progress by calling it with a post request:
 
 ```
-curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo/qas
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo/qas
 {
   "ACTION": "sync",
   "ACTION_NAME": "sync",
@@ -396,7 +394,7 @@ We notice job_id is 34 and can fetch it status (also if we would post again whil
 syncrator-api sees that a similar job is already running);
 Fetching status, by going to /jobs/<job_id>
 ```
-curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
+$ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
 {
   "created_at": "Fri, 22 May 2020 14:30:35 GMT",
   "env": "qas",
@@ -416,7 +414,7 @@ correctly and running the specified job). For delete, diff and delta jobs this g
 however a sync job lasts 15 to 20 minutes before reaching complete status.
 
 ```
-curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
+$ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
 
 {
   "created_at": "Fri, 22 May 2020 18:11:44 GMT",
@@ -446,7 +444,7 @@ Job status is now running and the sync_id is also finished, so we get back the p
 We wait a little longer, make another request:
 
 ```
-curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
+$ curl http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/34
 
 {
   "created_at": "Fri, 22 May 2020 18:11:44 GMT", 

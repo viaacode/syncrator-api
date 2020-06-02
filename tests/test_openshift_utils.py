@@ -4,6 +4,9 @@
 #
 #  tests/test_openshift_utils.py
 #
+import os
+import json
+
 from app.openshift_utils import (
     oc_create_job,
     read_params_file,
@@ -41,3 +44,20 @@ def test_param_parsing():
 def test_path_in_execute():
     path_command = oc_execute('ls *.py -1 | wc -l', path='tests')
     assert path_command == 'cd tests && ls *.py -1 | wc -l'
+
+
+def test_execute_result_jsonifyable():
+    """
+    tests actual running of code returns json serialisable result
+    """
+    current_env = os.environ.get('FLASK_ENV')
+    os.environ['FLASK_ENV'] = 'development'
+
+    cmd_output = oc_execute('echo "hello world"')
+    cmd_json = json.dumps({'output': cmd_output})
+
+    result = json.loads(cmd_json)
+
+    assert result['output'] == 'hello world\n'
+
+    os.environ['FLASK_ENV'] = current_env

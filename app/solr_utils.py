@@ -129,7 +129,7 @@ def prepare_solr_standby(job_params, dryrun=False):
     app = job_params.get('TARGET')
     environment = job_params.get('ENV')
 
-    if job_requires_solr(app):
+    if job_requires_solr(app) and job_params.get('ACTION') == 'sync':
         solr_env_and_target = f'--target_env {environment} --target {app}'
         job_params['OPTIONS'] = '{} {} {}'.format(
             job_params.get('OPTIONS'),

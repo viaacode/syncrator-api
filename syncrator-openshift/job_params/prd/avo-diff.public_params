@@ -2,7 +2,7 @@ ENV=prd
 TARGET=avo
 ACTION_NAME=diff
 ACTION=diff
-IS_TAG=stable
+IS_TAG=prd
 OPTIONS=-n 1000 -c 1
 
 

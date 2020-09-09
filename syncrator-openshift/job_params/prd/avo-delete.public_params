@@ -2,5 +2,5 @@ ENV=prd
 TARGET=avo
 ACTION_NAME=delete
 ACTION=delete
-IS_TAG=stable
+IS_TAG=prd
 OPTIONS=--debug

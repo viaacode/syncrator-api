@@ -2,7 +2,5 @@ ENV=prd
 TARGET=avo
 ACTION_NAME=delta
 ACTION=delta
-IS_TAG=stable
+IS_TAG=prd
 OPTIONS=-n 1000 -c 1
-
-

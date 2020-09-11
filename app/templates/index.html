@@ -31,16 +31,18 @@
              openshift oc call to delete any openshift jobs 
              started with these parameters. 
         </li>
-        <br/>
-
 
         <li><a href="/sync_jobs?page=1"> GET /sync_jobs </a>
            - paginated list of all sync jobs 
              (these include syncrator runs started with CRON)
         </li>
         <br/>
+     </ul>
 
+      
 
+      <h2>Example: AVO jobs sync to postgres in shared.items</h2>
+      <ul>
         <li><a href="/delta/avo/qas">GET /delta/avo/qas</a> 
            - delta synchronisation job dryrun
         </li>
@@ -50,8 +52,6 @@
         </li>
         <br/>
 
-
-
         <li><a href="/delete/avo/qas">GET /delete/avo/qas</a> 
           - delete synchronisation job dryrun
         </li>
@@ -59,7 +59,6 @@
           - start a new delete synchronisation job
         </li>
         <br/>
-
 
         <li><a href="/diff/avo/qas">GET /diff/avo/qas</a> 
           - dryrun for delta followed by delete in one go for partial updates
@@ -69,7 +68,6 @@
         </li>
         <br/>
 
-
         <li><a href="/sync/avo/qas">GET /sync/avo/qas</a> 
           - full synchronisation job dryrun
         </li>
@@ -77,7 +75,124 @@
           - start a new full synchronisation job
         </li>
         <br/>
+      </ul>
 
+
+
+      <h2>Example: AVO subtitle jobs sync to postgres in shared.collateral</h2>
+      <ul>
+        <li><a href="/delta/avosubtitles/qas">GET /delta/avosubtitles/qas</a> 
+           - delta synchronisation job dryrun
+        </li>
+        
+        <li> POST /delta/&lt;project>/&lt;env>             
+          - start a new delta synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/delete/avosubtitles/qas">GET /delete/avosubtitles/qas</a> 
+          - delete synchronisation job dryrun
+        </li>
+        <li> POST /delete/&lt;project>/&lt;env>            
+          - start a new delete synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/diff/avosubtitles/qas">GET /diff/avosubtitles/qas</a> 
+          - dryrun for delta followed by delete in one go for partial updates
+        </li>
+        <li> POST /diff/&lt;project>/&lt;env>             
+          - start delta job followed by a delete job
+        </li>
+        <br/>
+
+        <li><a href="/sync/avosubtitles/qas">GET /sync/avosubtitles/qas</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/&lt;project>/&lt;env>             
+          - start a new full synchronisation job
+        </li>
+        <br/>
+      </ul>
+
+
+      <h2>Example: Cataloguspro sync to SOLR </h2>
+      <ul>
+        <li><a href="/delta/cataloguspro/qas">GET /delta/cataloguspro/qas</a> 
+           - delta synchronisation job dryrun
+        </li>
+        
+        <li> POST /delta/&lt;project>/&lt;env>             
+          - start a new delta synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/delete/cataloguspro/qas">GET /delete/cataloguspro/qas</a> 
+          - delete synchronisation job dryrun
+        </li>
+        <li> POST /delete/&lt;project>/&lt;env>            
+          - start a new delete synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/diff/cataloguspro/qas">GET /diff/cataloguspro/qas</a> 
+          - dryrun for delta followed by delete in one go for partial updates
+        </li>
+        <li> POST /diff/&lt;project>/&lt;env>             
+          - start delta job followed by a delete job
+        </li>
+        <br/>
+
+        <li><a href="/sync/cataloguspro/qas">GET /sync/cataloguspro/qas</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/&lt;project>/&lt;env>             
+          - start a new full synchronisation job
+        </li>
+        <br/>
+      </ul>
+
+      <h2>Example: Metadatacatalogus / Hetarchief sync to SOLR </h2>
+      <ul>
+        <li><a href="/delta/metadatacatalogus/qas">GET /delta/metadatacatalogus/qas</a> 
+           - delta synchronisation job dryrun
+        </li>
+        
+        <li> POST /delta/&lt;project>/&lt;env>             
+          - start a new delta synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/delete/metadatacatalogus/qas">GET /delete/metadatacatalogus/qas</a> 
+          - delete synchronisation job dryrun
+        </li>
+        <li> POST /delete/&lt;project>/&lt;env>            
+          - start a new delete synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/diff/metadatacatalogus/qas">GET /diff/metadatacatalogus/qas</a> 
+          - dryrun for delta followed by delete in one go for partial updates
+        </li>
+        <li> POST /diff/&lt;project>/&lt;env>             
+          - start delta job followed by a delete job
+        </li>
+        <br/>
+
+        <li><a href="/sync/metadatacatalogus/qas">GET /sync/metadatacatalogus/qas</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/&lt;project>/&lt;env>             
+          - start a new full synchronisation job
+        </li>
+        <br/>
+      </ul>
+
+
+      <b> In above examples you can replace the environment 'qas' to 'prd' for production </b>
+
+      <h2>Starting generic job with POST request</h2>
+      <ul>
         <li> POST /run             
           - start custom syncrator job by passing all 
           template parameters (target, env, action_name, action, is_tag, options)
@@ -86,11 +201,10 @@
           - dryrun custom job by passing all 
           template parameters (target, env, action_name, action, is_tag, options)
         </li>
-      </ul>
+     </ul>
 
 
       <h2>Health check call</h2>
-
       <ul>
         <li> 
           <a href="/health/live"> GET /health/live </a> 

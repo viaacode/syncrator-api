@@ -1,0 +1,6 @@
+ENV=qas
+TARGET=avosubtitles
+ACTION_NAME=sync
+ACTION=sync
+IS_TAG=latest
+OPTIONS=-n 1000 -c 1

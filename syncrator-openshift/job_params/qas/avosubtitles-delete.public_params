@@ -1,0 +1,6 @@
+ENV=qas
+TARGET=avo
+ACTION_NAME=delete
+ACTION=delete
+IS_TAG=latest
+OPTIONS=--debug

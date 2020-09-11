@@ -1,0 +1,8 @@
+ENV=prd
+TARGET=avo
+ACTION_NAME=diff
+ACTION=diff
+IS_TAG=stable
+OPTIONS=-n 1000 -c 1
+
+

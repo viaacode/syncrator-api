@@ -3,6 +3,7 @@ TARGET=avosubtitles
 ACTION_NAME=diff
 ACTION=diff
 IS_TAG=stable
+MAM_MAIN_QUERY='+(CP_id:"OR-h41jm1d") +(OriginalExtension:srt)'
 OPTIONS=-n 1000 -c 1
 
 

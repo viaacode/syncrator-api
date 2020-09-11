@@ -3,4 +3,5 @@ TARGET=avosubtitles
 ACTION_NAME=delta
 ACTION=delta
 IS_TAG=latest
+MAM_MAIN_QUERY='+(CP_id:"OR-h41jm1d") +(OriginalExtension:srt)'
 OPTIONS=-n 1000 -c 1

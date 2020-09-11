@@ -3,4 +3,5 @@ TARGET=avosubtitles
 ACTION_NAME=delete
 ACTION=delete
 IS_TAG=latest
+MAM_MAIN_QUERY='+(CP_id:"OR-h41jm1d") +(OriginalExtension:srt)'
 OPTIONS=--debug

@@ -1,5 +1,5 @@
 ENV=qas
-TARGET=avo
+TARGET=avosubtitles
 ACTION_NAME=delta
 ACTION=delta
 IS_TAG=latest

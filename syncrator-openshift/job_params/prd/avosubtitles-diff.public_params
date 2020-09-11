@@ -1,5 +1,5 @@
 ENV=prd
-TARGET=avo
+TARGET=avosubtitles
 ACTION_NAME=diff
 ACTION=diff
 IS_TAG=stable

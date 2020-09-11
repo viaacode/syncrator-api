@@ -1,5 +1,5 @@
 ENV=qas
-TARGET=avo
+TARGET=avosubtitles
 ACTION_NAME=delete
 ACTION=delete
 IS_TAG=latest

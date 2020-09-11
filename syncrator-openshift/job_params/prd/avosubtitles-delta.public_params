@@ -1,5 +1,5 @@
 ENV=prd
-TARGET=avo
+TARGET=avosubtitles
 ACTION_NAME=delta
 ACTION=delta
 IS_TAG=stable

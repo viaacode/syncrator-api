@@ -1,5 +1,5 @@
 ENV=prd
-TARGET=avo
+TARGET=avosubtitles
 ACTION_NAME=delete
 ACTION=delete
 IS_TAG=stable

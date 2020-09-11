@@ -1,5 +1,5 @@
 ENV=prd
-TARGET=avo
+TARGET=avosubtitles
 ACTION_NAME=sync
 ACTION=sync
 IS_TAG=stable

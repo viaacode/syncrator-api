@@ -5,3 +5,4 @@ viaa-chassis==0.1.3
 uWSGI==2.0.18
 psycopg2==2.8.5
 requests>=2.23.0
+pyjwt>=1.7.0

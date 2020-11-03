@@ -20,6 +20,8 @@ from viaa.configuration import ConfigParser
 from viaa.observability import logging
 from sqlalchemy.exc import OperationalError
 from app.config import flask_environment
+from app.authorization import get_token
+# , verify_token : todo verify in decorator!
 
 app = Flask(__name__)
 config = ConfigParser()
@@ -37,6 +39,19 @@ def index():
             'environment': flask_environment()
         })
     return render_template('index.html')
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    logger.info("POST login =",
+                dictionary={
+                    'username': username,
+                    'password': '[FILTERED]'
+                }
+                )
+    return jsonify(get_token(username, password))
 
 
 @app.route("/health/live")

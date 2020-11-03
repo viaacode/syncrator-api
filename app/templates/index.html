@@ -11,11 +11,48 @@
         a {
           color: #007487;
         }
+
+        label {
+          display:inline-block;
+          width: 5em;
+          text-align: right;
+        }
+        form {
+          padding: 0.5em;
+          border: 2px solid #007487;
+          border-radius: 3px;
+          background-color: #fff;
+          width: 22em;
+        }
+        input {
+          margin: 0.5em;
+          width: 18em;
+        }
+        input[type=submit]{
+          width: 7em;
+          margin-left: 17.8em;
+        }
       </style>
    </head>
    <body>
       
      <h1>Syncrator-API</h1>
+
+     <p>For DELETE and POST calls that alter state, you need to also pass a jwt token in an authorization header.
+     Use the below login form to get a token. 
+     </p>
+     <form action="/login" method="POST">
+
+         <label>Username</label>
+         <input name="username"/> <br/>
+
+         <label>Password</label>
+         <input name="password" type="password"/>
+
+         <br/>
+       <input type="submit" value="Login"/>
+
+     </form>
 
      <ul>
         <li><a href="/jobs?page=1"> GET /jobs </a> 

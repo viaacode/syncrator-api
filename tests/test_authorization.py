@@ -5,6 +5,7 @@
 #  tests/test_authorization.py
 #
 from app.authorization import get_token, verify_token
+from pytest import mark
 
 
 def test_jwt():
@@ -17,9 +18,14 @@ def test_jwt():
     jwt_token += "MDQ0MjAxMjIsImlzcyI6IlZJQUEiLCJqdGkiOiJhNTBmMmY4NmFmN2Mw"
     jwt_token += "MjM2YzQ5NjViMmJhM2MzOTNhZiJ9.phTAC1ovxal00tLICK17VxJBXYl"
     jwt_token += "oYVMBgx-qJuh5Ai4"
-    assert verify_token(jwt_token)
+    assert verify_token('Bearer ' + jwt_token)
 
 
-def test_wrong_auth_token():
+def test_wrong_credentials():
     result = get_token("user", "pass")
     assert result == {'error': 'wrong username or password'}
+
+
+@mark.skip(reason="TODO: turn off testing env + check a call returns 401")
+def test_unauthorized_call():
+    assert True

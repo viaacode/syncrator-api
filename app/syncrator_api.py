@@ -20,8 +20,7 @@ from viaa.configuration import ConfigParser
 from viaa.observability import logging
 from sqlalchemy.exc import OperationalError
 from app.config import flask_environment
-from app.authorization import get_token
-# , verify_token : todo verify in decorator!
+from app.authorization import get_token, requires_authorization
 
 app = Flask(__name__)
 config = ConfigParser()
@@ -60,6 +59,7 @@ def liveness_check():
 
 
 @app.route("/jobs", methods=['GET'])
+@requires_authorization
 def list_api_jobs():
     page = request.args.get('page', 1, type=int)
     rows = ApiJob.query.order_by(
@@ -71,6 +71,7 @@ def list_api_jobs():
 
 
 @app.route("/jobs/<int:job_id>", methods=['GET'])
+@requires_authorization
 def get_job(job_id):
     try:
         api_job = ApiJob.query.filter_by(id=job_id).first()
@@ -85,6 +86,7 @@ def get_job(job_id):
 
 
 @app.route("/jobs/<int:job_id>", methods=['DELETE'])
+@requires_authorization
 def destroy_job(job_id):
     try:
         api_job = ApiJob.query.filter_by(id=job_id).first()
@@ -105,6 +107,7 @@ def destroy_job(job_id):
 
 
 @app.route("/sync_jobs", methods=['GET'])
+@requires_authorization
 def list_sync_jobs():
     page = request.args.get('page', 1, type=int)
     rows = SyncJob.query.order_by(
@@ -117,6 +120,7 @@ def list_sync_jobs():
 
 @app.route("/sync/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
+@requires_authorization
 def start_sync_job(project, environment):
     try:
         return run(
@@ -131,6 +135,7 @@ def start_sync_job(project, environment):
 
 @app.route("/delta/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
+@requires_authorization
 def start_delta_job(project, environment):
     try:
         return run(
@@ -145,6 +150,7 @@ def start_delta_job(project, environment):
 
 @app.route("/delete/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
+@requires_authorization
 def start_delete_job(project, environment):
     try:
         return run(
@@ -159,6 +165,7 @@ def start_delete_job(project, environment):
 
 @app.route("/diff/<string:project>/<string:environment>",
            methods=['GET', 'POST'])
+@requires_authorization
 def start_diff_job(project, environment):
     try:
         return run(
@@ -172,6 +179,7 @@ def start_diff_job(project, environment):
 
 
 @app.route("/run", methods=['POST'])
+@requires_authorization
 def syncrator_run():
     # POST /run run custom job by passing all template parameters in json
     return run(job_params_from_request())
@@ -261,6 +269,11 @@ def run(job_params, dryrun=False):
         response['result'] = 'starting'
 
     return jsonify(response)
+
+
+@app.errorhandler(401)
+def unauthorized(e):
+    return "<h1>401</h1><p>Unauthorized</p>", 401
 
 
 @app.errorhandler(404)

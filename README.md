@@ -217,6 +217,34 @@ syncrator-openshift/job_params
 ```
 
 
+### Authorization
+
+This has been added recently 3/11/2020. For any POST, DELETE call that does actual processing you also need to 
+pass an access token in the authorization header. To get a token you first make a request or use the form provided
+on the default homepage of this service.
+
+Here is a curl example to get an access token:
+```
+$ curl -X  POST -F "username=somelogin@meemoo.be" -F "password=PW_HERE" http://localhost:8080/login
+ 
+```
+
+This returns an access token as json response:
+```
+{
+  "access_token": "YOUR_PERSONAL_TOKEN", 
+  "expires_in": 899, 
+  "token_type": "bearer"
+}
+```
+
+Then for all the examples below also add this token in an authorization bearer header.
+For example a delete job call will become:
+
+```
+$ curl -X DELETE -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' http://localhost:8080/jobs/123
+```
+
 
 ### Examples
 
@@ -234,7 +262,7 @@ $ curl -X POST http://127.0.0.1:8080/sync/avo/qas
 If you don't want or don't have a predifined template (.public_params file) you can start a custom syncrator job like so:
 
 ```
-$ curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' \
+$ curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo", 
     "env":"qas",
@@ -255,7 +283,7 @@ To make the actual pod start and execute the openshift commands use the path 'ru
 
 Delta dryrun example
 ```
-$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo",
     "env":"qas",
@@ -284,7 +312,7 @@ Dryrun result
 Now running same job as above for real:
 
 ```
-$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo",
     "env":"qas",
@@ -362,7 +390,7 @@ this sets status to deleted and removes the pods that we're started with a previ
 example:
 
 ```
-$ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/9
+$ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/jobs/9 -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN'
 {
   "created_at": "Tue, 19 May 2020 16:26:26 GMT",
   "env": "qas",
@@ -381,7 +409,7 @@ $ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.d
 Start actual syncrator sync job with progress by calling it with a post request:
 
 ```
-$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo/qas
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo/qas -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN'
 {
   "ACTION": "sync",
   "ACTION_NAME": "sync",

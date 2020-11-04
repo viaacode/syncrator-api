@@ -60,10 +60,6 @@ def requires_authorization(f):
         if request.method == 'GET':
             return f(*args, **kwargs)
 
-        # for testing environment also disable auth token checking
-        # if os.environ.get('FLASK_ENV') == 'TESTING':
-        #    return f(*args, **kwargs)
-
         # for PUT, POST, DELETE require jwt_token as this creates/destroys
         # actual syncrator jobs
         if not jwt_token or not verify_token(jwt_token):

@@ -14,7 +14,7 @@ from functools import wraps
 from flask import request, abort
 
 OAS_SERVER = os.environ.get('OAS_SERVER', 'https://oas-qas.hetarchief.be')
-OAS_APPNAME = os.environ.get('OAS_APPNAME', 'syncrator-api')
+OAS_APPNAME = os.environ.get('OAS_APPNAME', 'syncrator')
 
 
 def get_token(username, password):

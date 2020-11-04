@@ -226,7 +226,6 @@ on the default homepage of this service.
 Here is a curl example to get an access token:
 ```
 $ curl -X  POST -F "username=somelogin@meemoo.be" -F "password=PW_HERE" http://localhost:8080/login
- 
 ```
 
 This returns an access token as json response:

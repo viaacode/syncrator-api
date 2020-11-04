@@ -4,6 +4,9 @@
         body{
           background-color: #ffffff; 
           color: #333333;
+          margin: auto;
+          width: 1024px;
+          padding: 1em;
         }
         h1, h2, h3, h4 {
           color: #007487;
@@ -29,8 +32,8 @@
           width: 18em;
         }
         input[type=submit]{
-          width: 7em;
-          margin-left: 17.8em;
+          width: 14em;
+          margin-left: 10.8em;
         }
       </style>
    </head>
@@ -38,8 +41,9 @@
       
      <h1>Syncrator-API</h1>
 
-     <p>For DELETE and POST calls that alter state, you need to also pass a jwt token in an authorization header.
-     Use the below login form to get a token. 
+     <p>For POST and DELETE calls that alter state, you need to also pass an access token in the Authorization header.</p>
+     <p>
+      Use the form here to get your access token:
      </p>
      <form action="/login" method="POST">
 
@@ -50,9 +54,20 @@
          <input name="password" type="password"/>
 
          <br/>
-       <input type="submit" value="Login"/>
+       <input type="submit" value="Request access token"/>
 
      </form>
+     <p>
+      When calling delete, or create jobs you pass in the 'access_token' in an 'Authorization' header
+      and add the word 'Bearer'. For instance if your token is 'xyz' your header should be
+      -H 'Authorization: Bearer xyz'. For the GET calls and dryrun calls you don't need a token which
+      makes it easier to craft your requests before worrying about authorization.
+     </p>
+     <p>
+     You can also request a token from the commandline with curl by issueing a POST request to the /login route
+     and just pass in username and password as form parameters : 
+      curl -X  POST -F "username=somelogin@meemoo.be" -F "password=PW_HERE" http://localhost:8080/login
+     </p>
 
      <ul>
         <li><a href="/jobs?page=1"> GET /jobs </a> 
@@ -66,7 +81,9 @@
         <li>DELETE /jobs/&lt;id>  
            - get api job, set status to "deleted" and run 
              openshift oc call to delete any openshift jobs 
-             started with these parameters. 
+             started with these parameters.<br/>
+             Example: 
+              curl -X DELETE -H 'Authorization: Bearer access_token' http://localhost:8080/jobs/123
         </li>
 
         <li><a href="/sync_jobs?page=1"> GET /sync_jobs </a>

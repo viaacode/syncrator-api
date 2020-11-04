@@ -14,6 +14,7 @@ from app.syncrator_api import app
 from app.models import db
 
 from .fixtures import jobs_fixture
+from .fixtures import jwt_token
 from sqlalchemy import exc as sa_exc
 
 db_fd = None
@@ -148,13 +149,24 @@ def test_delete_job(client, setup):
     assert res.status_code == 200
     assert job_before['status'] != 'deleted'
 
-    res = client.delete('/jobs/3')
+    res = client.delete(
+        '/jobs/3',
+        headers={'Authorization': jwt_token()}
+    )
     job_after = res.get_json()
     assert job_after['status'] == 'deleted'
 
 
-def test_delete_unknown_job(client, setup):
+def test_delete_without_token(client, setup):
     resp = client.delete('/jobs/2000')
+    assert resp.status_code == 401
+
+
+def test_delete_unknown_job(client, setup):
+    resp = client.delete(
+        '/jobs/2000',
+        headers={'Authorization': jwt_token()}
+    )
     assert resp.status_code == 404
 
 
@@ -186,8 +198,28 @@ def test_dryrun_matches_templated_get(client):
     assert generic_data == delta_data
 
 
+def test_general_job_run_unauthorized(client):
+    # test both should give unauthorized if authorization
+    # header is missing
+    resp = client.post('/run',
+                       json={
+                           'target': 'avo',
+                           'env': 'qas',
+                                  'action_name': 'delta',
+                                  'action': 'delta',
+                                  'is_tag': 'latest',
+                                  'options': '-n 1000 -c 1',
+                       })
+    assert resp.status_code == 401
+
+    res_delta = client.post('/delta/avo/qas')
+    assert res_delta.status_code == 401
+
+
+# test that a generic run call with correct params gives same results
 def test_general_job_run(client):
     resp = client.post('/run',
+                       headers={'Authorization': jwt_token()},
                        json={
                            'target': 'avo',
                            'env': 'qas',
@@ -199,12 +231,13 @@ def test_general_job_run(client):
     assert resp.status_code == status.HTTP_200_OK
     generic_data = resp.get_json()
 
-    res_delta = client.post('/delta/avo/qas')
+    res_delta = client.post(
+        '/delta/avo/qas',
+        headers={'Authorization': jwt_token()}
+    )
     assert res_delta.status_code == status.HTTP_200_OK
     delta_data = res_delta.get_json()
 
-    # test that a generic run call with correct params gives same
-    # result as a preconfigred delta run (both dryruns)
     assert generic_data['ENV'] == delta_data['ENV']
     assert generic_data['TARGET'] == delta_data['TARGET']
     assert generic_data['ACTION'] == delta_data['ACTION']
@@ -254,8 +287,16 @@ def test_random_404(client, setup):
     assert resp.status_code == 404
 
 
-def test_diff_job(client):
+def test_diff_job_without_token(client):
     res = client.post('/diff/avo/qas')
+    assert res.status_code == 401  # unauthorized
+
+
+def test_diff_job(client):
+    res = client.post(
+        '/diff/avo/qas',
+        headers={'Authorization': jwt_token()}
+    )
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()

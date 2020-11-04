@@ -17,7 +17,7 @@ def test_jwt():
     jwt_token += "dm8iLCJhY2NvdW50LW1hbmFnZXIiLCJoZXRhcmNoaWVmIiwic3luY3"
     jwt_token += "JhdG9yLWFwaSJdLCJleHAiOjE2MDQ1MDQzODUsImlzcyI6IlZJQUEi"
     jwt_token += "LCJqdGkiOiI3ZGU4MjM1NjM1ZWE0OTA2NTE1ODQxMWE3ZDJiOTk4MC"
-    jwt_token += "J9.jCDOO3FxGsrMQxXUcTleIdEt2EvMc4eBRmuSnarUpQI"
+    jwt_token += "J9.jCDOO3FxGsrMQxXUcTleIdEt2EvMc4eBRmuSnarTEST"
 
     assert verify_token('Bearer ' + jwt_token)
 

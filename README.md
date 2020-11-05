@@ -244,6 +244,9 @@ For example a delete job call will become:
 $ curl -X DELETE -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' http://localhost:8080/jobs/123
 ```
 
+The syncrator-api validates you have a token and that you have access to the 'syncrator' app on ldap by looking at the apps
+listed in your token. You can add the syncrator app to your account using the account manager (ACM) and then use your regular
+avo2 or hetarchief or cataloguspro account login and pass here. 
 
 ### Examples
 

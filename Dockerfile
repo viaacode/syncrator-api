@@ -35,6 +35,13 @@ RUN pip3 install -r requirements.txt \
 
 USER appuser
 
+ENV OAS_JWT_SECRET ''
+ENV OAS_SERVER 'https://oas-qas.hetarchief.be'
+ENV OAS_APPNAME 'syncrator'
+ENV OC_USER 'configure_user'
+ENV OC_PASSWORD 'configure_pass'
+
+
 # This command will be run when starting the container. It is the same one that
 # can be used to run the application locally.
 ENTRYPOINT [ "uwsgi", "-i", "uwsgi.ini"]

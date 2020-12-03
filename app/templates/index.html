@@ -14,7 +14,13 @@
         a {
           color: #007487;
         }
-
+        pre {
+          background-color: #ddefef;
+          border: 1px solid #5ca8af;
+          padding: 1em;
+          padding-bottom: 0;
+          border-radius: 5px;
+        }
         label {
           display:inline-block;
           width: 5em;
@@ -66,7 +72,11 @@
      <p>
      You can also request a token from the commandline with curl by issueing a POST request to the /login route
      and just pass in username and password as form parameters : 
-      curl -X  POST -F "username=somelogin@meemoo.be" -F "password=PW_HERE" http://localhost:8080/login
+      <pre>
+$ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/login \
+  -F "username=somelogin@meemoo.be" \
+  -F "password=PW_HERE"
+      </pre>
      </p>
 
      <ul>
@@ -250,10 +260,44 @@
         <li> POST /run             
           - start custom syncrator job by passing all 
           template parameters (target, env, action_name, action, is_tag, options)
+
+          <h3>Example</h3>
+          This and any of the above POST calls does actual work (fire up a syncrator pod to sync data). Therefore you need a valid authorization jwt token.
+          <pre>
+$ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/run \
+  -H 'Content-Type:application/json' \
+  -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
+  -d '{
+    "target":"avo",
+    "env":"qas",
+    "action_name": "delta",
+    "action": "delta",
+    "is_tag": "latest",
+    "options": "-n 1000 -c 1"
+    }'
+
+          </pre>
+
         </li>
         <li> POST /dryrun          
-          - dryrun custom job by passing all 
+          - dryrun custom job by passing all. 
           template parameters (target, env, action_name, action, is_tag, options)
+          <h3>Example</h3>
+Dryrun and get requests don't need a token so you can test your call before doing any real server changes. It does return the same output as for an actual run call
+but does not start the actual pod to do the work in the background. Therefor a job_id wont be returned either.
+          <pre>
+$ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun \
+  -H 'Content-Type:application/json' \
+  -d '{
+    "target":"avo",
+    "env":"qas",
+    "action_name": "delta",
+    "action": "delta",
+    "is_tag": "latest",
+    "options": "-n 1000 -c 1"
+    }'
+
+          </pre>
         </li>
      </ul>
 

@@ -9,12 +9,14 @@
 import os
 import requests
 import jwt
+import base64
 
 from functools import wraps
 from flask import request, abort
 
 OAS_SERVER = os.environ.get('OAS_SERVER', 'https://oas-qas.hetarchief.be')
 OAS_APPNAME = os.environ.get('OAS_APPNAME', 'syncrator')
+OAS_JWT_SECRET = os.environ.get('OAS_JWT_SECRET', '')
 
 
 def get_token(username, password):
@@ -32,9 +34,11 @@ def get_token(username, password):
         return result.json()
 
 
+def skip_signature_check():
+    return len(OAS_JWT_SECRET) == 0
+
+
 def verify_token(auth_token):
-    # future TODO: validate token signature with an extra api call to be
-    # provided by Herwig.
     try:
         if 'Bearer' not in auth_token:
             return False
@@ -42,11 +46,40 @@ def verify_token(auth_token):
         # first strip 'Bearer ' from auth_token string to get jwt token
         jwt_token = auth_token.strip().replace("Bearer ", "")
 
-        # decode token and check allowed apps contains our OAS_APPNAME
-        dt = jwt.decode(jwt_token, verify=False)
-        allowed_apps = dt.get('aud')
-        return OAS_APPNAME in allowed_apps
-    except jwt.exceptions.DecodeError:
+        # we only validate signature if OAS_JWT_SECRET is supplied
+        if skip_signature_check():
+            print(
+                "WARNING skipping jwt verification, configure OAS_JWT_SECRET!",
+                flush=True)
+            dt = jwt.decode(jwt_token, verify=False)
+
+            # check allowed apps contains our OAS_APPNAME
+            allowed_apps = dt.get('aud')
+            return OAS_APPNAME in allowed_apps
+        else:
+            # jwt_secret we base64 decode as bytes and remove end of file
+            # marker
+            jwt_secret = base64.b64decode(
+                OAS_JWT_SECRET.encode()).replace(
+                b'\x1a', b'')
+
+            # this not only checks signature but also if audience 'aud'
+            # contains syncrator
+            dt = jwt.decode(
+                jwt_token,
+                jwt_secret,
+                audience=['syncrator'],
+                algorithms=['HS256'])
+            return True
+
+    except jwt.exceptions.DecodeError as de:
+        print(f"caught decode error de={de}", flush=True)
+        return False
+    except jwt.exceptions.ExpiredSignatureError:
+        print("jwt token is expired", flush=True)
+        return False
+    except jwt.exceptions.InvalidAudienceError:
+        print("invalid audience in jwt token.", flush=True)
         return False
 
 

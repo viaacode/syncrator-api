@@ -508,3 +508,12 @@ We see job status is now completed here. all went well the syncrator pod finishe
 the whole cycle repeats.
 If anything goes wrong status will be 'failed' this is set by syncrator itself when api_job_id is passed you may also do another post or delete the job in this case.
 
+
+### Verification of bearer token
+In order to verify bearer token the secret key is shared. This is base64 encode hs256 jwt key. We share the key as environment variable OAS_JWT_SECRET
+and it is stored here for qas: https://do-prd-okp-m0.do.viaa.be:8443/console/project/public-api/browse/secrets/avo-oas-qas-develop-config
+and here for prd: https://do-prd-okp-m0.do.viaa.be:8443/console/project/public-api/browse/secrets/avo-oas-prd-master-config.
+
+The k value for the respective environment is stored in OAS_JWT_SECRET and the syncrator-api decodes + verifies the jwt signature from OAS in the verify_token method in app/authorization.py we also verify the audience == 'syncrator' this is the 'aud' in the jwt token. When signature verification is enabled this verifies also the audience and throws an exception if it does not match (which is caught and results in a 401 access denied). Without the OAS_JWT_SECRET a fallback mode decodes the jwt token and checks the 'aud' value but this is unsecure and therefore a warning message will be printed to setup the secret properly.
+
+

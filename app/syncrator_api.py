@@ -21,6 +21,7 @@ from viaa.observability import logging
 from sqlalchemy.exc import OperationalError
 from app.config import flask_environment
 from app.authorization import get_token, requires_authorization
+from flask import abort
 
 app = Flask(__name__)
 config = ConfigParser()
@@ -196,15 +197,18 @@ def syncrator_dryrun():
 
 
 def job_params_from_request():
-    request_data = request.json
-    return {
-        'TARGET': request_data['target'],
-        'ENV': request_data['env'],
-        'ACTION_NAME': request_data['action_name'],
-        'ACTION': request_data['action'],
-        'IS_TAG': request_data['is_tag'],
-        'OPTIONS': request_data['options']
-    }
+    try:
+        request_data = request.json
+        return {
+            'TARGET': request_data['target'],
+            'ENV': request_data['env'],
+            'ACTION_NAME': request_data['action_name'],
+            'ACTION': request_data['action'],
+            'IS_TAG': request_data['is_tag'],
+            'OPTIONS': request_data['options']
+        }
+    except TypeError:
+        abort(400, 'Invalid job parameters')
 
 
 def create_or_find_job(job_params, dryrun=False):

@@ -57,8 +57,8 @@ def verify_token(auth_token):
             allowed_apps = dt.get('aud')
             return OAS_APPNAME in allowed_apps
         else:
-            # jwt_secret we base64 decode as bytes and remove end of file
-            # marker
+            # jwt_secret we base64 decode as bytes and remove EOF marker
+            # and extra padding added in case secret len is not multiple of 4
             jwt_secret = base64.b64decode(
                 OAS_JWT_SECRET.encode()+b'===').replace(
                 b'\x1a', b'')

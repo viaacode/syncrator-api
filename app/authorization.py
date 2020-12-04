@@ -60,7 +60,7 @@ def verify_token(auth_token):
             # jwt_secret we base64 decode as bytes and remove end of file
             # marker
             jwt_secret = base64.b64decode(
-                OAS_JWT_SECRET.encode()).replace(
+                OAS_JWT_SECRET.encode()+b'===').replace(
                 b'\x1a', b'')
 
             # this not only checks signature but also if audience 'aud'

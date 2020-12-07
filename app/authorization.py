@@ -12,7 +12,7 @@ import jwt
 import base64
 
 from functools import wraps
-from flask import request, abort
+from flask import request, abort, jsonify
 
 OAS_SERVER = os.environ.get('OAS_SERVER', 'https://oas-qas.hetarchief.be')
 OAS_APPNAME = os.environ.get('OAS_APPNAME', 'syncrator')
@@ -29,7 +29,7 @@ def get_token(username, password):
             username, password))
 
     if result.status_code == 401:
-        return {'error': 'wrong username or password'}
+        abort(401, jsonify(message='wrong username or password'))
     else:
         return result.json()
 
@@ -60,7 +60,7 @@ def verify_token(auth_token):
             # jwt_secret we base64 decode as bytes and remove EOF marker
             # and extra padding added in case secret len is not multiple of 4
             jwt_secret = base64.b64decode(
-                OAS_JWT_SECRET.encode()+b'===').replace(
+                OAS_JWT_SECRET.encode() + b'===').replace(
                 b'\x1a', b'')
 
             # this not only checks signature but also if audience 'aud'
@@ -73,14 +73,11 @@ def verify_token(auth_token):
             return True
 
     except jwt.exceptions.DecodeError as de:
-        print(f"caught decode error de={de}", flush=True)
-        return False
+        abort(401, jsonify(message=f"jwt token decode error {de}"))
     except jwt.exceptions.ExpiredSignatureError:
-        print("jwt token is expired", flush=True)
-        return False
+        abort(401, jsonify(message='jwt token is expired'))
     except jwt.exceptions.InvalidAudienceError:
-        print("invalid audience in jwt token.", flush=True)
-        return False
+        abort(401, jsonify(message='invalid audience in jwt token'))
 
 
 # decorator verifies token authenticity

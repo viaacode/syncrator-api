@@ -28,7 +28,6 @@ def get_token(username, password):
         token_url, data=token_params, auth=(
             username, password))
 
-    print(f"oas token result={result}", flush=True)
     if result.status_code == 401:
         abort(401, jsonify(message='wrong username or password'))
     else:
@@ -52,7 +51,13 @@ def verify_token(auth_token):
             print(
                 "WARNING skipping jwt verification, configure OAS_JWT_SECRET!",
                 flush=True)
-            dt = jwt.decode(jwt_token, verify=False)
+            dt = jwt.decode(
+                jwt_token,
+                audience=[OAS_APPNAME],
+                algorithms=['HS256'],
+                verify=False,
+                options={'verify_signature': False}
+            )
 
             # check allowed apps contains our OAS_APPNAME
             allowed_apps = dt.get('aud')
@@ -74,10 +79,13 @@ def verify_token(auth_token):
             return True
 
     except jwt.exceptions.DecodeError as de:
+        print(f"JWT decode error {de}", flush=True)
         abort(401, jsonify(message=f"jwt token decode error {de}"))
     except jwt.exceptions.ExpiredSignatureError:
+        print("JWT token expired", flush=True)
         abort(401, jsonify(message='jwt token is expired'))
     except jwt.exceptions.InvalidAudienceError:
+        print("JWT invalid audience", flush=True)
         abort(401, jsonify(message='invalid audience in jwt token'))
 
 

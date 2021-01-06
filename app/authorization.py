@@ -28,6 +28,7 @@ def get_token(username, password):
         token_url, data=token_params, auth=(
             username, password))
 
+    print(f"oas token result={result}", flush=True)
     if result.status_code == 401:
         abort(401, jsonify(message='wrong username or password'))
     else:
@@ -68,7 +69,7 @@ def verify_token(auth_token):
             dt = jwt.decode(
                 jwt_token,
                 jwt_secret,
-                audience=['syncrator'],
+                audience=[OAS_APPNAME],
                 algorithms=['HS256'])
             return True
 

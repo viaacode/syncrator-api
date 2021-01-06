@@ -96,6 +96,7 @@ You can use the scripts/coverage helper to show testing coverage report.
 After running it you can open htmlcov/index.html to see a nice detailed report on all code which is tested or missed during tests.
 
 ```
+$ scripts/coverage
 $ ==================================== test session starts ====================================
 platform darwin -- Python 3.7.6, pytest-5.4.1, py-1.8.1, pluggy-0.13.1
 rootdir: /Users/wschrep/FreelanceWork/VIAA/syncrator-api

@@ -161,27 +161,29 @@ DELETE /jobs/<id> - get api job, set status to "deleted" and run openshift oc ca
 GET /sync_jobs - paginated list of all sync jobs (these include syncrator runs started with CRON)
 
 GET /delta/avo/qas - delta synchronisation job dryrun
-POST /delta/<project>/<env> - start a new delta synchronisation job
+POST /delta/<project> - start a new delta synchronisation job
 
 GET /delete/avo/qas - delete synchronisation job dryrun
-POST /delete/<project>/<env> - start a new delete synchronisation job
+POST /delete/<project> - start a new delete synchronisation job
 
 GET /diff/avo/qas - dryrun for delta followed by delete in one go for partial updates
-POST /diff/<project>/<env> - start delta job followed by a delete job
+POST /diff/<project> - start delta job followed by a delete job
 
 GET /sync/avo/qas - full synchronisation job dryrun
-POST /sync/<project>/<env> - start a new full synchronisation job
+POST /sync/<project> - start a new full synchronisation job
 
 POST /run - start custom syncrator job by passing all template parameters (target, env, action_name, action, is_tag, options)
 POST /dryrun - dryrun custom job by passing all template parameters (target, env, action_name, action, is_tag, options)
 ```
+Just running the application and surfing to the root route will give the most up to date calls and docs that are implemented.
+
 
 
 As mentioned in examples the sync, delta, delete (and to be implemented diff) calls can all be done
 using the /run and /dryrun post's but you will need to exactly specify the 6 parameters that fill in the template.
 
 ### Paremetrised jobs
-When using the simplified calls ex /sync/avo/qas or /delta/avo/prd these do a lookup in the parameter files defined 
+When using the simplified calls ex /sync/avo or /delta/avo these do a lookup in the parameter files defined 
 in the directory 'syncrator-openshift/job_params'.
 Here is a list of all currently predefined params: 
 ```
@@ -212,8 +214,6 @@ syncrator-openshift/job_params
     ├── metadatacatalogus-delta.public_params
     ├── metadatacatalogus-diff.public_params
     └── metadatacatalogus-sync.public_params
-
-2 directories, 24 files
 
 ```
 
@@ -253,12 +253,12 @@ avo2 or hetarchief or cataloguspro account login and pass here.
 
 Example run a full sync on avo project in qas environment as dryrun we first want to see the template output. We use jq to show only the template result:
 ```
-$ curl http://127.0.0.1:8080/sync/avo/qas 
+$ curl http://127.0.0.1:8080/sync/avo
 ```
 
 To now have an actual syncrator pod startup just make same request but then with a post call:
 ```
-$ curl -X POST http://127.0.0.1:8080/sync/avo/qas
+$ curl -X POST http://127.0.0.1:8080/sync/avo
 ```
 
 
@@ -268,7 +268,6 @@ If you don't want or don't have a predifined template (.public_params file) you 
 $ curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo", 
-    "env":"qas",
     "action_name": "delta",
     "action": "delta",
     "is_tag": "latest",
@@ -276,9 +275,13 @@ $ curl -X POST http://localhost:8080/dryrun -H 'Content-Type:application/json' -
     }'
 ```
 
+The env is now determined by the SYNC_ENV environment variable that defaults to 'qas' if unconfigured. For the production pod it
+is set to 'prd' and this in term then uses a specific environment configuration on openshift determined by the env and project params:
+https://do-prd-okp-m0.do.viaa.be:8443/console/project/shared-components/browse/config-maps
+
 This has the same result as doing following request as this already exists:
 ```
-$ curl http://127.0.0.1:8080/delta/avo/qas
+$ curl http://127.0.0.1:8080/delta/avo
 ```
 
 To make the actual pod start and execute the openshift commands use the path 'run' instead of 'dryrun'
@@ -289,7 +292,6 @@ Delta dryrun example
 $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun -H 'Content-Type:application/json' -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo",
-    "env":"qas",
     "action_name": "delta",
     "action": "delta",
     "is_tag": "latest",
@@ -318,7 +320,6 @@ Now running same job as above for real:
 $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run -H 'Content-Type:application/json' -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo",
-    "env":"qas",
     "action_name": "delta",
     "action": "delta",
     "is_tag": "latest",
@@ -412,7 +413,7 @@ $ curl -X DELETE http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.d
 Start actual syncrator sync job with progress by calling it with a post request:
 
 ```
-$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo/qas -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN'
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/sync/avo -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN'
 {
   "ACTION": "sync",
   "ACTION_NAME": "sync",

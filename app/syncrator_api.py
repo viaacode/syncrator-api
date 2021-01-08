@@ -38,7 +38,11 @@ def index():
         "configuration = ", dictionary={
             'environment': flask_environment()
         })
-    return render_template('index.html')
+
+    return render_template(
+        'index.html',
+        environment=app.config.get('SYNC_ENV')
+    )
 
 
 @app.route('/login', methods=['POST'])
@@ -119,10 +123,11 @@ def list_sync_jobs():
     return jsonify(jobs)
 
 
-@app.route("/sync/<string:project>/<string:environment>",
+@app.route("/sync/<string:project>",
            methods=['GET', 'POST'])
 @requires_authorization
-def start_sync_job(project, environment):
+def start_sync_job(project):
+    environment = app.config.get('SYNC_ENV')
     try:
         return run(
             read_params_file(environment, project, 'sync'),
@@ -134,10 +139,11 @@ def start_sync_job(project, environment):
                 project, environment, fe), 400
 
 
-@app.route("/delta/<string:project>/<string:environment>",
+@app.route("/delta/<string:project>",
            methods=['GET', 'POST'])
 @requires_authorization
-def start_delta_job(project, environment):
+def start_delta_job(project):
+    environment = app.config.get('SYNC_ENV')
     try:
         return run(
             read_params_file(environment, project, 'delta'),
@@ -149,13 +155,14 @@ def start_delta_job(project, environment):
                 project, environment, fe), 400
 
 
-@app.route("/delete/<string:project>/<string:environment>",
+@app.route("/delete/<string:project>",
            methods=['GET', 'POST'])
 @requires_authorization
-def start_delete_job(project, environment):
+def start_delete_job(project):
+    environment = app.config.get('SYNC_ENV')
     try:
         return run(
-            read_params_file(environment, project, 'delete'),
+            read_params_file(app.config.get('SYNC_ENV'), project, 'delete'),
             dryrun=request.method == 'GET'
         )
     except FileNotFoundError as fe:
@@ -164,13 +171,14 @@ def start_delete_job(project, environment):
                 project, environment, fe), 400
 
 
-@app.route("/diff/<string:project>/<string:environment>",
+@app.route("/diff/<string:project>",
            methods=['GET', 'POST'])
 @requires_authorization
-def start_diff_job(project, environment):
+def start_diff_job(project):
+    environment = app.config.get('SYNC_ENV')
     try:
         return run(
-            read_params_file(environment, project, 'diff'),
+            read_params_file(app.config.get('SYNC_ENV'), project, 'diff'),
             dryrun=request.method == 'GET'
         )
     except FileNotFoundError as fe:
@@ -201,7 +209,7 @@ def job_params_from_request():
         request_data = request.json
         return {
             'TARGET': request_data['target'],
-            'ENV': request_data['env'],
+            'ENV': app.config.get('SYNC_ENV'),  # request_data['env'],
             'ACTION_NAME': request_data['action_name'],
             'ACTION': request_data['action'],
             'IS_TAG': request_data['is_tag'],

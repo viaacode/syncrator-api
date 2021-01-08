@@ -17,13 +17,13 @@ def vcr_config():
 
 
 def test_solr_preperation(client):
-    res = client.get('/sync/metadatacatalogus/qas')
+    res = client.get('/sync/metadatacatalogus')
     assert res.status_code == 200
 
     job_params = res.get_json()
     assert '--switch_solr_alias' in job_params['result']
 
-    res = client.get('/sync/cataloguspro/qas')
+    res = client.get('/sync/cataloguspro')
     assert res.status_code == 200
 
     job_params = res.get_json()
@@ -32,7 +32,7 @@ def test_solr_preperation(client):
     assert '--target_env qas' in job_params['result']
 
     # test for avo we don't need the solr commands
-    res = client.get('/sync/avo/qas')
+    res = client.get('/sync/avo')
     assert res.status_code == 200
 
     job_params = res.get_json()

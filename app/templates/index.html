@@ -46,6 +46,7 @@
    <body>
       
      <h1>Syncrator-API</h1>
+     <h4>(Environment: {{environment}})</h4>
 
      <p>For POST and DELETE calls that alter state, you need to also pass an access token in the Authorization header.</p>
      <p>
@@ -73,7 +74,7 @@
      You can also request a token from the commandline with curl by issueing a POST request to the /login route
      and just pass in username and password as form parameters : 
       <pre>
-$ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/login \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/login \
   -F "username=somelogin@meemoo.be" \
   -F "password=PW_HERE"
       </pre>
@@ -103,39 +104,81 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
         <br/>
      </ul>
 
-      
-
-      <h2>Example: AVO jobs sync to postgres in shared.items</h2>
+     <h2>Managing syncrator jobs</h2>
       <ul>
-        <li><a href="/delta/avo/qas">GET /delta/avo/qas</a> 
-           - delta synchronisation job dryrun
+        <li>GET /delta/&lt;project>
+           - delta synchronisation job dryrun : shows configuration but doesn't really run a pod
         </li>
         
-        <li> POST /delta/&lt;project>/&lt;env>             
-          - start a new delta synchronisation job
+        <li> POST /delta/&lt;project>             
+          - start a new delta synchronisation job: runs actual openshift syncrator pod
         </li>
         <br/>
 
-        <li><a href="/delete/avo/qas">GET /delete/avo/qas</a> 
+        <li>GET /delete/&lt;project>
           - delete synchronisation job dryrun
         </li>
-        <li> POST /delete/&lt;project>/&lt;env>            
-          - start a new delete synchronisation job
+        <li> POST /delete/&lt;project>            
+          - start a new delete synchronisation job (delete removes items not present anymore in target)
         </li>
         <br/>
 
-        <li><a href="/diff/avo/qas">GET /diff/avo/qas</a> 
+        <li>GET /diff/&lt;project>
           - dryrun for delta followed by delete in one go for partial updates
         </li>
-        <li> POST /diff/&lt;project>/&lt;env>             
+        <li> POST /diff/&lt;project>             
           - start delta job followed by a delete job
         </li>
         <br/>
 
-        <li><a href="/sync/avo/qas">GET /sync/avo/qas</a> 
+        <li>GET /sync/&lt;project> 
           - full synchronisation job dryrun
         </li>
-        <li> POST /sync/&lt;project>/&lt;env>             
+        <li> POST /sync/&lt;project>             
+          - start a new full synchronisation job
+        </li>
+        <br/>
+      </ul>
+
+      <p>The <b>project</b> parameter can be one of these currently:
+      <b>avo, avosubtitles, cataloguspro, metadatacatalogus</b>
+      <br/>
+      But more might be added. To get an updated list look at the <a href="https://do-prd-okp-m0.do.viaa.be:8443/console/project/shared-components/browse/config-maps">openshift config maps
+      defined for each syncrator project</a> 
+      </p>
+      
+
+      <h2>Example: AVO jobs sync to postgres in shared.items</h2>
+      <ul>
+        <li><a href="/delta/avo">GET /delta/avo</a> 
+           - delta synchronisation job dryrun
+        </li>
+        
+        <li> POST /delta/&lt;project>             
+          - start a new delta synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/delete/avo">GET /delete/avo</a> 
+          - delete synchronisation job dryrun
+        </li>
+        <li> POST /delete/&lt;project>            
+          - start a new delete synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/diff/avo">GET /diff/avo</a> 
+          - dryrun for delta followed by delete in one go for partial updates
+        </li>
+        <li> POST /diff/&lt;project>             
+          - start delta job followed by a delete job
+        </li>
+        <br/>
+
+        <li><a href="/sync/avo">GET /sync/avo</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/&lt;project>             
           - start a new full synchronisation job
         </li>
         <br/>
@@ -145,35 +188,35 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
 
       <h2>Example: AVO subtitle jobs sync to postgres in shared.collateral</h2>
       <ul>
-        <li><a href="/delta/avosubtitles/qas">GET /delta/avosubtitles/qas</a> 
+        <li><a href="/delta/avosubtitles">GET /delta/avosubtitles</a> 
            - delta synchronisation job dryrun
         </li>
         
-        <li> POST /delta/&lt;project>/&lt;env>             
+        <li> POST /delta/&lt;project>             
           - start a new delta synchronisation job
         </li>
         <br/>
 
-        <li><a href="/delete/avosubtitles/qas">GET /delete/avosubtitles/qas</a> 
+        <li><a href="/delete/avosubtitles">GET /delete/avosubtitles</a> 
           - delete synchronisation job dryrun
         </li>
-        <li> POST /delete/&lt;project>/&lt;env>            
+        <li> POST /delete/&lt;project>            
           - start a new delete synchronisation job
         </li>
         <br/>
 
-        <li><a href="/diff/avosubtitles/qas">GET /diff/avosubtitles/qas</a> 
+        <li><a href="/diff/avosubtitles">GET /diff/avosubtitles</a> 
           - dryrun for delta followed by delete in one go for partial updates
         </li>
-        <li> POST /diff/&lt;project>/&lt;env>             
+        <li> POST /diff/&lt;project>             
           - start delta job followed by a delete job
         </li>
         <br/>
 
-        <li><a href="/sync/avosubtitles/qas">GET /sync/avosubtitles/qas</a> 
+        <li><a href="/sync/avosubtitles">GET /sync/avosubtitles</a> 
           - full synchronisation job dryrun
         </li>
-        <li> POST /sync/&lt;project>/&lt;env>             
+        <li> POST /sync/&lt;project>             
           - start a new full synchronisation job
         </li>
         <br/>
@@ -182,35 +225,35 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
 
       <h2>Example: Cataloguspro sync to SOLR </h2>
       <ul>
-        <li><a href="/delta/cataloguspro/qas">GET /delta/cataloguspro/qas</a> 
+        <li><a href="/delta/cataloguspro">GET /delta/cataloguspro</a> 
            - delta synchronisation job dryrun
         </li>
         
-        <li> POST /delta/&lt;project>/&lt;env>             
+        <li> POST /delta/&lt;project>             
           - start a new delta synchronisation job
         </li>
         <br/>
 
-        <li><a href="/delete/cataloguspro/qas">GET /delete/cataloguspro/qas</a> 
+        <li><a href="/delete/cataloguspro">GET /delete/cataloguspro</a> 
           - delete synchronisation job dryrun
         </li>
-        <li> POST /delete/&lt;project>/&lt;env>            
+        <li> POST /delete/&lt;project>            
           - start a new delete synchronisation job
         </li>
         <br/>
 
-        <li><a href="/diff/cataloguspro/qas">GET /diff/cataloguspro/qas</a> 
+        <li><a href="/diff/cataloguspro">GET /diff/cataloguspro</a> 
           - dryrun for delta followed by delete in one go for partial updates
         </li>
-        <li> POST /diff/&lt;project>/&lt;env>             
+        <li> POST /diff/&lt;project>             
           - start delta job followed by a delete job
         </li>
         <br/>
 
-        <li><a href="/sync/cataloguspro/qas">GET /sync/cataloguspro/qas</a> 
+        <li><a href="/sync/cataloguspro">GET /sync/cataloguspro</a> 
           - full synchronisation job dryrun
         </li>
-        <li> POST /sync/&lt;project>/&lt;env>             
+        <li> POST /sync/&lt;project>             
           - start a new full synchronisation job
         </li>
         <br/>
@@ -218,42 +261,50 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
 
       <h2>Example: Metadatacatalogus / Hetarchief sync to SOLR </h2>
       <ul>
-        <li><a href="/delta/metadatacatalogus/qas">GET /delta/metadatacatalogus/qas</a> 
+        <li><a href="/delta/metadatacatalogus">GET /delta/metadatacatalogus</a> 
            - delta synchronisation job dryrun
         </li>
         
-        <li> POST /delta/&lt;project>/&lt;env>             
+        <li> POST /delta/&lt;project>             
           - start a new delta synchronisation job
         </li>
         <br/>
 
-        <li><a href="/delete/metadatacatalogus/qas">GET /delete/metadatacatalogus/qas</a> 
+        <li><a href="/delete/metadatacatalogus">GET /delete/metadatacatalogus</a> 
           - delete synchronisation job dryrun
         </li>
-        <li> POST /delete/&lt;project>/&lt;env>            
+        <li> POST /delete/&lt;project>            
           - start a new delete synchronisation job
         </li>
         <br/>
 
-        <li><a href="/diff/metadatacatalogus/qas">GET /diff/metadatacatalogus/qas</a> 
+        <li><a href="/diff/metadatacatalogus">GET /diff/metadatacatalogus</a> 
           - dryrun for delta followed by delete in one go for partial updates
         </li>
-        <li> POST /diff/&lt;project>/&lt;env>             
+        <li> POST /diff/&lt;project>             
           - start delta job followed by a delete job
         </li>
         <br/>
 
-        <li><a href="/sync/metadatacatalogus/qas">GET /sync/metadatacatalogus/qas</a> 
+        <li><a href="/sync/metadatacatalogus">GET /sync/metadatacatalogus</a> 
           - full synchronisation job dryrun
         </li>
-        <li> POST /sync/&lt;project>/&lt;env>             
+        <li> POST /sync/&lt;project>             
           - start a new full synchronisation job
         </li>
         <br/>
       </ul>
 
 
-      <b> In above examples you can replace the environment 'qas' to 'prd' for production </b>
+      <b> In above examples the environment 'qas' or 'prd' is determined by which
+      syncrator-api pod you use.
+      </b>
+      <p>
+      For prd you go to: <a href="http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/">http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/</a>
+        <br/>
+        and for qas you use : 
+        <a href="http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/">http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/</a>
+      </p>
 
       <h2>Starting generic job with POST request</h2>
       <ul>
@@ -264,12 +315,11 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
           <h3>Example</h3>
           This and any of the above POST calls does actual work (fire up a syncrator pod to sync data). Therefore you need a valid authorization jwt token.
           <pre>
-$ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/run \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/run \
   -H 'Content-Type:application/json' \
   -H 'Authorization: Bearer YOUR_PERSONAL_TOKEN' \
   -d '{
     "target":"avo",
-    "env":"qas",
     "action_name": "delta",
     "action": "delta",
     "is_tag": "latest",
@@ -277,6 +327,7 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
     }'
 
           </pre>
+          NOTE: api has changed recently. the "env" var is implicit now. it is set on the pod with SYNC_ENV variable to be qas or prd depending on which syncrator-api pod url you use. This determines which environment you are syncing for now. Which makes more sence. Also prd and qas have seperate databases used for syncing and displaying jobs. Qas is now totally seperated from prd.
 
         </li>
         <li> POST /dryrun          
@@ -286,11 +337,10 @@ $ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.
 Dryrun and get requests don't need a token so you can test your call before doing any real server changes. It does return the same output as for an actual run call
 but does not start the actual pod to do the work in the background. Therefor a job_id wont be returned either.
           <pre>
-$ curl -X POST http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun \
+$ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/dryrun \
   -H 'Content-Type:application/json' \
   -d '{
     "target":"avo",
-    "env":"qas",
     "action_name": "delta",
     "action": "delta",
     "is_tag": "latest",

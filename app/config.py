@@ -27,7 +27,7 @@ class Config(object):
     JOBS_PER_PAGE = 50
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL', 'postgresql://postgres@localhost:5432/syncrator_dev')
-    API_KEY = os.environ.get('API_KEY', 'secret123')
+    SYNC_ENV = os.environ.get('SYNC_ENV', 'qas')
 
 
 class PrdConfig(Config):

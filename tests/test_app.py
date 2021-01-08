@@ -54,7 +54,7 @@ def test_liveness_check(client):
 
 
 def test_dryrun_sync_job(client):
-    res = client.get('/sync/avo/qas')
+    res = client.get('/sync/avo')
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
@@ -65,7 +65,7 @@ def test_dryrun_sync_job(client):
 
 
 def test_dryrun_delta_job(client):
-    res = client.get('/delta/avo/qas')
+    res = client.get('/delta/avo')
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
@@ -76,7 +76,7 @@ def test_dryrun_delta_job(client):
 
 
 def test_dryrun_delete_job(client):
-    res = client.get('/delete/avo/qas')
+    res = client.get('/delete/avo')
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
@@ -87,7 +87,7 @@ def test_dryrun_delete_job(client):
 
 
 def test_diff_job_dryrun(client):
-    res = client.get('/diff/avo/qas')
+    res = client.get('/diff/avo')
     assert res.status_code == status.HTTP_200_OK
 
     job = res.get_json()
@@ -183,7 +183,7 @@ def test_dryrun_matches_templated_get(client):
     assert res_generic.status_code == status.HTTP_200_OK
     generic_data = res_generic.get_json()
 
-    res_delta = client.get('/delta/avo/qas')
+    res_delta = client.get('/delta/avo')
     assert res_delta.status_code == status.HTTP_200_OK
     delta_data = res_delta.get_json()
 
@@ -212,7 +212,7 @@ def test_general_job_run_unauthorized(client):
                        })
     assert resp.status_code == 401
 
-    res_delta = client.post('/delta/avo/qas')
+    res_delta = client.post('/delta/avo')
     assert res_delta.status_code == 401
 
 
@@ -232,7 +232,7 @@ def test_general_job_run(client):
     generic_data = resp.get_json()
 
     res_delta = client.post(
-        '/delta/avo/qas',
+        '/delta/avo',
         headers={'Authorization': jwt_token()}
     )
     assert res_delta.status_code == status.HTTP_200_OK
@@ -288,13 +288,13 @@ def test_random_404(client, setup):
 
 
 def test_diff_job_without_token(client):
-    res = client.post('/diff/avo/qas')
+    res = client.post('/diff/avo')
     assert res.status_code == 401  # unauthorized
 
 
 def test_diff_job(client):
     res = client.post(
-        '/diff/avo/qas',
+        '/diff/avo',
         headers={'Authorization': jwt_token()}
     )
     assert res.status_code == status.HTTP_200_OK
@@ -307,14 +307,14 @@ def test_diff_job(client):
 
 
 def test_missing_template(client):
-    resp = client.get('/sync/unknownproject/qas')
+    resp = client.get('/sync/unknownproject')
     assert resp.status_code == 400
 
-    resp = client.get('/delete/unknownproject/qas')
+    resp = client.get('/delete/unknownproject')
     assert resp.status_code == 400
 
-    resp = client.get('/delta/unknownproject/qas')
+    resp = client.get('/delta/unknownproject')
     assert resp.status_code == 400
 
-    resp = client.get('/diff/unknownproject/prd')
+    resp = client.get('/diff/unknownproject')
     assert resp.status_code == 400

@@ -7,3 +7,5 @@ psycopg2==2.8.5
 requests>=2.23.0
 pyjwt>=1.7.0
 werkzeug==0.16.0
+jinja2==2.11.2
+itsdangerous==1.1.0

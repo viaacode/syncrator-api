@@ -16,6 +16,8 @@ from app.models import db
 from .fixtures import jobs_fixture
 from .fixtures import jwt_token
 from sqlalchemy import exc as sa_exc
+from app.openshift_utils import OC_URL
+
 
 db_fd = None
 
@@ -258,7 +260,7 @@ def test_dryrun_openshift_commands(client, setup):
     dryrun = resp.get_json()
 
     assert dryrun['result'] == ' '.join((
-        'oc login https://do-prd-okp-m0.do.viaa.be:8443',
+        f'oc login {OC_URL}',
         '-p "configure_user" -u "configure_pass"',
         '--insecure-skip-tls-verify > /dev/null ;',
         'oc project shared-components ;',

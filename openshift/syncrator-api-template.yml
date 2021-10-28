@@ -168,8 +168,7 @@ objects:
         app.openshift.io/runtime: syncrator-api
     stringData:
       OC_URL: ''
-      OC_USER: ''
-      OC_PASSWORD: ''
+      OC_SERVICE_ACCOUNT_TOKEN: ''
 parameters:
   - name: env
     value: "env"

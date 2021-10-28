@@ -38,8 +38,7 @@ USER appuser
 ENV OAS_JWT_SECRET ''
 ENV OAS_SERVER 'https://oas-qas.hetarchief.be'
 ENV OAS_APPNAME 'syncrator'
-ENV OC_USER 'configure_user'
-ENV OC_PASSWORD 'configure_pass'
+ENV OC_SERVICE_ACCOUNT_TOKEN 'configure_token'
 
 
 # This command will be run when starting the container. It is the same one that

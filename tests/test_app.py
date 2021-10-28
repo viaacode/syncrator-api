@@ -261,7 +261,7 @@ def test_dryrun_openshift_commands(client, setup):
 
     assert dryrun['result'] == ' '.join((
         f'oc login {OC_URL}',
-        '-p "configure_user" -u "configure_pass"',
+        '--token "configure_token"',
         '--insecure-skip-tls-verify > /dev/null ;',
         'oc project shared-components ;',
         'oc delete jobs syncrator-qas-avo-delta ;',

@@ -11,8 +11,7 @@ from app.solr_utils import prepare_solr_standby
 
 OC_URL = os.environ.get('OC_URL', 'https://do-prd-okp-m0.do.viaa.be:8443')
 OC_PROJECT_NAME = os.environ.get('OC_PROJECT_NAME', 'shared-components')
-OC_USER = os.environ.get('OC_USER', 'configure_user')
-OC_PASSWORD = os.environ.get('OC_PASSWORD', 'configure_pass')
+OC_TOKEN = os.environ.get('OC_SERVICE_ACCOUNT_TOKEN', 'configure_token')
 JOB_TEMPLATE_PARAMETER_PATH = "syncrator-openshift/job_params"
 
 
@@ -29,10 +28,9 @@ def oc_execute(cmd, path=None, dryrun=False):
 
 
 def oc_login():
-    login = 'oc login {} -p "{}" -u "{}" {} > /dev/null'.format(
+    login = 'oc login {} --token "{}" {} > /dev/null'.format(
         OC_URL,
-        OC_USER,
-        OC_PASSWORD,
+        OC_TOKEN,
         '--insecure-skip-tls-verify'
     )
 

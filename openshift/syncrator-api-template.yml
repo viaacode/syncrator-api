@@ -102,6 +102,8 @@ objects:
                     name: "syncrator-api-${env}"
                 - secretRef:
                     name: "syncrator-api-${env}"
+                - secretRef:
+                    name: syncrator-api-open-shift-auth
               image: >-
                 image-registry.openshift-image-registry.svc:5000/etl/syncrator-api:${env}
           restartPolicy: Always
@@ -131,12 +133,10 @@ objects:
         app.openshift.io/runtime-version: ${env}
         env: ${env}
     data:
-      DATABASE_URL: some_value
       OC_PROJECT_NAME: some_value
-      OC_URL: some_value
       OAS_SERVER: some_value
       OAS_APPNAME: some_value
-      SYNC_ENV: some_value
+      SYNC_ENV: "${env}"
   - kind: Secret
     apiVersion: v1
     metadata:
@@ -153,9 +153,23 @@ objects:
         env: ${env}
     stringData:
       DATABASE_URL: ''
+      OAS_JWT_SECRET: ''
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: syncrator-api-open-shift-auth
+      namespace: etl
+      labels:
+        app: syncrator-api
+        app.kubernetes.io/component: syncrator-api
+        app.kubernetes.io/instance: syncrator-api
+        app.kubernetes.io/name: syncrator-api
+        app.kubernetes.io/part-of: syncrator-api
+        app.openshift.io/runtime: syncrator-api
+    stringData:
+      OC_URL: ''
       OC_USER: ''
       OC_PASSWORD: ''
-      OAS_JWT_SECRET: ''
 parameters:
   - name: env
     value: "env"

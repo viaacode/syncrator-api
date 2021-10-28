@@ -28,10 +28,9 @@ def oc_execute(cmd, path=None, dryrun=False):
 
 
 def oc_login():
-    login = 'oc login {} --token "{}" {} > /dev/null'.format(
+    login = 'oc login {} --token "{}" > /dev/null'.format(
         OC_URL,
-        OC_TOKEN,
-        '--insecure-skip-tls-verify'
+        OC_TOKEN
     )
 
     commands = "{} ; {}".format(

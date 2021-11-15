@@ -109,7 +109,8 @@ objects:
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
-          securityContext: {}
+          securityContext:
+            runAsUser: 1000
           schedulerName: default-scheduler
       strategy:
         type: RollingUpdate

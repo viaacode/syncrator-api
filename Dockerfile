@@ -12,7 +12,7 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Make a new user so we don't run as root.
-RUN useradd -d /app appuser
+RUN useradd -d /app -m appuser
 
 WORKDIR /app
 

@@ -109,7 +109,8 @@ objects:
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
-          securityContext: {}
+          securityContext:
+            runAsUser: 1000
           schedulerName: default-scheduler
       strategy:
         type: RollingUpdate
@@ -168,8 +169,7 @@ objects:
         app.openshift.io/runtime: syncrator-api
     stringData:
       OC_URL: ''
-      OC_USER: ''
-      OC_PASSWORD: ''
+      OC_SERVICE_ACCOUNT_TOKEN: ''
 parameters:
   - name: env
     value: "env"

@@ -11,14 +11,14 @@ RUN apt-get update && \
     rm /tmp/oc.tar.gz && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Make a new group and user so we don't run as root.
-RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup
+# Make a new user so we don't run as root.
+RUN useradd -d /app -m appuser
 
 WORKDIR /app
 
 # Let the appuser own the files so he can rwx during runtime.
 COPY . .
-RUN chown -R appuser:appgroup /app
+RUN chown -R appuser /app
 
 # Install gcc and libc6-dev to be able to compile uWSGI
 RUN apt-get update && \
@@ -38,8 +38,7 @@ USER appuser
 ENV OAS_JWT_SECRET ''
 ENV OAS_SERVER 'https://oas-qas.hetarchief.be'
 ENV OAS_APPNAME 'syncrator'
-ENV OC_USER 'configure_user'
-ENV OC_PASSWORD 'configure_pass'
+ENV OC_SERVICE_ACCOUNT_TOKEN 'configure_token'
 
 
 # This command will be run when starting the container. It is the same one that

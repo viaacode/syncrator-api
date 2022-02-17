@@ -25,8 +25,10 @@ def get_token(username, password):
         'grant_type': 'client_credentials',
     }
     result = requests.get(
-        token_url, data=token_params, auth=(
-            username, password))
+        token_url,
+        data=token_params, 
+        auth=(username, password)
+    )
 
     if result.status_code == 401:
         abort(401, jsonify(message='wrong username or password'))

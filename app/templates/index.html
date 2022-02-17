@@ -295,12 +295,31 @@ $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
         <br/>
       </ul>
 
+      <h2>Example: Hetarchief V2 bezoekerstool</h2>
+      <ul>
+ 
+        <li><a href="/sync/hetarchief">GET /sync/hetarchief</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/hetarchief             
+          - start a new full synchronisation job for hetarchief using postgresql_v2
+        </li>
+        <br/>
+      </ul>
 
       <b> In above examples the environment 'qas' or 'prd' is determined by which
       syncrator-api pod you use.
       </b>
       <p>
-      For prd you go to: <a href="http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/">http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/</a>
+
+      <b>New syncrator-api pods:</b><br/>
+
+        PRD: <a href="https://syncrator-api-prd-etl.private.cloud.meemoo.be/">https://syncrator-api-prd-etl.private.cloud.meemoo.be/</a> <br/>
+        QAS: <a href="https://syncrator-api-qas-etl.private.cloud.meemoo.be/">https://syncrator-api-qas-etl.private.cloud.meemoo.be/</a> <br/>
+        <br/>
+
+        <b>Old syncrator-api pods:</b><br/>
+        For prd you go to: <a href="http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/">http://syncrator-api-prd-shared-components.apps.do-prd-okp-m0.do.viaa.be/</a>
         <br/>
         and for qas you use : 
         <a href="http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/">http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.viaa.be/</a>

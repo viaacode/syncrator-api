@@ -295,19 +295,49 @@ $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
         <br/>
       </ul>
 
-      <h2>Example: Hetarchief V2 bezoekerstool</h2>
+      <h2>Example: Hetarchief V2 voor bezoekerstool</h2>
+
       <ul>
- 
-        <li><a href="/sync/hetarchief">GET /sync/hetarchief</a> 
+       <li><a href="/delta/hetarchief_video">GET /delta/hetarchief_video</a> 
+           - delta synchronisation job dryrun
+        </li>
+        
+        <li> POST /delta/&lt;project>             
+          - start a new delta synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/delete/hetarchief_video">GET /delete/hetarchief_video</a> 
+          - delete synchronisation job dryrun
+        </li>
+        <li> POST /delete/hetarchief_video>            
+          - start a new delete synchronisation job
+        </li>
+        <br/>
+
+        <li><a href="/diff/hetarchief_video">GET /diff/hetarchief_video</a> 
+          - dryrun for delta followed by delete in one go for partial updates
+        </li>
+        <li> POST /diff/hetarchief>             
+          - start delta job followed by a delete job
+        </li>
+        <br/>
+
+        <li><a href="/sync/hetarchief_video">GET /sync/hetarchief_video</a> 
           - full synchronisation job dryrun
         </li>
-        <li> POST /sync/hetarchief             
+        <li> POST /sync/hetarchief_video             
           - start a new full synchronisation job for hetarchief using postgresql_v2
         </li>
         <br/>
       </ul>
+      <p>
+      For audio there are 4 seperate calls POST /sync/hetarchief_audio, POST /delta/hetarchief_audio etc... (These are work in progress and will be functional
+      once the target databas supports it + we need a seperate configmap most likely).
+      </p>
 
-      <b> In above examples the environment 'qas' or 'prd' is determined by which
+      <h3>Choosing QAS, PRD environment</h3>
+      In the above examples the environment 'qas' or 'prd' is determined by which
       syncrator-api pod you use.
       </b>
       <p>

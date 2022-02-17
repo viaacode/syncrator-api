@@ -26,7 +26,7 @@ def get_token(username, password):
     }
     result = requests.get(
         token_url,
-        data=token_params, 
+        data=token_params,
         auth=(username, password)
     )
 

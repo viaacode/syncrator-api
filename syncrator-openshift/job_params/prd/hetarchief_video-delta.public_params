@@ -1,0 +1,7 @@
+ENV=prd
+TARGET=archiefv2
+ACTION_NAME=delta
+ACTION=delta
+IS_TAG=latest
+MAM_MAIN_QUERY=+(MediaObjectType:video) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
+OPTIONS=-n 1000 -c 1

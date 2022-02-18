@@ -1,7 +1,7 @@
 ENV=qas
-TARGET=archiefv2
+TARGET=archiefaudio
 ACTION_NAME=delete
 ACTION=delete
-IS_TAG=latest
+IS_TAG=qas
 MAM_MAIN_QUERY=+(MediaObjectType:audio) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
 OPTIONS=-n 1000 -c 1

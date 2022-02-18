@@ -1,7 +1,7 @@
 ENV=qas
-TARGET=archiefv2
+TARGET=archiefvideo
 ACTION_NAME=sync
 ACTION=sync
-IS_TAG=latest
+IS_TAG=qas
 MAM_MAIN_QUERY=+(MediaObjectType:video) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
 OPTIONS=-n 1000 -c 1

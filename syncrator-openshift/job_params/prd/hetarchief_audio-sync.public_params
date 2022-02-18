@@ -1,7 +1,7 @@
 ENV=prd
-TARGET=archiefv2
+TARGET=archiefaudio
 ACTION_NAME=sync
 ACTION=sync
-IS_TAG=latest
+IS_TAG=prd
 MAM_MAIN_QUERY=+(MediaObjectType:audio) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
 OPTIONS=-n 1000 -c 1

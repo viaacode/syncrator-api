@@ -3,5 +3,5 @@ TARGET=cataloguspro
 ACTION_NAME=sync
 ACTION=sync
 MAM_MAIN_QUERY=+(MediaObjectType:audio MediaObjectType:video MediaObjectType:audiofragment MediaObjectType:videofragment) +(MediaObjectFragmentisiningestspace:0) +(MediaObjectFragmentDcrightslicensesMultiselect:(VIAA-INTRA_CP-METADATA-ALL OR VIAA-INTRA_CP-CONTENT)) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
-IS_TAG=stable
+IS_TAG=prd
 OPTIONS=-n 1000 -c 4

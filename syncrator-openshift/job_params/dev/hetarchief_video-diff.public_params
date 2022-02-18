@@ -1,5 +1,5 @@
 ENV=dev
-TARGET=archiefv2
+TARGET=archiefvideo
 ACTION_NAME=diff
 ACTION=diff
 IS_TAG=latest

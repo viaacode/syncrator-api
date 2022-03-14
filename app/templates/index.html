@@ -327,9 +327,26 @@ $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
           - full synchronisation job dryrun
         </li>
         <li> POST /sync/hetarchief_video             
-          - start a new full synchronisation job for hetarchief using postgresql_v2
+          - start a new full synchronisation job for bezoekertool and hetarchief for videos using postgresql_v2
         </li>
         <br/>
+
+        <li><a href="/sync/hetarchief_audio">GET /sync/hetarchief_audio</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/hetarchief_video             
+          - start a new full synchronisation job for bezoekertool and hetarchief for audio using postgresql_v2
+        </li>
+        <br/>
+
+        <li><a href="/sync/bezoekertool_film">GET /sync/bezoekertool_film</a> 
+          - full synchronisation job dryrun
+        </li>
+        <li> POST /sync/bezoekertool_film
+          - start a new full synchronisation job for bezoekertool for film using postgresql_v2
+        </li>
+        <br/>
+
       </ul>
       <p>
       For audio there are 4 seperate calls POST /sync/hetarchief_audio, POST /delta/hetarchief_audio etc... (These are work in progress and will be functional

@@ -3,5 +3,5 @@ TARGET=archiefvideo
 ACTION_NAME=delta
 ACTION=delta
 IS_TAG=prd
-MAM_MAIN_QUERY=+(MediaObjectType:video) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
+MAM_MAIN_QUERY=+(type:(video videofragment)) +(dc_rights_licensesmultiselect:BEZOEKER*)
 OPTIONS=-n 1000 -c 1

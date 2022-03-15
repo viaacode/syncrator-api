@@ -3,5 +3,5 @@ TARGET=archiefaudio
 ACTION_NAME=sync
 ACTION=sync
 IS_TAG=qas
-MAM_MAIN_QUERY=+(type:(audio audiofragment) -(type_viaa:film) +(dc_rights_licensesmultiselect:BEZOEKER*)
+MAM_MAIN_QUERY=+(type:(audio audiofragment)) -(type_viaa:film) +(dc_rights_licensesmultiselect:BEZOEKER*)
 OPTIONS=-n 1000 -c 1

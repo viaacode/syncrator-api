@@ -3,5 +3,5 @@ TARGET=archiefaudio
 ACTION_NAME=diff
 ACTION=diff
 IS_TAG=latest
-MAM_MAIN_QUERY=+(MediaObjectType:audio) +(MediaObjectArchiveStatus:(completed OR on_disk OR on_tape))
+MAM_MAIN_QUERY=+(type:(audio audiofragment) -(type_viaa:film) +(dc_rights_licensesmultiselect:BEZOEKER*)
 OPTIONS=-n 1000 -c 1

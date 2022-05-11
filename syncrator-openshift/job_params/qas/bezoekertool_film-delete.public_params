@@ -1,0 +1,7 @@
+ENV=qas
+TARGET=film
+ACTION_NAME=delete
+ACTION=delete
+IS_TAG=qas
+MAM_MAIN_QUERY=+(type_viaa:film) +(type:(video videofragment audio audiofragment))
+OPTIONS=-n 1000 -c 1

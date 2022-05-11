@@ -1,0 +1,7 @@
+ENV=prd
+TARGET=film
+ACTION_NAME=sync
+ACTION=sync
+IS_TAG=prd
+MAM_MAIN_QUERY=+(type_viaa:film) +(type:(video videofragment audio audiofragment))
+OPTIONS=-n 1000 -c 1

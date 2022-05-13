@@ -318,7 +318,7 @@ $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
         <li><a href="/diff/hetarchief_video">GET /diff/hetarchief_video</a> 
           - dryrun for delta followed by delete in one go for partial updates
         </li>
-        <li> POST /diff/hetarchief>             
+        <li> POST /diff/hetarchief_video>             
           - start delta job followed by a delete job
         </li>
         <br/>
@@ -331,13 +331,63 @@ $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
         </li>
         <br/>
 
+        <li><a href="/delta/hetarchief_audio">GET /delta/hetarchief_audio</a> 
+          - delta synchronisation job dryrun
+       </li>
+       
+       <li> POST /delta/&lt;project>             
+         - start a new delta synchronisation job
+       </li>
+       <br/>
+
+       <li><a href="/delete/hetarchief_audio">GET /delete/hetarchief_audio</a> 
+         - delete synchronisation job dryrun
+       </li>
+       <li> POST /delete/hetarchief_audio>            
+         - start a new delete synchronisation job
+       </li>
+       <br/>
+
+       <li><a href="/diff/hetarchief_audio">GET /diff/hetarchief_audio</a> 
+         - dryrun for delta followed by delete in one go for partial updates
+       </li>
+       <li> POST /diff/hetarchief_audio>             
+         - start delta job followed by a delete job
+       </li>
+       <br/>
+
         <li><a href="/sync/hetarchief_audio">GET /sync/hetarchief_audio</a> 
           - full synchronisation job dryrun
         </li>
-        <li> POST /sync/hetarchief_video             
+        <li> POST /sync/hetarchief_audio             
           - start a new full synchronisation job for bezoekertool and hetarchief for audio using postgresql_v2
         </li>
         <br/>
+
+        <li><a href="/delta/bezoekertool_film">GET /delta/bezoekertool_film</a> 
+          - delta synchronisation job dryrun
+       </li>
+       
+       <li> POST /delta/&lt;project>             
+         - start a new delta synchronisation job
+       </li>
+       <br/>
+
+       <li><a href="/delete/bezoekertool_film">GET /delete/bezoekertool_film</a> 
+         - delete synchronisation job dryrun
+       </li>
+       <li> POST /delete/bezoekertool_film>            
+         - start a new delete synchronisation job
+       </li>
+       <br/>
+
+       <li><a href="/diff/bezoekertool_film">GET /diff/bezoekertool_film</a> 
+         - dryrun for delta followed by delete in one go for partial updates
+       </li>
+       <li> POST /diff/bezoekertool_film>             
+         - start delta job followed by a delete job
+       </li>
+       <br/>
 
         <li><a href="/sync/bezoekertool_film">GET /sync/bezoekertool_film</a> 
           - full synchronisation job dryrun
@@ -348,10 +398,6 @@ $ curl -X POST http://syncrator-api-qas-shared-components.apps.do-prd-okp-m0.do.
         <br/>
 
       </ul>
-      <p>
-      For audio there are 4 seperate calls POST /sync/hetarchief_audio, POST /delta/hetarchief_audio etc... (These are work in progress and will be functional
-      once the target databas supports it + we need a seperate configmap most likely).
-      </p>
 
       <h3>Choosing QAS, PRD environment</h3>
       In the above examples the environment 'qas' or 'prd' is determined by which

@@ -3,5 +3,5 @@ TARGET=film
 ACTION_NAME=delta
 ACTION=delta
 IS_TAG=qas
-MAM_MAIN_QUERY=+(type_viaa:film) +(type:(video videofragment audio audiofragment))
+MAM_MAIN_QUERY=+(type_viaa:film) +(type:(video videofragment audio audiofragment)) +(dc_rights_licensesmultiselect:BEZOEKER*)
 OPTIONS=-n 1000 -c 1

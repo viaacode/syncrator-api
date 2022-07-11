@@ -244,6 +244,24 @@ def test_general_job_run(client):
     assert generic_data['TARGET'] == delta_data['TARGET']
     assert generic_data['ACTION'] == delta_data['ACTION']
     assert generic_data['result'] == 'starting'
+    assert generic_data.get('MAM_MAIN_QUERY') is None
+
+
+def test_general_job_run_mam_main_query(client):
+    resp = client.post('/run',
+                       headers={'Authorization': jwt_token()},
+                       json={
+                            'target': 'avo',
+                            'env': 'qas',
+                            'action_name': 'delta',
+                            'action': 'delta',
+                            'is_tag': 'latest',
+                            'options': '-n 1000 -c 1',
+                            'mam_main_query': '+(type:video)'
+                       })
+    assert resp.status_code == status.HTTP_200_OK
+    data = resp.get_json()
+    assert data['MAM_MAIN_QUERY'] == '+(type:video)'
 
 
 def test_dryrun_openshift_commands(client, setup):

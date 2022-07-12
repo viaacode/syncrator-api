@@ -207,7 +207,7 @@ def syncrator_dryrun():
 def job_params_from_request():
     try:
         request_data = request.json
-        return {
+        params = {
             'TARGET': request_data['target'],
             'ENV': app.config.get('SYNC_ENV'),  # request_data['env'],
             'ACTION_NAME': request_data['action_name'],
@@ -215,6 +215,12 @@ def job_params_from_request():
             'IS_TAG': request_data['is_tag'],
             'OPTIONS': request_data['options']
         }
+        # Add MAM_MAIN_QUERY if it was filled in.
+        try:
+            params["MAM_MAIN_QUERY"] = request_data['mam_main_query']
+        except:
+            pass
+        return params
     except TypeError:
         abort(400, 'Invalid job parameters')
 

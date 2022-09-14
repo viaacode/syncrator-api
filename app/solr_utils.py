@@ -10,7 +10,7 @@
 #
 import requests
 
-OC_SERVER = 'do-prd-okp-m0.do.viaa.be'
+OC_SERVER = 'catalogi.svc.cluster.local:2080'
 SYNCRATOR_SOLR_FLAG = '--switch_solr_alias'
 CONTENT_TYPE = {
     'Content-type': 'text/xml; charset=utf-8'
@@ -93,7 +93,7 @@ def delete_standby(base_solr_url, standby_alias):
 
 
 def sync_to_standby(app, environment):
-    base_solr_url = 'http://solr-{}-catalogi.apps.{}/solr/'.format(
+    base_solr_url = 'http://solr-{}-0.{}/solr/'.format(
         environment,
         OC_SERVER
     )

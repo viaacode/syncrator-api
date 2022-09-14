@@ -42,7 +42,7 @@ def test_solr_preperation(client):
 @pytest.mark.vcr
 def test_list_aliases(client):
     res = list_aliases(
-        'http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/')
+        'http://solr-qas-0.catalogi.svc.cluster.local:2080/solr/')
     assert res == {
         'metadatacatalogus-standby': 'metadatacatalogus-2',
         'cataloguspro-standby': 'cataloguspro-1',

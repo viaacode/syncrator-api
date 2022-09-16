@@ -11,7 +11,7 @@ interactions:
       User-Agent:
       - python-requests/2.23.0
     method: GET
-    uri: http://solr-qas-catalogi.apps.do-prd-okp-m0.do.viaa.be/solr/admin/collections?action=LISTALIASES&wt=json
+    uri: http://solr-qas-0.catalogi.svc.cluster.local:2080/solr/admin/collections?action=LISTALIASES&wt=json
   response:
     body:
       string: '{"responseHeader":{"status":0,"QTime":0},"aliases":{"metadatacatalogus-standby":"metadatacatalogus-2","cataloguspro-standby":"cataloguspro-1","metadatacatalogus":"metadatacatalogus-1","cataloguspro":"cataloguspro-2","metadatacatalogus-sync":"metadatacatalogus-1","cataloguspro-sync":"cataloguspro-1"}}

@@ -6,6 +6,6 @@ uWSGI==2.0.18
 psycopg2==2.8.5
 requests>=2.23.0
 pyjwt>=1.7.0
-werkzeug==0.16.0
+werkzeug==2.2.3
 jinja2==2.11.3
 itsdangerous==1.1.0
